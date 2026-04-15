@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HTMLab &mdash; CSS Grid</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<nav id="topnav">
+  <div class="logo"><a href="index.html">HTML<span>ab</span> &#9999;&#65039;</a></div>
+  <div class="nav-links">
+    <a class="nav-link active" href="index.html">&#128218; Learn</a>
+    <a class="nav-link" href="playground.html">&#129514; Playground</a>
+  </div>
+</nav>
+<div class="page-wrap">
+  <aside id="sidebar"><div class="sb-section"><div class="sb-section-title">Getting Started</div><a class="sb-item" href="html-basics.html"><span>&lt;html&gt;</span><span class="sb-tag">Intro</span></a></div><div class="sb-section"><div class="sb-section-title">Text Elements</div><a class="sb-item" href="headings.html"><span>&lt;h1&gt;–&lt;h6&gt;</span><span class="sb-tag">Text</span></a><a class="sb-item" href="paragraph.html"><span>&lt;p&gt;</span><span class="sb-tag">Text</span></a><a class="sb-item" href="span.html"><span>&lt;span&gt;</span><span class="sb-tag">Inline</span></a><a class="sb-item" href="strong-em.html"><span>&lt;strong&gt;</span><span class="sb-tag">Text</span></a></div><div class="sb-section"><div class="sb-section-title">Structure</div><a class="sb-item" href="div.html"><span>&lt;div&gt;</span><span class="sb-tag">Block</span></a><a class="sb-item" href="semantic.html"><span>&lt;header&gt;</span><span class="sb-tag">Semantic</span></a></div><div class="sb-section"><div class="sb-section-title">Links & Nav</div><a class="sb-item" href="anchor.html"><span>&lt;a&gt;</span><span class="sb-tag">Link</span></a></div><div class="sb-section"><div class="sb-section-title">Media</div><a class="sb-item" href="image.html"><span>&lt;img&gt;</span><span class="sb-tag">Media</span></a><a class="sb-item" href="video.html"><span>&lt;video&gt;</span><span class="sb-tag">Media</span></a><a class="sb-item" href="audio.html"><span>&lt;audio&gt;</span><span class="sb-tag">Media</span></a></div><div class="sb-section"><div class="sb-section-title">Lists</div><a class="sb-item" href="lists.html"><span>&lt;ul&gt; &lt;ol&gt;</span><span class="sb-tag">List</span></a></div><div class="sb-section"><div class="sb-section-title">Tables</div><a class="sb-item" href="table.html"><span>&lt;table&gt;</span><span class="sb-tag">Table</span></a></div><div class="sb-section"><div class="sb-section-title">Forms</div><a class="sb-item" href="form.html"><span>&lt;form&gt;</span><span class="sb-tag">Form</span></a><a class="sb-item" href="input.html"><span>&lt;input&gt;</span><span class="sb-tag">Form</span></a><a class="sb-item" href="textarea.html"><span>&lt;textarea&gt;</span><span class="sb-tag">Form</span></a><a class="sb-item" href="select.html"><span>&lt;select&gt;</span><span class="sb-tag">Form</span></a><a class="sb-item" href="button.html"><span>&lt;button&gt;</span><span class="sb-tag">Form</span></a></div><div class="sb-section"><div class="sb-section-title">Document</div><a class="sb-item" href="meta.html"><span>&lt;head&gt;</span><span class="sb-tag">Meta</span></a></div><div class="sb-section"><div class="sb-section-title">CSS Layout</div><a class="sb-item" href="flexbox.html"><span>display:flex</span><span class="sb-tag">CSS</span></a><a class="sb-item active" href="grid.html"><span>display:grid</span><span class="sb-tag">CSS</span></a><a class="sb-item" href="boxmodel.html"><span>box-model</span><span class="sb-tag">CSS</span></a></div><div class="sb-section"><div class="sb-section-title">CSS Styling</div><a class="sb-item" href="typography.html"><span>font-*</span><span class="sb-tag">CSS</span></a><a class="sb-item" href="backgrounds.html"><span>background</span><span class="sb-tag">CSS</span></a><a class="sb-item" href="animations.html"><span>transition</span><span class="sb-tag">CSS</span></a></div></aside>
+  <div id="content">
+    <div id="content-scroll">
+      <div class="slide-header">
+        <span class="slide-tag-chip">CSS</span>
+        <div>
+          <div class="hero-badge badge-style">CSS Layout</div>
+          <h1 class="slide-title">CSS Grid</h1>
+        </div>
+      </div>
+      <p class="slide-desc">CSS <strong>Grid</strong> creates two-dimensional layouts &mdash; rows AND columns simultaneously. Perfect for full-page layouts, dashboards, and galleries.</p>
+      <div class="fact-box tip"><strong>&#128161; Tip</strong><code>fr</code> is a fractional unit. <code>1fr 2fr 1fr</code> gives the middle column double the space of the outer ones.</div>
+      <div class="controls-row"><div class="ctrl-group"><div class="ctrl-label">grid-template-columns</div><select class="ctrl-select" data-cid="gr-cols"><option value="1fr">1fr</option><option value="1fr 1fr">1fr 1fr</option><option value="1fr 1fr 1fr" selected>1fr 1fr 1fr</option><option value="repeat(4,1fr)">repeat(4,1fr)</option><option value="1fr 2fr">1fr 2fr</option><option value="2fr 1fr 1fr">2fr 1fr 1fr</option></select></div><div class="ctrl-group"><div class="ctrl-label">Row Height<span class="ctrl-val" id="val-gr-rh">80px</span></div><input type="range" class="ctrl-slider" data-cid="gr-rh" min="40" max="140" step="1" value="80"></div><div class="ctrl-group"><div class="ctrl-label">Gap<span class="ctrl-val" id="val-gr-gap">10px</span></div><input type="range" class="ctrl-slider" data-cid="gr-gap" min="0" max="28" step="1" value="10"></div><div class="ctrl-group"><div class="ctrl-label">Item Count<span class="ctrl-val" id="val-gr-n">6</span></div><input type="range" class="ctrl-slider" data-cid="gr-n" min="2" max="9" step="1" value="6"></div><div class="ctrl-group"><div class="ctrl-label">Item Color</div><input type="color" class="ctrl-color" data-cid="gr-ic" value="#2bb5a0"></div></div>
+      <div class="three-pane">
+        <div class="pane">
+          <div class="pane-header html-head"><div class="pane-dot dot-html"></div>HTML</div>
+          <textarea class="code-editor" id="html-editor" spellcheck="false"></textarea>
+        </div>
+        <div class="pane">
+          <div class="pane-header css-head"><div class="pane-dot dot-css"></div>CSS</div>
+          <textarea class="code-editor" id="css-editor" spellcheck="false"></textarea>
+        </div>
+        <div class="pane">
+          <div class="pane-header prev-head">
+            <div class="pane-dot dot-prev"></div>Live Preview
+            <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+          </div>
+          <div class="preview-body"><iframe id="preview-frame" sandbox="allow-scripts allow-same-origin"></iframe></div>
+        </div>
+      </div>
+    </div>
+    <div id="bottom-nav">
+      <a class="btn-nav btn-prev" href="flexbox.html">&#8592; Prev</a>
+      <div class="slide-counter">Slide <b>21</b> of 25</div>
+      <a class="btn-nav btn-next" href="boxmodel.html">Next &#8594;</a>
+    </div>
+  </div>
+</div>
+<script src="shared.js"></script>
+<script>
+var htmlEditor = document.getElementById('html-editor');
+var cssEditor  = document.getElementById('css-editor');
+htmlEditor.value = "<div class=\"grid\">\n  <div class=\"cell\">1</div>\n  <div class=\"cell\">2</div>\n  <div class=\"cell\">3</div>\n  <div class=\"cell\">4</div>\n  <div class=\"cell\">5</div>\n  <div class=\"cell\">6</div>\n</div>";
+cssEditor.value  = "body { padding: 16px; font-family: monospace; }\n.grid {\n  display: grid;\n  grid-template-columns: 1fr 1fr 1fr;\n  grid-auto-rows: 80px;\n  gap: 10px;\n}\n.cell {\n  background: #2bb5a0;\n  color: #fff;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  border-radius: 6px;\n  font-weight: 700;\n  font-size: 1rem;\n}";
+function refresh() { SharedEngine.refreshPreview(); }
+htmlEditor.addEventListener('input', refresh);
+cssEditor.addEventListener('input',  refresh);
+refresh();
+
+function applyControl(cid, val) {
+  var h = htmlEditor.value, c = cssEditor.value;
+  if (cid === 'gr-cols') { c = c.replace(/grid-template-columns:\s*[^;]+/, 'grid-template-columns: ' + val); cssEditor.value = c; }
+  if (cid === 'gr-rh')   { c = c.replace(/grid-auto-rows:\s*[^;]+/, 'grid-auto-rows: ' + val + 'px'); cssEditor.value = c; }
+  if (cid === 'gr-gap')  { c = c.replace(/gap:\s*[^;]+/, 'gap: ' + val + 'px'); cssEditor.value = c; }
+  if (cid === 'gr-n') {
+    var n = parseInt(val), cells = '';
+    for (var i = 1; i <= n; i++) cells += '  <div class="cell">' + i + '</div>\n';
+    htmlEditor.value = '<div class="grid">\n' + cells + '</div>';
+  }
+  if (cid === 'gr-ic') { c = c.replace(/(\.cell\s*\{[^}]*background:\s*)[^;]+/, '$1' + val); cssEditor.value = c; }
+}
+SharedEngine.wireControls(function(cid, val) {
+  applyControl(cid, val);
+  refresh();
+});
+</script>
+</body>
+</html>

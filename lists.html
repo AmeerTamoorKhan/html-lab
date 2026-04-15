@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HTMLab &mdash; Lists: <code>&lt;ul&gt;</code> &amp; <code>&lt;ol&gt;</code></title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<nav id="topnav">
+  <div class="logo"><a href="index.html">HTML<span>ab</span> &#9999;&#65039;</a></div>
+  <div class="nav-links">
+    <a class="nav-link active" href="index.html">&#128218; Learn</a>
+    <a class="nav-link" href="playground.html">&#129514; Playground</a>
+  </div>
+</nav>
+<div class="page-wrap">
+  <aside id="sidebar"><div class="sb-section"><div class="sb-section-title">Getting Started</div><a class="sb-item" href="html-basics.html"><span>&lt;html&gt;</span><span class="sb-tag">Intro</span></a></div><div class="sb-section"><div class="sb-section-title">Text Elements</div><a class="sb-item" href="headings.html"><span>&lt;h1&gt;–&lt;h6&gt;</span><span class="sb-tag">Text</span></a><a class="sb-item" href="paragraph.html"><span>&lt;p&gt;</span><span class="sb-tag">Text</span></a><a class="sb-item" href="span.html"><span>&lt;span&gt;</span><span class="sb-tag">Inline</span></a><a class="sb-item" href="strong-em.html"><span>&lt;strong&gt;</span><span class="sb-tag">Text</span></a></div><div class="sb-section"><div class="sb-section-title">Structure</div><a class="sb-item" href="div.html"><span>&lt;div&gt;</span><span class="sb-tag">Block</span></a><a class="sb-item" href="semantic.html"><span>&lt;header&gt;</span><span class="sb-tag">Semantic</span></a></div><div class="sb-section"><div class="sb-section-title">Links & Nav</div><a class="sb-item" href="anchor.html"><span>&lt;a&gt;</span><span class="sb-tag">Link</span></a></div><div class="sb-section"><div class="sb-section-title">Media</div><a class="sb-item" href="image.html"><span>&lt;img&gt;</span><span class="sb-tag">Media</span></a><a class="sb-item" href="video.html"><span>&lt;video&gt;</span><span class="sb-tag">Media</span></a><a class="sb-item" href="audio.html"><span>&lt;audio&gt;</span><span class="sb-tag">Media</span></a></div><div class="sb-section"><div class="sb-section-title">Lists</div><a class="sb-item active" href="lists.html"><span>&lt;ul&gt; &lt;ol&gt;</span><span class="sb-tag">List</span></a></div><div class="sb-section"><div class="sb-section-title">Tables</div><a class="sb-item" href="table.html"><span>&lt;table&gt;</span><span class="sb-tag">Table</span></a></div><div class="sb-section"><div class="sb-section-title">Forms</div><a class="sb-item" href="form.html"><span>&lt;form&gt;</span><span class="sb-tag">Form</span></a><a class="sb-item" href="input.html"><span>&lt;input&gt;</span><span class="sb-tag">Form</span></a><a class="sb-item" href="textarea.html"><span>&lt;textarea&gt;</span><span class="sb-tag">Form</span></a><a class="sb-item" href="select.html"><span>&lt;select&gt;</span><span class="sb-tag">Form</span></a><a class="sb-item" href="button.html"><span>&lt;button&gt;</span><span class="sb-tag">Form</span></a></div><div class="sb-section"><div class="sb-section-title">Document</div><a class="sb-item" href="meta.html"><span>&lt;head&gt;</span><span class="sb-tag">Meta</span></a></div><div class="sb-section"><div class="sb-section-title">CSS Layout</div><a class="sb-item" href="flexbox.html"><span>display:flex</span><span class="sb-tag">CSS</span></a><a class="sb-item" href="grid.html"><span>display:grid</span><span class="sb-tag">CSS</span></a><a class="sb-item" href="boxmodel.html"><span>box-model</span><span class="sb-tag">CSS</span></a></div><div class="sb-section"><div class="sb-section-title">CSS Styling</div><a class="sb-item" href="typography.html"><span>font-*</span><span class="sb-tag">CSS</span></a><a class="sb-item" href="backgrounds.html"><span>background</span><span class="sb-tag">CSS</span></a><a class="sb-item" href="animations.html"><span>transition</span><span class="sb-tag">CSS</span></a></div></aside>
+  <div id="content">
+    <div id="content-scroll">
+      <div class="slide-header">
+        <span class="slide-tag-chip">List</span>
+        <div>
+          <div class="hero-badge badge-text">Lists</div>
+          <h1 class="slide-title">Lists: <code>&lt;ul&gt;</code> &amp; <code>&lt;ol&gt;</code></h1>
+        </div>
+      </div>
+      <p class="slide-desc"><code>&lt;ul&gt;</code> creates a <strong>bullet list</strong>. <code>&lt;ol&gt;</code> creates a <strong>numbered list</strong>. Both wrap each item in <code>&lt;li&gt;</code> tags.</p>
+      <div class="fact-box tip"><strong>&#128161; Tip</strong>Change bullet style with CSS: <code>list-style-type: disc | circle | square | none</code>. For <code>&lt;ol&gt;</code>: <code>decimal | upper-alpha | lower-roman</code>.</div>
+      <div class="controls-row"><div class="ctrl-group"><div class="ctrl-label">List Type</div><div class="ctrl-toggle"><button class="toggle-btn active" data-cid="lst-type" data-grp="lst-type" data-val="ul">ul</button><button class="toggle-btn" data-cid="lst-type" data-grp="lst-type" data-val="ol">ol</button></div></div><div class="ctrl-group"><div class="ctrl-label">Item 1</div><input class="ctrl-input" data-cid="lst-i1" value="HTML is the structure"></div><div class="ctrl-group"><div class="ctrl-label">Item 2</div><input class="ctrl-input" data-cid="lst-i2" value="CSS is the style"></div><div class="ctrl-group"><div class="ctrl-label">Item 3</div><input class="ctrl-input" data-cid="lst-i3" value="JS is the behavior"></div><div class="ctrl-group"><div class="ctrl-label">Bullet Style</div><select class="ctrl-select" data-cid="lst-style"><option value="disc" selected>disc</option><option value="circle">circle</option><option value="square">square</option><option value="none">none</option><option value="decimal">decimal</option><option value="upper-alpha">upper-alpha</option><option value="lower-roman">lower-roman</option></select></div><div class="ctrl-group"><div class="ctrl-label">Color</div><input type="color" class="ctrl-color" data-cid="lst-color" value="#1a1612"></div><div class="ctrl-group"><div class="ctrl-label">Font Size<span class="ctrl-val" id="val-lst-size">16px</span></div><input type="range" class="ctrl-slider" data-cid="lst-size" min="10" max="28" step="1" value="16"></div></div>
+      <div class="three-pane">
+        <div class="pane">
+          <div class="pane-header html-head"><div class="pane-dot dot-html"></div>HTML</div>
+          <textarea class="code-editor" id="html-editor" spellcheck="false"></textarea>
+        </div>
+        <div class="pane">
+          <div class="pane-header css-head"><div class="pane-dot dot-css"></div>CSS</div>
+          <textarea class="code-editor" id="css-editor" spellcheck="false"></textarea>
+        </div>
+        <div class="pane">
+          <div class="pane-header prev-head">
+            <div class="pane-dot dot-prev"></div>Live Preview
+            <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+          </div>
+          <div class="preview-body"><iframe id="preview-frame" sandbox="allow-scripts allow-same-origin"></iframe></div>
+        </div>
+      </div>
+    </div>
+    <div id="bottom-nav">
+      <a class="btn-nav btn-prev" href="audio.html">&#8592; Prev</a>
+      <div class="slide-counter">Slide <b>12</b> of 25</div>
+      <a class="btn-nav btn-next" href="table.html">Next &#8594;</a>
+    </div>
+  </div>
+</div>
+<script src="shared.js"></script>
+<script>
+var htmlEditor = document.getElementById('html-editor');
+var cssEditor  = document.getElementById('css-editor');
+htmlEditor.value = "<ul id=\"demo\">\n  <li>HTML is the structure</li>\n  <li>CSS is the style</li>\n  <li>JS is the behavior</li>\n</ul>";
+cssEditor.value  = "body { font-family: Georgia, serif; padding: 24px; }\n#demo {\n  list-style-type: disc;\n  color: #1a1612;\n  font-size: 16px;\n  padding-left: 28px;\n  line-height: 1.8;\n}";
+function refresh() { SharedEngine.refreshPreview(); }
+htmlEditor.addEventListener('input', refresh);
+cssEditor.addEventListener('input',  refresh);
+refresh();
+
+var _lt = 'ul';
+function applyControl(cid, val) {
+  var h = htmlEditor.value, c = cssEditor.value;
+  if (cid === 'lst-type') {
+    h = h.replace(new RegExp('<' + _lt + ' id="demo">'), '<' + val + ' id="demo">');
+    h = h.replace(new RegExp('<\\/' + _lt + '>'), '</' + val + '>');
+    _lt = val; htmlEditor.value = h;
+  }
+  if (cid === 'lst-i1') {
+    var parts = h.split('<li>');
+    parts[1] = val + '</li>\n  ';
+    htmlEditor.value = parts.join('<li>');
+  }
+  if (cid === 'lst-i2') {
+    var parts = h.split('<li>');
+    parts[2] = val + '</li>\n  ';
+    htmlEditor.value = parts.join('<li>');
+  }
+  if (cid === 'lst-i3') {
+    var parts = h.split('<li>');
+    parts[3] = val + '</li>\n';
+    htmlEditor.value = parts.join('<li>');
+  }
+  if (cid === 'lst-style') { c = c.replace(/list-style-type:\s*[^;]+/, 'list-style-type: ' + val); cssEditor.value = c; }
+  if (cid === 'lst-color') { c = c.replace(/color:\s*[^;]+/, 'color: ' + val); cssEditor.value = c; }
+  if (cid === 'lst-size')  { c = c.replace(/font-size:\s*[^;]+/, 'font-size: ' + val + 'px'); cssEditor.value = c; }
+}
+SharedEngine.wireControls(function(cid, val) {
+  applyControl(cid, val);
+  refresh();
+});
+</script>
+</body>
+</html>

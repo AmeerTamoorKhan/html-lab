@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HTMLab &mdash; The Box Model</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<nav id="topnav">
+  <div class="logo"><a href="index.html">HTML<span>ab</span> &#9999;&#65039;</a></div>
+  <div class="nav-links">
+    <a class="nav-link active" href="index.html">&#128218; Learn</a>
+    <a class="nav-link" href="playground.html">&#129514; Playground</a>
+  </div>
+</nav>
+<div class="page-wrap">
+  <aside id="sidebar"><div class="sb-section"><div class="sb-section-title">Getting Started</div><a class="sb-item" href="html-basics.html"><span>&lt;html&gt;</span><span class="sb-tag">Intro</span></a></div><div class="sb-section"><div class="sb-section-title">Text Elements</div><a class="sb-item" href="headings.html"><span>&lt;h1&gt;–&lt;h6&gt;</span><span class="sb-tag">Text</span></a><a class="sb-item" href="paragraph.html"><span>&lt;p&gt;</span><span class="sb-tag">Text</span></a><a class="sb-item" href="span.html"><span>&lt;span&gt;</span><span class="sb-tag">Inline</span></a><a class="sb-item" href="strong-em.html"><span>&lt;strong&gt;</span><span class="sb-tag">Text</span></a></div><div class="sb-section"><div class="sb-section-title">Structure</div><a class="sb-item" href="div.html"><span>&lt;div&gt;</span><span class="sb-tag">Block</span></a><a class="sb-item" href="semantic.html"><span>&lt;header&gt;</span><span class="sb-tag">Semantic</span></a></div><div class="sb-section"><div class="sb-section-title">Links & Nav</div><a class="sb-item" href="anchor.html"><span>&lt;a&gt;</span><span class="sb-tag">Link</span></a></div><div class="sb-section"><div class="sb-section-title">Media</div><a class="sb-item" href="image.html"><span>&lt;img&gt;</span><span class="sb-tag">Media</span></a><a class="sb-item" href="video.html"><span>&lt;video&gt;</span><span class="sb-tag">Media</span></a><a class="sb-item" href="audio.html"><span>&lt;audio&gt;</span><span class="sb-tag">Media</span></a></div><div class="sb-section"><div class="sb-section-title">Lists</div><a class="sb-item" href="lists.html"><span>&lt;ul&gt; &lt;ol&gt;</span><span class="sb-tag">List</span></a></div><div class="sb-section"><div class="sb-section-title">Tables</div><a class="sb-item" href="table.html"><span>&lt;table&gt;</span><span class="sb-tag">Table</span></a></div><div class="sb-section"><div class="sb-section-title">Forms</div><a class="sb-item" href="form.html"><span>&lt;form&gt;</span><span class="sb-tag">Form</span></a><a class="sb-item" href="input.html"><span>&lt;input&gt;</span><span class="sb-tag">Form</span></a><a class="sb-item" href="textarea.html"><span>&lt;textarea&gt;</span><span class="sb-tag">Form</span></a><a class="sb-item" href="select.html"><span>&lt;select&gt;</span><span class="sb-tag">Form</span></a><a class="sb-item" href="button.html"><span>&lt;button&gt;</span><span class="sb-tag">Form</span></a></div><div class="sb-section"><div class="sb-section-title">Document</div><a class="sb-item" href="meta.html"><span>&lt;head&gt;</span><span class="sb-tag">Meta</span></a></div><div class="sb-section"><div class="sb-section-title">CSS Layout</div><a class="sb-item" href="flexbox.html"><span>display:flex</span><span class="sb-tag">CSS</span></a><a class="sb-item" href="grid.html"><span>display:grid</span><span class="sb-tag">CSS</span></a><a class="sb-item active" href="boxmodel.html"><span>box-model</span><span class="sb-tag">CSS</span></a></div><div class="sb-section"><div class="sb-section-title">CSS Styling</div><a class="sb-item" href="typography.html"><span>font-*</span><span class="sb-tag">CSS</span></a><a class="sb-item" href="backgrounds.html"><span>background</span><span class="sb-tag">CSS</span></a><a class="sb-item" href="animations.html"><span>transition</span><span class="sb-tag">CSS</span></a></div></aside>
+  <div id="content">
+    <div id="content-scroll">
+      <div class="slide-header">
+        <span class="slide-tag-chip">CSS</span>
+        <div>
+          <div class="hero-badge badge-style">CSS Layout</div>
+          <h1 class="slide-title">The Box Model</h1>
+        </div>
+      </div>
+      <p class="slide-desc">Every HTML element is a <strong>rectangular box</strong> with four layers: <code>content</code> &#8594; <code>padding</code> &#8594; <code>border</code> &#8594; <code>margin</code>.</p>
+      <div class="fact-box tip"><strong>&#128161; Tip</strong>Use <code>box-sizing: border-box</code> so padding and border are included in the element's width &mdash; makes sizing much more predictable.</div>
+      <div class="controls-row"><div class="ctrl-group"><div class="ctrl-label">Margin<span class="ctrl-val" id="val-bm-margin">16px</span></div><input type="range" class="ctrl-slider" data-cid="bm-margin" min="0" max="40" step="1" value="16"></div><div class="ctrl-group"><div class="ctrl-label">Border Width<span class="ctrl-val" id="val-bm-border">4px</span></div><input type="range" class="ctrl-slider" data-cid="bm-border" min="0" max="16" step="1" value="4"></div><div class="ctrl-group"><div class="ctrl-label">Padding<span class="ctrl-val" id="val-bm-padding">16px</span></div><input type="range" class="ctrl-slider" data-cid="bm-padding" min="0" max="40" step="1" value="16"></div><div class="ctrl-group"><div class="ctrl-label">Content Color</div><input type="color" class="ctrl-color" data-cid="bm-content" value="#deeaf7"></div><div class="ctrl-group"><div class="ctrl-label">Border Color</div><input type="color" class="ctrl-color" data-cid="bm-border-color" value="#f06449"></div></div>
+      <div class="three-pane">
+        <div class="pane">
+          <div class="pane-header html-head"><div class="pane-dot dot-html"></div>HTML</div>
+          <textarea class="code-editor" id="html-editor" spellcheck="false"></textarea>
+        </div>
+        <div class="pane">
+          <div class="pane-header css-head"><div class="pane-dot dot-css"></div>CSS</div>
+          <textarea class="code-editor" id="css-editor" spellcheck="false"></textarea>
+        </div>
+        <div class="pane">
+          <div class="pane-header prev-head">
+            <div class="pane-dot dot-prev"></div>Live Preview
+            <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+          </div>
+          <div class="preview-body"><iframe id="preview-frame" sandbox="allow-scripts allow-same-origin"></iframe></div>
+        </div>
+      </div>
+    </div>
+    <div id="bottom-nav">
+      <a class="btn-nav btn-prev" href="grid.html">&#8592; Prev</a>
+      <div class="slide-counter">Slide <b>22</b> of 25</div>
+      <a class="btn-nav btn-next" href="typography.html">Next &#8594;</a>
+    </div>
+  </div>
+</div>
+<script src="shared.js"></script>
+<script>
+var htmlEditor = document.getElementById('html-editor');
+var cssEditor  = document.getElementById('css-editor');
+htmlEditor.value = "<div class=\"margin-box\">\n  <div class=\"border-box\">\n    <div class=\"content-box\">content</div>\n  </div>\n</div>";
+cssEditor.value  = "body { font-family: monospace; padding: 24px; }\n.margin-box { background: #fde8e3; padding: 16px; position: relative; }\n.margin-box::before { content: \"margin\"; position: absolute; top: 3px; left: 6px; font-size: 10px; color: #f06449; font-weight: bold; }\n.border-box { border: 4px solid #f06449; background: #fff8e0; padding: 16px; position: relative; }\n.border-box::before { content: \"padding\"; position: absolute; top: 3px; left: 6px; font-size: 10px; color: #b08000; font-weight: bold; }\n.content-box { background: #deeaf7; padding: 16px; text-align: center; font-weight: bold; color: #1a1612; }";
+function refresh() { SharedEngine.refreshPreview(); }
+htmlEditor.addEventListener('input', refresh);
+cssEditor.addEventListener('input',  refresh);
+refresh();
+
+function applyControl(cid, val) {
+  var c = cssEditor.value;
+  if (cid === 'bm-margin')  { c = c.replace(/(\.margin-box\s*\{[^}]*padding:\s*)[^;]+/, '$1' + val + 'px'); cssEditor.value = c; }
+  if (cid === 'bm-border')  { c = c.replace(/(\.border-box\s*\{[^}]*border:\s*)\d+px/, '$1' + val + 'px'); cssEditor.value = c; }
+  if (cid === 'bm-padding') { c = c.replace(/(\.border-box\s*\{[^}]*padding:\s*)[^;]+/, '$1' + val + 'px'); cssEditor.value = c; }
+  if (cid === 'bm-content') { c = c.replace(/(\.content-box\s*\{[^}]*background:\s*)[^;]+/, '$1' + val); cssEditor.value = c; }
+  if (cid === 'bm-border-color') { c = c.replace(/(\.border-box\s*\{[^}]*border:\s*\d+px solid\s*)[^;]+/, '$1' + val); cssEditor.value = c; }
+}
+SharedEngine.wireControls(function(cid, val) {
+  applyControl(cid, val);
+  refresh();
+});
+</script>
+</body>
+</html>

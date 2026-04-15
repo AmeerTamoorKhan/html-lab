@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HTMLab &mdash; CSS Typography</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<nav id="topnav">
+  <div class="logo"><a href="index.html">HTML<span>ab</span> &#9999;&#65039;</a></div>
+  <div class="nav-links">
+    <a class="nav-link active" href="index.html">&#128218; Learn</a>
+    <a class="nav-link" href="playground.html">&#129514; Playground</a>
+  </div>
+</nav>
+<div class="page-wrap">
+  <aside id="sidebar"><div class="sb-section"><div class="sb-section-title">Getting Started</div><a class="sb-item" href="html-basics.html"><span>&lt;html&gt;</span><span class="sb-tag">Intro</span></a></div><div class="sb-section"><div class="sb-section-title">Text Elements</div><a class="sb-item" href="headings.html"><span>&lt;h1&gt;–&lt;h6&gt;</span><span class="sb-tag">Text</span></a><a class="sb-item" href="paragraph.html"><span>&lt;p&gt;</span><span class="sb-tag">Text</span></a><a class="sb-item" href="span.html"><span>&lt;span&gt;</span><span class="sb-tag">Inline</span></a><a class="sb-item" href="strong-em.html"><span>&lt;strong&gt;</span><span class="sb-tag">Text</span></a></div><div class="sb-section"><div class="sb-section-title">Structure</div><a class="sb-item" href="div.html"><span>&lt;div&gt;</span><span class="sb-tag">Block</span></a><a class="sb-item" href="semantic.html"><span>&lt;header&gt;</span><span class="sb-tag">Semantic</span></a></div><div class="sb-section"><div class="sb-section-title">Links & Nav</div><a class="sb-item" href="anchor.html"><span>&lt;a&gt;</span><span class="sb-tag">Link</span></a></div><div class="sb-section"><div class="sb-section-title">Media</div><a class="sb-item" href="image.html"><span>&lt;img&gt;</span><span class="sb-tag">Media</span></a><a class="sb-item" href="video.html"><span>&lt;video&gt;</span><span class="sb-tag">Media</span></a><a class="sb-item" href="audio.html"><span>&lt;audio&gt;</span><span class="sb-tag">Media</span></a></div><div class="sb-section"><div class="sb-section-title">Lists</div><a class="sb-item" href="lists.html"><span>&lt;ul&gt; &lt;ol&gt;</span><span class="sb-tag">List</span></a></div><div class="sb-section"><div class="sb-section-title">Tables</div><a class="sb-item" href="table.html"><span>&lt;table&gt;</span><span class="sb-tag">Table</span></a></div><div class="sb-section"><div class="sb-section-title">Forms</div><a class="sb-item" href="form.html"><span>&lt;form&gt;</span><span class="sb-tag">Form</span></a><a class="sb-item" href="input.html"><span>&lt;input&gt;</span><span class="sb-tag">Form</span></a><a class="sb-item" href="textarea.html"><span>&lt;textarea&gt;</span><span class="sb-tag">Form</span></a><a class="sb-item" href="select.html"><span>&lt;select&gt;</span><span class="sb-tag">Form</span></a><a class="sb-item" href="button.html"><span>&lt;button&gt;</span><span class="sb-tag">Form</span></a></div><div class="sb-section"><div class="sb-section-title">Document</div><a class="sb-item" href="meta.html"><span>&lt;head&gt;</span><span class="sb-tag">Meta</span></a></div><div class="sb-section"><div class="sb-section-title">CSS Layout</div><a class="sb-item" href="flexbox.html"><span>display:flex</span><span class="sb-tag">CSS</span></a><a class="sb-item" href="grid.html"><span>display:grid</span><span class="sb-tag">CSS</span></a><a class="sb-item" href="boxmodel.html"><span>box-model</span><span class="sb-tag">CSS</span></a></div><div class="sb-section"><div class="sb-section-title">CSS Styling</div><a class="sb-item active" href="typography.html"><span>font-*</span><span class="sb-tag">CSS</span></a><a class="sb-item" href="backgrounds.html"><span>background</span><span class="sb-tag">CSS</span></a><a class="sb-item" href="animations.html"><span>transition</span><span class="sb-tag">CSS</span></a></div></aside>
+  <div id="content">
+    <div id="content-scroll">
+      <div class="slide-header">
+        <span class="slide-tag-chip">CSS</span>
+        <div>
+          <div class="hero-badge badge-style">CSS Styling</div>
+          <h1 class="slide-title">CSS Typography</h1>
+        </div>
+      </div>
+      <p class="slide-desc">CSS gives full control over how text looks: <strong>fonts, sizes, weights, spacing, decoration</strong>. Good typography makes content readable and beautiful.</p>
+      <div class="fact-box tip"><strong>&#128161; Tip</strong>Use Google Fonts for free web fonts: add a <code>&lt;link&gt;</code> in your <code>&lt;head&gt;</code> to import them.</div>
+      <div class="controls-row"><div class="ctrl-group"><div class="ctrl-label">Text</div><input class="ctrl-input" data-cid="typ-text" value="The quick brown fox jumps."></div><div class="ctrl-group"><div class="ctrl-label">Font Family</div><select class="ctrl-select" data-cid="typ-family"><option value="serif" selected>serif</option><option value="sans-serif">sans-serif</option><option value="monospace">monospace</option><option value="cursive">cursive</option><option value="fantasy">fantasy</option></select></div><div class="ctrl-group"><div class="ctrl-label">Font Size<span class="ctrl-val" id="val-typ-size">18px</span></div><input type="range" class="ctrl-slider" data-cid="typ-size" min="10" max="42" step="1" value="18"></div><div class="ctrl-group"><div class="ctrl-label">Font Weight</div><select class="ctrl-select" data-cid="typ-weight"><option value="100">100</option><option value="300">300</option><option value="400" selected>400</option><option value="600">600</option><option value="700">700</option><option value="900">900</option></select></div><div class="ctrl-group"><div class="ctrl-label">Style</div><div class="ctrl-toggle"><button class="toggle-btn active" data-cid="typ-style" data-grp="typ-style" data-val="normal">normal</button><button class="toggle-btn" data-cid="typ-style" data-grp="typ-style" data-val="italic">italic</button></div></div><div class="ctrl-group"><div class="ctrl-label">Transform</div><select class="ctrl-select" data-cid="typ-transform"><option value="none" selected>none</option><option value="uppercase">uppercase</option><option value="lowercase">lowercase</option><option value="capitalize">capitalize</option></select></div><div class="ctrl-group"><div class="ctrl-label">Letter Spacing<span class="ctrl-val" id="val-typ-spacing">0</span></div><input type="range" class="ctrl-slider" data-cid="typ-spacing" min="-2" max="10" step="1" value="0"></div><div class="ctrl-group"><div class="ctrl-label">Color</div><input type="color" class="ctrl-color" data-cid="typ-color" value="#1a1612"></div><div class="ctrl-group"><div class="ctrl-label">Decoration</div><select class="ctrl-select" data-cid="typ-dec"><option value="none" selected>none</option><option value="underline">underline</option><option value="line-through">line-through</option><option value="overline">overline</option></select></div></div>
+      <div class="three-pane">
+        <div class="pane">
+          <div class="pane-header html-head"><div class="pane-dot dot-html"></div>HTML</div>
+          <textarea class="code-editor" id="html-editor" spellcheck="false"></textarea>
+        </div>
+        <div class="pane">
+          <div class="pane-header css-head"><div class="pane-dot dot-css"></div>CSS</div>
+          <textarea class="code-editor" id="css-editor" spellcheck="false"></textarea>
+        </div>
+        <div class="pane">
+          <div class="pane-header prev-head">
+            <div class="pane-dot dot-prev"></div>Live Preview
+            <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+          </div>
+          <div class="preview-body"><iframe id="preview-frame" sandbox="allow-scripts allow-same-origin"></iframe></div>
+        </div>
+      </div>
+    </div>
+    <div id="bottom-nav">
+      <a class="btn-nav btn-prev" href="boxmodel.html">&#8592; Prev</a>
+      <div class="slide-counter">Slide <b>23</b> of 25</div>
+      <a class="btn-nav btn-next" href="backgrounds.html">Next &#8594;</a>
+    </div>
+  </div>
+</div>
+<script src="shared.js"></script>
+<script>
+var htmlEditor = document.getElementById('html-editor');
+var cssEditor  = document.getElementById('css-editor');
+htmlEditor.value = "<p id=\"demo\">The quick brown fox jumps.</p>";
+cssEditor.value  = "body { padding: 24px; }\n#demo {\n  font-family: serif;\n  font-size: 18px;\n  font-weight: 400;\n  font-style: normal;\n  text-transform: none;\n  letter-spacing: 0px;\n  color: #1a1612;\n  text-decoration: none;\n  line-height: 1.65;\n}";
+function refresh() { SharedEngine.refreshPreview(); }
+htmlEditor.addEventListener('input', refresh);
+cssEditor.addEventListener('input',  refresh);
+refresh();
+
+function applyControl(cid, val) {
+  var h = htmlEditor.value, c = cssEditor.value;
+  if (cid === 'typ-text')      { h = h.replace(/(<p id="demo">)[^<]*/, '$1' + val); htmlEditor.value = h; }
+  if (cid === 'typ-family')    { c = c.replace(/font-family:\s*[^;]+/, 'font-family: ' + val); cssEditor.value = c; }
+  if (cid === 'typ-size')      { c = c.replace(/font-size:\s*[^;]+/, 'font-size: ' + val + 'px'); cssEditor.value = c; }
+  if (cid === 'typ-weight')    { c = c.replace(/font-weight:\s*[^;]+/, 'font-weight: ' + val); cssEditor.value = c; }
+  if (cid === 'typ-style')     { c = c.replace(/font-style:\s*[^;]+/, 'font-style: ' + val); cssEditor.value = c; }
+  if (cid === 'typ-transform') { c = c.replace(/text-transform:\s*[^;]+/, 'text-transform: ' + val); cssEditor.value = c; }
+  if (cid === 'typ-spacing')   { c = c.replace(/letter-spacing:\s*[^;]+/, 'letter-spacing: ' + val + 'px'); cssEditor.value = c; }
+  if (cid === 'typ-color')     { c = c.replace(/color:\s*[^;]+/, 'color: ' + val); cssEditor.value = c; }
+  if (cid === 'typ-dec')       { c = c.replace(/text-decoration:\s*[^;]+/, 'text-decoration: ' + val); cssEditor.value = c; }
+}
+SharedEngine.wireControls(function(cid, val) {
+  applyControl(cid, val);
+  refresh();
+});
+</script>
+</body>
+</html>

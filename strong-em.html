@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HTMLab &mdash; Bold &amp; Italic: <code>&lt;strong&gt;</code> &amp; <code>&lt;em&gt;</code></title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<nav id="topnav">
+  <div class="logo"><a href="index.html">HTML<span>ab</span> &#9999;&#65039;</a></div>
+  <div class="nav-links">
+    <a class="nav-link active" href="index.html">&#128218; Learn</a>
+    <a class="nav-link" href="playground.html">&#129514; Playground</a>
+  </div>
+</nav>
+<div class="page-wrap">
+  <aside id="sidebar"><div class="sb-section"><div class="sb-section-title">Getting Started</div><a class="sb-item" href="html-basics.html"><span>&lt;html&gt;</span><span class="sb-tag">Intro</span></a></div><div class="sb-section"><div class="sb-section-title">Text Elements</div><a class="sb-item" href="headings.html"><span>&lt;h1&gt;–&lt;h6&gt;</span><span class="sb-tag">Text</span></a><a class="sb-item" href="paragraph.html"><span>&lt;p&gt;</span><span class="sb-tag">Text</span></a><a class="sb-item" href="span.html"><span>&lt;span&gt;</span><span class="sb-tag">Inline</span></a><a class="sb-item active" href="strong-em.html"><span>&lt;strong&gt;</span><span class="sb-tag">Text</span></a></div><div class="sb-section"><div class="sb-section-title">Structure</div><a class="sb-item" href="div.html"><span>&lt;div&gt;</span><span class="sb-tag">Block</span></a><a class="sb-item" href="semantic.html"><span>&lt;header&gt;</span><span class="sb-tag">Semantic</span></a></div><div class="sb-section"><div class="sb-section-title">Links & Nav</div><a class="sb-item" href="anchor.html"><span>&lt;a&gt;</span><span class="sb-tag">Link</span></a></div><div class="sb-section"><div class="sb-section-title">Media</div><a class="sb-item" href="image.html"><span>&lt;img&gt;</span><span class="sb-tag">Media</span></a><a class="sb-item" href="video.html"><span>&lt;video&gt;</span><span class="sb-tag">Media</span></a><a class="sb-item" href="audio.html"><span>&lt;audio&gt;</span><span class="sb-tag">Media</span></a></div><div class="sb-section"><div class="sb-section-title">Lists</div><a class="sb-item" href="lists.html"><span>&lt;ul&gt; &lt;ol&gt;</span><span class="sb-tag">List</span></a></div><div class="sb-section"><div class="sb-section-title">Tables</div><a class="sb-item" href="table.html"><span>&lt;table&gt;</span><span class="sb-tag">Table</span></a></div><div class="sb-section"><div class="sb-section-title">Forms</div><a class="sb-item" href="form.html"><span>&lt;form&gt;</span><span class="sb-tag">Form</span></a><a class="sb-item" href="input.html"><span>&lt;input&gt;</span><span class="sb-tag">Form</span></a><a class="sb-item" href="textarea.html"><span>&lt;textarea&gt;</span><span class="sb-tag">Form</span></a><a class="sb-item" href="select.html"><span>&lt;select&gt;</span><span class="sb-tag">Form</span></a><a class="sb-item" href="button.html"><span>&lt;button&gt;</span><span class="sb-tag">Form</span></a></div><div class="sb-section"><div class="sb-section-title">Document</div><a class="sb-item" href="meta.html"><span>&lt;head&gt;</span><span class="sb-tag">Meta</span></a></div><div class="sb-section"><div class="sb-section-title">CSS Layout</div><a class="sb-item" href="flexbox.html"><span>display:flex</span><span class="sb-tag">CSS</span></a><a class="sb-item" href="grid.html"><span>display:grid</span><span class="sb-tag">CSS</span></a><a class="sb-item" href="boxmodel.html"><span>box-model</span><span class="sb-tag">CSS</span></a></div><div class="sb-section"><div class="sb-section-title">CSS Styling</div><a class="sb-item" href="typography.html"><span>font-*</span><span class="sb-tag">CSS</span></a><a class="sb-item" href="backgrounds.html"><span>background</span><span class="sb-tag">CSS</span></a><a class="sb-item" href="animations.html"><span>transition</span><span class="sb-tag">CSS</span></a></div></aside>
+  <div id="content">
+    <div id="content-scroll">
+      <div class="slide-header">
+        <span class="slide-tag-chip">Text</span>
+        <div>
+          <div class="hero-badge badge-text">Text Elements</div>
+          <h1 class="slide-title">Bold &amp; Italic: <code>&lt;strong&gt;</code> &amp; <code>&lt;em&gt;</code></h1>
+        </div>
+      </div>
+      <p class="slide-desc"><code>&lt;strong&gt;</code> marks <strong>important text</strong> (bold). <code>&lt;em&gt;</code> marks <em>emphasized text</em> (italic). Both carry semantic meaning for screen readers.</p>
+      <div class="fact-box tip"><strong>&#128161; Tip</strong><strong>Semantic difference:</strong> <code>&lt;b&gt;</code> is visually bold with no meaning. <code>&lt;strong&gt;</code> signals importance. Same for <code>&lt;i&gt;</code> vs <code>&lt;em&gt;</code>.</div>
+      <div class="controls-row"><div class="ctrl-group"><div class="ctrl-label">Bold Word</div><input class="ctrl-input" data-cid="se-strong" value="strong"></div><div class="ctrl-group"><div class="ctrl-label">Italic Word</div><input class="ctrl-input" data-cid="se-em" value="emphatic"></div><div class="ctrl-group"><div class="ctrl-label">Bold Color</div><input type="color" class="ctrl-color" data-cid="se-strong-color" value="#f06449"></div><div class="ctrl-group"><div class="ctrl-label">Italic Color</div><input type="color" class="ctrl-color" data-cid="se-em-color" value="#2bb5a0"></div></div>
+      <div class="three-pane">
+        <div class="pane">
+          <div class="pane-header html-head"><div class="pane-dot dot-html"></div>HTML</div>
+          <textarea class="code-editor" id="html-editor" spellcheck="false"></textarea>
+        </div>
+        <div class="pane">
+          <div class="pane-header css-head"><div class="pane-dot dot-css"></div>CSS</div>
+          <textarea class="code-editor" id="css-editor" spellcheck="false"></textarea>
+        </div>
+        <div class="pane">
+          <div class="pane-header prev-head">
+            <div class="pane-dot dot-prev"></div>Live Preview
+            <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+          </div>
+          <div class="preview-body"><iframe id="preview-frame" sandbox="allow-scripts allow-same-origin"></iframe></div>
+        </div>
+      </div>
+    </div>
+    <div id="bottom-nav">
+      <a class="btn-nav btn-prev" href="span.html">&#8592; Prev</a>
+      <div class="slide-counter">Slide <b>5</b> of 25</div>
+      <a class="btn-nav btn-next" href="div.html">Next &#8594;</a>
+    </div>
+  </div>
+</div>
+<script src="shared.js"></script>
+<script>
+var htmlEditor = document.getElementById('html-editor');
+var cssEditor  = document.getElementById('css-editor');
+htmlEditor.value = "<p>HTML is <strong id=\"s\">strong</strong> and CSS is <em id=\"e\">emphatic</em>!</p>";
+cssEditor.value  = "body { font-family: Georgia, serif; font-size: 1.15rem; padding: 24px; }\n#s { color: #f06449; }\n#e { color: #2bb5a0; }";
+function refresh() { SharedEngine.refreshPreview(); }
+htmlEditor.addEventListener('input', refresh);
+cssEditor.addEventListener('input',  refresh);
+refresh();
+
+function applyControl(cid, val) {
+  var h = htmlEditor.value, c = cssEditor.value;
+  if (cid === 'se-strong')       { h = h.replace(/(<strong id="s">)[^<]*/, '$1' + val); htmlEditor.value = h; }
+  if (cid === 'se-em')           { h = h.replace(/(<em id="e">)[^<]*/,     '$1' + val); htmlEditor.value = h; }
+  if (cid === 'se-strong-color') { c = c.replace(/(#s\s*\{\s*color:\s*)[^;]+/, '$1' + val); cssEditor.value = c; }
+  if (cid === 'se-em-color')     { c = c.replace(/(#e\s*\{\s*color:\s*)[^;]+/, '$1' + val); cssEditor.value = c; }
+}
+SharedEngine.wireControls(function(cid, val) {
+  applyControl(cid, val);
+  refresh();
+});
+</script>
+</body>
+</html>

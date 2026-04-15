@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HTMLab &mdash; Headings <code>&lt;h1&gt;&ndash;&lt;h6&gt;</code></title>
+
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<nav id="topnav">
+  <div class="logo"><a href="index.html">HTML<span>ab</span> &#9999;&#65039;</a></div>
+  <div class="nav-links">
+    <a class="nav-link active" href="index.html">&#128218; Learn</a>
+    <a class="nav-link" href="playground.html">&#129514; Playground</a>
+  </div>
+</nav>
+<div class="page-wrap">
+  <aside id="sidebar"><div class="sb-section"><div class="sb-section-title">Getting Started</div><a class="sb-item" href="html-basics.html"><span>&lt;html&gt;</span><span class="sb-tag">Intro</span></a></div><div class="sb-section"><div class="sb-section-title">Text Elements</div><a class="sb-item active" href="headings.html"><span>&lt;h1&gt;–&lt;h6&gt;</span><span class="sb-tag">Text</span></a><a class="sb-item" href="paragraph.html"><span>&lt;p&gt;</span><span class="sb-tag">Text</span></a><a class="sb-item" href="span.html"><span>&lt;span&gt;</span><span class="sb-tag">Inline</span></a><a class="sb-item" href="strong-em.html"><span>&lt;strong&gt;</span><span class="sb-tag">Text</span></a></div><div class="sb-section"><div class="sb-section-title">Structure</div><a class="sb-item" href="div.html"><span>&lt;div&gt;</span><span class="sb-tag">Block</span></a><a class="sb-item" href="semantic.html"><span>&lt;header&gt;</span><span class="sb-tag">Semantic</span></a></div><div class="sb-section"><div class="sb-section-title">Links & Nav</div><a class="sb-item" href="anchor.html"><span>&lt;a&gt;</span><span class="sb-tag">Link</span></a></div><div class="sb-section"><div class="sb-section-title">Media</div><a class="sb-item" href="image.html"><span>&lt;img&gt;</span><span class="sb-tag">Media</span></a><a class="sb-item" href="video.html"><span>&lt;video&gt;</span><span class="sb-tag">Media</span></a><a class="sb-item" href="audio.html"><span>&lt;audio&gt;</span><span class="sb-tag">Media</span></a></div><div class="sb-section"><div class="sb-section-title">Lists</div><a class="sb-item" href="lists.html"><span>&lt;ul&gt; &lt;ol&gt;</span><span class="sb-tag">List</span></a></div><div class="sb-section"><div class="sb-section-title">Tables</div><a class="sb-item" href="table.html"><span>&lt;table&gt;</span><span class="sb-tag">Table</span></a></div><div class="sb-section"><div class="sb-section-title">Forms</div><a class="sb-item" href="form.html"><span>&lt;form&gt;</span><span class="sb-tag">Form</span></a><a class="sb-item" href="input.html"><span>&lt;input&gt;</span><span class="sb-tag">Form</span></a><a class="sb-item" href="textarea.html"><span>&lt;textarea&gt;</span><span class="sb-tag">Form</span></a><a class="sb-item" href="select.html"><span>&lt;select&gt;</span><span class="sb-tag">Form</span></a><a class="sb-item" href="button.html"><span>&lt;button&gt;</span><span class="sb-tag">Form</span></a></div><div class="sb-section"><div class="sb-section-title">Document</div><a class="sb-item" href="meta.html"><span>&lt;head&gt;</span><span class="sb-tag">Meta</span></a></div><div class="sb-section"><div class="sb-section-title">CSS Layout</div><a class="sb-item" href="flexbox.html"><span>display:flex</span><span class="sb-tag">CSS</span></a><a class="sb-item" href="grid.html"><span>display:grid</span><span class="sb-tag">CSS</span></a><a class="sb-item" href="boxmodel.html"><span>box-model</span><span class="sb-tag">CSS</span></a></div><div class="sb-section"><div class="sb-section-title">CSS Styling</div><a class="sb-item" href="typography.html"><span>font-*</span><span class="sb-tag">CSS</span></a><a class="sb-item" href="backgrounds.html"><span>background</span><span class="sb-tag">CSS</span></a><a class="sb-item" href="animations.html"><span>transition</span><span class="sb-tag">CSS</span></a></div></aside>
+  <div id="content">
+    <div id="content-scroll">
+      <div class="slide-header">
+        <span class="slide-tag-chip">Text</span>
+        <div>
+          <div class="hero-badge badge-text">Text Elements</div>
+          <h1 class="slide-title">Headings <code>&lt;h1&gt;&ndash;&lt;h6&gt;</code></h1>
+        </div>
+      </div>
+      <p class="slide-desc">Headings create <strong>hierarchy</strong>. <code>&lt;h1&gt;</code> is the biggest, <code>&lt;h6&gt;</code> the smallest. Use them like chapters in a book.</p>
+      <div class="fact-box tip"><strong>&#128161; Tip</strong><strong>SEO Tip:</strong> Use exactly one <code>&lt;h1&gt;</code> per page &mdash; it tells search engines what the page is about.</div>
+      <div class="controls-row"><div class="ctrl-group"><div class="ctrl-label">Heading Text</div><input class="ctrl-input" data-cid="heading-text" value="Hello World!"></div><div class="ctrl-group"><div class="ctrl-label">Level</div><select class="ctrl-select" data-cid="heading-level"><option value="h1" selected>h1</option><option value="h2">h2</option><option value="h3">h3</option><option value="h4">h4</option><option value="h5">h5</option><option value="h6">h6</option></select></div><div class="ctrl-group"><div class="ctrl-label">Align</div><div class="ctrl-toggle"><button class="toggle-btn active" data-cid="heading-align" data-grp="heading-align" data-val="left">left</button><button class="toggle-btn" data-cid="heading-align" data-grp="heading-align" data-val="center">center</button><button class="toggle-btn" data-cid="heading-align" data-grp="heading-align" data-val="right">right</button></div></div><div class="ctrl-group"><div class="ctrl-label">Color</div><input type="color" class="ctrl-color" data-cid="heading-color" value="#1a1612"></div><div class="ctrl-group"><div class="ctrl-label">Font Size<span class="ctrl-val" id="val-heading-size">36px</span></div><input type="range" class="ctrl-slider" data-cid="heading-size" min="14" max="72" step="1" value="36"></div></div>
+      <div class="three-pane">
+        <div class="pane">
+          <div class="pane-header html-head"><div class="pane-dot dot-html"></div>HTML</div>
+          <textarea class="code-editor" id="html-editor" spellcheck="false"></textarea>
+        </div>
+        <div class="pane">
+          <div class="pane-header css-head"><div class="pane-dot dot-css"></div>CSS</div>
+          <textarea class="code-editor" id="css-editor" spellcheck="false"></textarea>
+        </div>
+        <div class="pane">
+          <div class="pane-header prev-head">
+            <div class="pane-dot dot-prev"></div>Live Preview
+            <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+          </div>
+          <div class="preview-body"><iframe id="preview-frame" sandbox="allow-scripts allow-same-origin"></iframe></div>
+        </div>
+      </div>
+    </div>
+    <div id="bottom-nav">
+      <a class="btn-nav btn-prev" href="html-basics.html">&#8592; Prev</a>
+      <div class="slide-counter">Slide <b>2</b> of 25</div>
+      <a class="btn-nav btn-next" href="paragraph.html">Next &#8594;</a>
+    </div>
+  </div>
+</div>
+<script src="shared.js"></script>
+<script>
+var htmlEditor = document.getElementById('html-editor');
+var cssEditor  = document.getElementById('css-editor');
+
+var headingSizes = {
+  h1: 36,
+  h2: 30,
+  h3: 26,
+  h4: 22,
+  h5: 18,
+  h6: 14
+};
+
+htmlEditor.value = '<h1 id="demo">Hello World!</h1>';
+cssEditor.value = `body { padding: 24px; }
+#demo {
+  font-family: Georgia, serif;
+  font-size: 36px;
+  color: #1a1612;
+  text-align: left;
+  font-weight: bold;
+  margin: 0;
+}`;
+
+function refresh() { SharedEngine.refreshPreview(); }
+htmlEditor.addEventListener('input', refresh);
+cssEditor.addEventListener('input',  refresh);
+refresh();
+
+var _level = 'h1';
+function applyControl(cid, val) {
+  var h = htmlEditor.value;
+  var c = cssEditor.value;
+
+  if (cid === 'heading-text') {
+    h = h.replace(/(<h[1-6]\s+id="demo">)([\s\S]*?)(<\/h[1-6]>)/, '$1' + val + '$3');
+    htmlEditor.value = h;
+  }
+
+  if (cid === 'heading-level') {
+    h = h.replace(/<h[1-6]\s+id="demo">/, '<' + val + ' id="demo">');
+    h = h.replace(/<\/h[1-6]>/, '</' + val + '>');
+    htmlEditor.value = h;
+
+    var autoSize = headingSizes[val];
+    c = c.replace(/(^|\n)(\s*)font-size:\s*[^;]+;/, '$1$2font-size: ' + autoSize + 'px;');
+    cssEditor.value = c;
+
+    var sizeSlider = document.querySelector('[data-cid="heading-size"]');
+    var sizeLabel = document.getElementById('val-heading-size');
+    if (sizeSlider) sizeSlider.value = autoSize;
+    if (sizeLabel) sizeLabel.textContent = autoSize + 'px';
+  }
+
+  if (cid === 'heading-size') {
+    c = c.replace(/(^|\n)(\s*)font-size:\s*[^;]+;/, '$1$2font-size: ' + val + 'px;');
+    cssEditor.value = c;
+  }
+
+  if (cid === 'heading-color') {
+    c = c.replace(/(^|\n)(\s*)color:\s*[^;]+;/, '$1$2color: ' + val + ';');
+    cssEditor.value = c;
+  }
+
+  if (cid === 'heading-align') {
+    c = c.replace(/(^|\n)(\s*)text-align:\s*[^;]+;/, '$1$2text-align: ' + val + ';');
+    cssEditor.value = c;
+  }
+}
+SharedEngine.wireControls(function(cid, val) {
+  applyControl(cid, val);
+  refresh();
+});
+</script>
+</body>
+</html>

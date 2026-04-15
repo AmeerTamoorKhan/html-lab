@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HTMLab &mdash; Hyperlink <code>&lt;a&gt;</code></title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<nav id="topnav">
+  <div class="logo"><a href="index.html">HTML<span>ab</span> &#9999;&#65039;</a></div>
+  <div class="nav-links">
+    <a class="nav-link active" href="index.html">&#128218; Learn</a>
+    <a class="nav-link" href="playground.html">&#129514; Playground</a>
+  </div>
+</nav>
+<div class="page-wrap">
+  <aside id="sidebar"><div class="sb-section"><div class="sb-section-title">Getting Started</div><a class="sb-item" href="html-basics.html"><span>&lt;html&gt;</span><span class="sb-tag">Intro</span></a></div><div class="sb-section"><div class="sb-section-title">Text Elements</div><a class="sb-item" href="headings.html"><span>&lt;h1&gt;–&lt;h6&gt;</span><span class="sb-tag">Text</span></a><a class="sb-item" href="paragraph.html"><span>&lt;p&gt;</span><span class="sb-tag">Text</span></a><a class="sb-item" href="span.html"><span>&lt;span&gt;</span><span class="sb-tag">Inline</span></a><a class="sb-item" href="strong-em.html"><span>&lt;strong&gt;</span><span class="sb-tag">Text</span></a></div><div class="sb-section"><div class="sb-section-title">Structure</div><a class="sb-item" href="div.html"><span>&lt;div&gt;</span><span class="sb-tag">Block</span></a><a class="sb-item" href="semantic.html"><span>&lt;header&gt;</span><span class="sb-tag">Semantic</span></a></div><div class="sb-section"><div class="sb-section-title">Links & Nav</div><a class="sb-item active" href="anchor.html"><span>&lt;a&gt;</span><span class="sb-tag">Link</span></a></div><div class="sb-section"><div class="sb-section-title">Media</div><a class="sb-item" href="image.html"><span>&lt;img&gt;</span><span class="sb-tag">Media</span></a><a class="sb-item" href="video.html"><span>&lt;video&gt;</span><span class="sb-tag">Media</span></a><a class="sb-item" href="audio.html"><span>&lt;audio&gt;</span><span class="sb-tag">Media</span></a></div><div class="sb-section"><div class="sb-section-title">Lists</div><a class="sb-item" href="lists.html"><span>&lt;ul&gt; &lt;ol&gt;</span><span class="sb-tag">List</span></a></div><div class="sb-section"><div class="sb-section-title">Tables</div><a class="sb-item" href="table.html"><span>&lt;table&gt;</span><span class="sb-tag">Table</span></a></div><div class="sb-section"><div class="sb-section-title">Forms</div><a class="sb-item" href="form.html"><span>&lt;form&gt;</span><span class="sb-tag">Form</span></a><a class="sb-item" href="input.html"><span>&lt;input&gt;</span><span class="sb-tag">Form</span></a><a class="sb-item" href="textarea.html"><span>&lt;textarea&gt;</span><span class="sb-tag">Form</span></a><a class="sb-item" href="select.html"><span>&lt;select&gt;</span><span class="sb-tag">Form</span></a><a class="sb-item" href="button.html"><span>&lt;button&gt;</span><span class="sb-tag">Form</span></a></div><div class="sb-section"><div class="sb-section-title">Document</div><a class="sb-item" href="meta.html"><span>&lt;head&gt;</span><span class="sb-tag">Meta</span></a></div><div class="sb-section"><div class="sb-section-title">CSS Layout</div><a class="sb-item" href="flexbox.html"><span>display:flex</span><span class="sb-tag">CSS</span></a><a class="sb-item" href="grid.html"><span>display:grid</span><span class="sb-tag">CSS</span></a><a class="sb-item" href="boxmodel.html"><span>box-model</span><span class="sb-tag">CSS</span></a></div><div class="sb-section"><div class="sb-section-title">CSS Styling</div><a class="sb-item" href="typography.html"><span>font-*</span><span class="sb-tag">CSS</span></a><a class="sb-item" href="backgrounds.html"><span>background</span><span class="sb-tag">CSS</span></a><a class="sb-item" href="animations.html"><span>transition</span><span class="sb-tag">CSS</span></a></div></aside>
+  <div id="content">
+    <div id="content-scroll">
+      <div class="slide-header">
+        <span class="slide-tag-chip">Link</span>
+        <div>
+          <div class="hero-badge badge-structure">Links & Nav</div>
+          <h1 class="slide-title">Hyperlink <code>&lt;a&gt;</code></h1>
+        </div>
+      </div>
+      <p class="slide-desc">The <code>&lt;a&gt;</code> tag creates <strong>hyperlinks</strong>. The <code>href</code> attribute sets the destination. Links can point to pages, files, email addresses, or page sections with <code>#id</code>.</p>
+      <div class="fact-box tip"><strong>&#128161; Tip</strong><code>target="_blank"</code> opens a new tab. Always add <code>rel="noopener noreferrer"</code> for security.</div>
+      <div class="controls-row"><div class="ctrl-group"><div class="ctrl-label">Link Text</div><input class="ctrl-input" data-cid="a-text" value="Visit Example.com"></div><div class="ctrl-group"><div class="ctrl-label">URL</div><input class="ctrl-input" data-cid="a-href" value="https://example.com"></div><div class="ctrl-group"><div class="ctrl-label">Color</div><input type="color" class="ctrl-color" data-cid="a-color" value="#2bb5a0"></div><div class="ctrl-group"><div class="ctrl-label">Decoration</div><div class="ctrl-toggle"><button class="toggle-btn active" data-cid="a-dec" data-grp="a-dec" data-val="underline">underline</button><button class="toggle-btn" data-cid="a-dec" data-grp="a-dec" data-val="none">none</button><button class="toggle-btn" data-cid="a-dec" data-grp="a-dec" data-val="overline">overline</button></div></div><div class="ctrl-group"><div class="ctrl-label">Target</div><div class="ctrl-toggle"><button class="toggle-btn active" data-cid="a-target" data-grp="a-target" data-val="_self">_self</button><button class="toggle-btn" data-cid="a-target" data-grp="a-target" data-val="_blank">_blank</button></div></div></div>
+      <div class="three-pane">
+        <div class="pane">
+          <div class="pane-header html-head"><div class="pane-dot dot-html"></div>HTML</div>
+          <textarea class="code-editor" id="html-editor" spellcheck="false"></textarea>
+        </div>
+        <div class="pane">
+          <div class="pane-header css-head"><div class="pane-dot dot-css"></div>CSS</div>
+          <textarea class="code-editor" id="css-editor" spellcheck="false"></textarea>
+        </div>
+        <div class="pane">
+          <div class="pane-header prev-head">
+            <div class="pane-dot dot-prev"></div>Live Preview
+            <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+          </div>
+          <div class="preview-body"><iframe id="preview-frame" sandbox="allow-scripts allow-same-origin"></iframe></div>
+        </div>
+      </div>
+    </div>
+    <div id="bottom-nav">
+      <a class="btn-nav btn-prev" href="semantic.html">&#8592; Prev</a>
+      <div class="slide-counter">Slide <b>8</b> of 25</div>
+      <a class="btn-nav btn-next" href="image.html">Next &#8594;</a>
+    </div>
+  </div>
+</div>
+<script src="shared.js"></script>
+<script>
+var htmlEditor = document.getElementById('html-editor');
+var cssEditor  = document.getElementById('css-editor');
+htmlEditor.value = "<a id=\"demo\" href=\"https://example.com\" target=\"_self\">Visit Example.com</a>";
+cssEditor.value  = "body { font-family: Georgia, serif; padding: 24px; font-size: 1.1rem; }\n#demo {\n  color: #2bb5a0;\n  text-decoration: underline;\n}";
+function refresh() { SharedEngine.refreshPreview(); }
+htmlEditor.addEventListener('input', refresh);
+cssEditor.addEventListener('input',  refresh);
+refresh();
+
+function applyControl(cid, val) {
+  var h = htmlEditor.value, c = cssEditor.value;
+  if (cid === 'a-text')   { h = h.replace(/(<a[^>]+>)[^<]*/, '$1' + val); htmlEditor.value = h; }
+  if (cid === 'a-href')   { h = h.replace(/href="[^"]*"/, 'href="' + val + '"'); htmlEditor.value = h; }
+  if (cid === 'a-color')  { c = c.replace(/color:\s*[^;]+/, 'color: ' + val); cssEditor.value = c; }
+  if (cid === 'a-dec')    { c = c.replace(/text-decoration:\s*[^;]+/, 'text-decoration: ' + val); cssEditor.value = c; }
+  if (cid === 'a-target') { h = h.replace(/target="[^"]*"/, 'target="' + val + '"'); htmlEditor.value = h; }
+}
+SharedEngine.wireControls(function(cid, val) {
+  applyControl(cid, val);
+  refresh();
+});
+</script>
+</body>
+</html>

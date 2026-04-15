@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HTMLab &mdash; Button <code>&lt;button&gt;</code></title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<nav id="topnav">
+  <div class="logo"><a href="index.html">HTML<span>ab</span> &#9999;&#65039;</a></div>
+  <div class="nav-links">
+    <a class="nav-link active" href="index.html">&#128218; Learn</a>
+    <a class="nav-link" href="playground.html">&#129514; Playground</a>
+  </div>
+</nav>
+<div class="page-wrap">
+  <aside id="sidebar"><div class="sb-section"><div class="sb-section-title">Getting Started</div><a class="sb-item" href="html-basics.html"><span>&lt;html&gt;</span><span class="sb-tag">Intro</span></a></div><div class="sb-section"><div class="sb-section-title">Text Elements</div><a class="sb-item" href="headings.html"><span>&lt;h1&gt;–&lt;h6&gt;</span><span class="sb-tag">Text</span></a><a class="sb-item" href="paragraph.html"><span>&lt;p&gt;</span><span class="sb-tag">Text</span></a><a class="sb-item" href="span.html"><span>&lt;span&gt;</span><span class="sb-tag">Inline</span></a><a class="sb-item" href="strong-em.html"><span>&lt;strong&gt;</span><span class="sb-tag">Text</span></a></div><div class="sb-section"><div class="sb-section-title">Structure</div><a class="sb-item" href="div.html"><span>&lt;div&gt;</span><span class="sb-tag">Block</span></a><a class="sb-item" href="semantic.html"><span>&lt;header&gt;</span><span class="sb-tag">Semantic</span></a></div><div class="sb-section"><div class="sb-section-title">Links & Nav</div><a class="sb-item" href="anchor.html"><span>&lt;a&gt;</span><span class="sb-tag">Link</span></a></div><div class="sb-section"><div class="sb-section-title">Media</div><a class="sb-item" href="image.html"><span>&lt;img&gt;</span><span class="sb-tag">Media</span></a><a class="sb-item" href="video.html"><span>&lt;video&gt;</span><span class="sb-tag">Media</span></a><a class="sb-item" href="audio.html"><span>&lt;audio&gt;</span><span class="sb-tag">Media</span></a></div><div class="sb-section"><div class="sb-section-title">Lists</div><a class="sb-item" href="lists.html"><span>&lt;ul&gt; &lt;ol&gt;</span><span class="sb-tag">List</span></a></div><div class="sb-section"><div class="sb-section-title">Tables</div><a class="sb-item" href="table.html"><span>&lt;table&gt;</span><span class="sb-tag">Table</span></a></div><div class="sb-section"><div class="sb-section-title">Forms</div><a class="sb-item" href="form.html"><span>&lt;form&gt;</span><span class="sb-tag">Form</span></a><a class="sb-item" href="input.html"><span>&lt;input&gt;</span><span class="sb-tag">Form</span></a><a class="sb-item" href="textarea.html"><span>&lt;textarea&gt;</span><span class="sb-tag">Form</span></a><a class="sb-item" href="select.html"><span>&lt;select&gt;</span><span class="sb-tag">Form</span></a><a class="sb-item active" href="button.html"><span>&lt;button&gt;</span><span class="sb-tag">Form</span></a></div><div class="sb-section"><div class="sb-section-title">Document</div><a class="sb-item" href="meta.html"><span>&lt;head&gt;</span><span class="sb-tag">Meta</span></a></div><div class="sb-section"><div class="sb-section-title">CSS Layout</div><a class="sb-item" href="flexbox.html"><span>display:flex</span><span class="sb-tag">CSS</span></a><a class="sb-item" href="grid.html"><span>display:grid</span><span class="sb-tag">CSS</span></a><a class="sb-item" href="boxmodel.html"><span>box-model</span><span class="sb-tag">CSS</span></a></div><div class="sb-section"><div class="sb-section-title">CSS Styling</div><a class="sb-item" href="typography.html"><span>font-*</span><span class="sb-tag">CSS</span></a><a class="sb-item" href="backgrounds.html"><span>background</span><span class="sb-tag">CSS</span></a><a class="sb-item" href="animations.html"><span>transition</span><span class="sb-tag">CSS</span></a></div></aside>
+  <div id="content">
+    <div id="content-scroll">
+      <div class="slide-header">
+        <span class="slide-tag-chip">Form</span>
+        <div>
+          <div class="hero-badge badge-form">Forms</div>
+          <h1 class="slide-title">Button <code>&lt;button&gt;</code></h1>
+        </div>
+      </div>
+      <p class="slide-desc">The <code>&lt;button&gt;</code> element creates a <strong>clickable button</strong>. Use <code>type="button"</code> for general actions, <code>type="submit"</code> for form submission.</p>
+      <div class="fact-box tip"><strong>&#128161; Tip</strong>Buttons inside a <code>&lt;form&gt;</code> default to <code>type="submit"</code>. Set <code>type="button"</code> explicitly when you don't want submission.</div>
+      <div class="controls-row"><div class="ctrl-group"><div class="ctrl-label">Label</div><input class="ctrl-input" data-cid="btn-text" value="Click Me!"></div><div class="ctrl-group"><div class="ctrl-label">Background</div><input type="color" class="ctrl-color" data-cid="btn-bg" value="#f06449"></div><div class="ctrl-group"><div class="ctrl-label">Text Color</div><input type="color" class="ctrl-color" data-cid="btn-fg" value="#ffffff"></div><div class="ctrl-group"><div class="ctrl-label">Font Size<span class="ctrl-val" id="val-btn-size">16px</span></div><input type="range" class="ctrl-slider" data-cid="btn-size" min="10" max="28" step="1" value="16"></div><div class="ctrl-group"><div class="ctrl-label">Radius<span class="ctrl-val" id="val-btn-radius">8px</span></div><input type="range" class="ctrl-slider" data-cid="btn-radius" min="0" max="40" step="1" value="8"></div><div class="ctrl-group"><div class="ctrl-label">Padding V<span class="ctrl-val" id="val-btn-pv">10px</span></div><input type="range" class="ctrl-slider" data-cid="btn-pv" min="4" max="32" step="1" value="10"></div><div class="ctrl-group"><div class="ctrl-label">Padding H<span class="ctrl-val" id="val-btn-ph">20px</span></div><input type="range" class="ctrl-slider" data-cid="btn-ph" min="8" max="64" step="1" value="20"></div><div class="ctrl-group"><div class="ctrl-label">Shadow</div><div class="ctrl-toggle"><button class="toggle-btn active" data-cid="btn-shadow" data-grp="btn-shadow" data-val="yes">yes</button><button class="toggle-btn" data-cid="btn-shadow" data-grp="btn-shadow" data-val="no">no</button></div></div></div>
+      <div class="three-pane">
+        <div class="pane">
+          <div class="pane-header html-head"><div class="pane-dot dot-html"></div>HTML</div>
+          <textarea class="code-editor" id="html-editor" spellcheck="false"></textarea>
+        </div>
+        <div class="pane">
+          <div class="pane-header css-head"><div class="pane-dot dot-css"></div>CSS</div>
+          <textarea class="code-editor" id="css-editor" spellcheck="false"></textarea>
+        </div>
+        <div class="pane">
+          <div class="pane-header prev-head">
+            <div class="pane-dot dot-prev"></div>Live Preview
+            <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+          </div>
+          <div class="preview-body"><iframe id="preview-frame" sandbox="allow-scripts allow-same-origin"></iframe></div>
+        </div>
+      </div>
+    </div>
+    <div id="bottom-nav">
+      <a class="btn-nav btn-prev" href="select.html">&#8592; Prev</a>
+      <div class="slide-counter">Slide <b>18</b> of 25</div>
+      <a class="btn-nav btn-next" href="meta.html">Next &#8594;</a>
+    </div>
+  </div>
+</div>
+<script src="shared.js"></script>
+<script>
+var htmlEditor = document.getElementById('html-editor');
+var cssEditor  = document.getElementById('css-editor');
+htmlEditor.value = "<button id=\"demo\" type=\"button\">Click Me!</button>";
+cssEditor.value  = "body { font-family: Georgia, serif; padding: 32px; }\n#demo {\n  background: #f06449;\n  color: #ffffff;\n  font-size: 16px;\n  border-radius: 8px;\n  padding: 10px 20px;\n  border: none;\n  cursor: pointer;\n  font-family: inherit;\n  box-shadow: 0 4px 12px rgba(0,0,0,0.2);\n  transition: opacity .2s;\n}\n#demo:hover { opacity: 0.85; }";
+function refresh() { SharedEngine.refreshPreview(); }
+htmlEditor.addEventListener('input', refresh);
+cssEditor.addEventListener('input',  refresh);
+refresh();
+
+function applyControl(cid, val) {
+  var h = htmlEditor.value, c = cssEditor.value;
+  if (cid === 'btn-text')   { h = h.replace(/(<button[^>]+>)[^<]*/, '$1' + val); htmlEditor.value = h; }
+  if (cid === 'btn-bg')     { c = c.replace(/#demo\s*\{[^}]*/.toString(), function(m){ return m.replace(/background:\s*[^;]+/, 'background: ' + val); }); cssEditor.value = c; }
+  if (cid === 'btn-fg')     { c = c.replace(/(#demo\s*\{[^}]*color:\s*)[^;]+/, '$1' + val); cssEditor.value = c; }
+  if (cid === 'btn-size')   { c = c.replace(/font-size:\s*[^;]+/, 'font-size: ' + val + 'px'); cssEditor.value = c; }
+  if (cid === 'btn-radius') { c = c.replace(/border-radius:\s*[^;]+/, 'border-radius: ' + val + 'px'); cssEditor.value = c; }
+  if (cid === 'btn-pv' || cid === 'btn-ph') {
+    var pv = document.querySelector('[data-cid="btn-pv"]').value;
+    var ph = document.querySelector('[data-cid="btn-ph"]').value;
+    c = c.replace(/padding:\s*[^;]+/, 'padding: ' + pv + 'px ' + ph + 'px');
+    cssEditor.value = c;
+  }
+  if (cid === 'btn-shadow') {
+    c = val === 'yes'
+      ? c.replace(/box-shadow:\s*[^;]+/, 'box-shadow: 0 4px 12px rgba(0,0,0,0.2)')
+      : c.replace(/box-shadow:\s*[^;]+/, 'box-shadow: none');
+    cssEditor.value = c;
+  }
+}
+SharedEngine.wireControls(function(cid, val) {
+  applyControl(cid, val);
+  refresh();
+});
+</script>
+</body>
+</html>

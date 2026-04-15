@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HTMLab — Learn HTML &amp; CSS Interactively</title>
+
+<link rel="stylesheet" href="shared.css">
+<style>
+body { overflow-y: auto; height: auto; min-height: 100vh; }
+.hero {
+  text-align: center;
+  padding: 60px 32px 48px;
+  background: linear-gradient(160deg, #1a1612 55%, #2a1f10);
+  color: #faf7f2;
+}
+.hero-logo { font-family: var(--hand); font-size: 3.6rem; font-weight: 700; color: var(--yellow); margin-bottom: 6px; }
+.hero-logo span { color: var(--coral); }
+.hero-sub { font-size: 1.1rem; color: #a09880; max-width: 520px; margin: 0 auto 32px; line-height: 1.65; }
+.hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.btn-start {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 13px 28px; border-radius: 10px;
+  background: var(--coral); color: #fff;
+  font-family: var(--mono); font-size: 0.8rem; font-weight: 700;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  transition: all .18s;
+}
+.btn-start:hover { background: #d94f38; transform: translateY(-2px); }
+.btn-play {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 13px 28px; border-radius: 10px;
+  background: transparent; color: var(--teal);
+  border: 2px solid var(--teal);
+  font-family: var(--mono); font-size: 0.8rem; font-weight: 700;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  transition: all .18s;
+}
+.btn-play:hover { background: var(--teal); color: #fff; }
+.stats { display: flex; gap: 32px; justify-content: center; margin-top: 32px; flex-wrap: wrap; }
+.stat { text-align: center; }
+.stat-num { font-family: var(--hand); font-size: 2.2rem; font-weight: 700; color: var(--yellow); }
+.stat-lbl { font-family: var(--mono); font-size: 0.65rem; color: #6b6159; letter-spacing: 0.1em; text-transform: uppercase; }
+
+.section-label {
+  font-family: var(--mono); font-size: 0.68rem; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--ink3); padding: 28px 32px 12px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 12px; padding: 0 32px 32px;
+  max-width: 1100px; margin: 0 auto;
+}
+.card {
+  background: #fff; border: 2px solid var(--border);
+  border-radius: var(--radius); padding: 16px 18px;
+  text-decoration: none; color: var(--ink);
+  transition: all .18s; display: flex; flex-direction: column; gap: 6px;
+  box-shadow: var(--shadow);
+}
+.card:hover { border-color: var(--coral); transform: translateY(-3px); box-shadow: 0 6px 20px rgba(26,22,18,0.12); }
+.card-tag {
+  font-family: var(--mono); font-size: 0.6rem; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 2px 8px; border-radius: 10px; width: fit-content;
+  background: var(--yellow-light); color: #7a6000;
+}
+.card-title { font-family: var(--mono); font-size: 0.82rem; font-weight: 700; color: var(--ink); }
+.card-desc { font-size: 0.82rem; color: var(--ink3); line-height: 1.5; }
+.card.css .card-tag { background: var(--purple-light); color: var(--purple); }
+.card.form .card-tag { background: var(--coral-light); color: var(--coral); }
+.card.media .card-tag { background: var(--teal-light); color: #1a7a6e; }
+.card.struct .card-tag { background: var(--blue-light); color: var(--blue); }
+.card.layout .card-tag { background: var(--green-light); color: var(--green); }
+
+.pg-banner {
+  margin: 0 32px 32px;
+  background: linear-gradient(135deg, #1a1612, #2a2508);
+  border-radius: var(--radius); padding: 28px 32px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 20px; flex-wrap: wrap;
+}
+.pg-banner h2 { font-family: var(--hand); font-size: 1.8rem; color: var(--yellow); margin-bottom: 4px; }
+.pg-banner p { color: #a09880; font-size: 0.95rem; }
+.footer {
+  text-align: center; padding: 24px;
+  font-family: var(--mono); font-size: 0.7rem; color: var(--ink3);
+  border-top: 2px solid var(--border); background: var(--cream2);
+}
+</style>
+</head>
+<body>
+<nav id="topnav">
+  <div class="logo">HTML<span>ab</span> ✏️</div>
+  <div class="nav-links">
+    <a class="nav-link active" href="index.html">📚 Learn</a>
+    <a class="nav-link" href="playground.html">🧪 Playground</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-logo">HTML<span>ab</span> ✏️</div>
+  <p class="hero-sub">A hands-on, interactive platform for learning HTML &amp; CSS from scratch. Edit live code, see instant results.</p>
+  <div class="hero-btns">
+    <a class="btn-start" href="html-basics.html">🚀 Start Learning</a>
+    <a class="btn-play" href="playground.html">🧪 Open Playground</a>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="stat-num">25</div><div class="stat-lbl">Lessons</div></div>
+    <div class="stat"><div class="stat-num">2</div><div class="stat-lbl">Code Editors</div></div>
+    <div class="stat"><div class="stat-num">∞</div><div class="stat-lbl">Experiments</div></div>
+  </div>
+</div>
+
+<div class="section-label">📖 HTML Fundamentals</div>
+<div class="grid">
+  <a class="card struct" href="html-basics.html"><span class="card-tag">Intro</span><div class="card-title">&lt;html&gt; Basics</div><div class="card-desc">What is HTML? Tags, structure, the boilerplate.</div></a>
+  <a class="card" href="headings.html"><span class="card-tag">Text</span><div class="card-title">&lt;h1&gt;–&lt;h6&gt; Headings</div><div class="card-desc">Create hierarchy. Control size, color, alignment.</div></a>
+  <a class="card" href="paragraph.html"><span class="card-tag">Text</span><div class="card-title">&lt;p&gt; Paragraph</div><div class="card-desc">Body text, line height, font family and weight.</div></a>
+  <a class="card" href="span.html"><span class="card-tag">Inline</span><div class="card-title">&lt;span&gt; Inline Text</div><div class="card-desc">Highlight words. Inline vs block explained.</div></a>
+  <a class="card" href="strong-em.html"><span class="card-tag">Text</span><div class="card-title">&lt;strong&gt; &amp; &lt;em&gt;</div><div class="card-desc">Bold and italic with semantic meaning.</div></a>
+  <a class="card struct" href="div.html"><span class="card-tag">Block</span><div class="card-title">&lt;div&gt; Container</div><div class="card-desc">The universal grouping box. Border, padding, radius.</div></a>
+  <a class="card struct" href="semantic.html"><span class="card-tag">Semantic</span><div class="card-title">Semantic Elements</div><div class="card-desc">header, nav, main, article, aside, footer.</div></a>
+  <a class="card struct" href="anchor.html"><span class="card-tag">Link</span><div class="card-title">&lt;a&gt; Hyperlink</div><div class="card-desc">href, target, color, decoration.</div></a>
+</div>
+
+<div class="section-label">🎥 Media</div>
+<div class="grid">
+  <a class="card media" href="image.html"><span class="card-tag">Media</span><div class="card-title">&lt;img&gt; Image</div><div class="card-desc">src, alt, width, border-radius, opacity.</div></a>
+  <a class="card media" href="video.html"><span class="card-tag">Media</span><div class="card-title">&lt;video&gt;</div><div class="card-desc">Embed video, controls, loop, poster.</div></a>
+  <a class="card media" href="audio.html"><span class="card-tag">Media</span><div class="card-title">&lt;audio&gt;</div><div class="card-desc">Embed audio with native browser controls.</div></a>
+  <a class="card" href="lists.html"><span class="card-tag">List</span><div class="card-title">&lt;ul&gt; &amp; &lt;ol&gt;</div><div class="card-desc">Bullet and numbered lists. list-style-type.</div></a>
+  <a class="card" href="table.html"><span class="card-tag">Table</span><div class="card-title">&lt;table&gt;</div><div class="card-desc">thead, tbody, tr, th, td. Styled data tables.</div></a>
+</div>
+
+<div class="section-label">📝 Forms &amp; Inputs</div>
+<div class="grid">
+  <a class="card form" href="form.html"><span class="card-tag">Form</span><div class="card-title">&lt;form&gt;</div><div class="card-desc">Complete contact form with styled inputs.</div></a>
+  <a class="card form" href="input.html"><span class="card-tag">Form</span><div class="card-title">&lt;input&gt;</div><div class="card-desc">9 input types. Border, radius, background.</div></a>
+  <a class="card form" href="textarea.html"><span class="card-tag">Form</span><div class="card-title">&lt;textarea&gt;</div><div class="card-desc">Multi-line text. Rows, resize, border.</div></a>
+  <a class="card form" href="select.html"><span class="card-tag">Form</span><div class="card-title">&lt;select&gt;</div><div class="card-desc">Dropdown menus. Custom options and styling.</div></a>
+  <a class="card form" href="button.html"><span class="card-tag">Form</span><div class="card-title">&lt;button&gt;</div><div class="card-desc">Clickable buttons. Color, shadow, padding.</div></a>
+  <a class="card" href="meta.html"><span class="card-tag">Meta</span><div class="card-title">&lt;head&gt; Section</div><div class="card-desc">title, charset, viewport, SEO meta tags.</div></a>
+</div>
+
+<div class="section-label">🎨 CSS Layout &amp; Styling</div>
+<div class="grid">
+  <a class="card layout" href="flexbox.html"><span class="card-tag">CSS</span><div class="card-title">Flexbox</div><div class="card-desc">display:flex. direction, justify, align, gap.</div></a>
+  <a class="card layout" href="grid.html"><span class="card-tag">CSS</span><div class="card-title">CSS Grid</div><div class="card-desc">2D layouts. columns, rows, gap, fr units.</div></a>
+  <a class="card layout" href="boxmodel.html"><span class="card-tag">CSS</span><div class="card-title">Box Model</div><div class="card-desc">margin, border, padding, content layers.</div></a>
+  <a class="card css" href="typography.html"><span class="card-tag">CSS</span><div class="card-title">Typography</div><div class="card-desc">font-family, size, weight, letter-spacing.</div></a>
+  <a class="card css" href="backgrounds.html"><span class="card-tag">CSS</span><div class="card-title">Backgrounds</div><div class="card-desc">Solid colors, linear &amp; radial gradients.</div></a>
+  <a class="card css" href="animations.html"><span class="card-tag">CSS</span><div class="card-title">Transitions &amp; Hover</div><div class="card-desc">Smooth animations with CSS transition.</div></a>
+</div>
+
+<div class="pg-banner">
+  <div>
+    <h2>🧪 Free Playground</h2>
+    <p>Write HTML &amp; CSS freely — live preview updates as you type. No setup needed.</p>
+  </div>
+  <a class="btn-start" href="playground.html">Open Playground →</a>
+</div>
+
+<div class="footer">
+  HTMLab &mdash; Built with pure HTML, CSS &amp; JavaScript &mdash; Made by Ameer Tamoor Khan
+</div>
+</body>
+</html>
