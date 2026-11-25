@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Toward Intelligent Robotic Haircutting — A. T. Khan · IWMMA 2026</title>
+<meta name="description" content="Interactive talk: Toward Intelligent Robotic Haircutting — From Precision Automation to Vision-Language-Action Models. Ameer Tamoor Khan, University of Copenhagen. IWMMA 2026, Krasnoyarsk.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23ff6a2b'/%3E%3Cpath d='M14 40c6-18 30-18 36 0' stroke='%23fff' stroke-width='5' fill='none' stroke-linecap='round'/%3E%3Cpath d='M20 34l-4-10M28 30l-1-11M36 30l1-11M44 34l4-10' stroke='%23fff' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="viewport"><div id="stage">
+
+<nav id="journey"></nav>
+<div id="progress"></div>
+
+<!-- ============ 1 TITLE ============ -->
+<section class="slide" data-title="Title" data-section="0" data-demo="hero">
+  <div class="title-wrap">
+    <div class="col grow" style="max-width:640px">
+      <div class="kicker">Invited talk · IWMMA 2026</div>
+      <h1>Toward Intelligent <em>Robotic Haircutting</em></h1>
+      <p class="sub">From precision automation to<br>vision-language-action models</p>
+      <div class="author">
+        <div class="n">Ameer Tamoor Khan</div>
+        <div class="a">Assistant Professor<br>Department of Plant and Environmental Sciences (PLEN)<br>University of Copenhagen, Denmark</div>
+      </div>
+      <div class="conf"><div class="logo"></div>
+        <div><b>15th International Workshop on Mathematical Models and their Applications</b><br>Krasnoyarsk, Russia · November 27–28, 2026</div></div>
+    </div>
+    <div class="col" style="align-items:center">
+      <canvas id="heroCv" data-w="500" data-h="500" style="background:transparent;border:none"></canvas>
+      <div class="hint">A robot that trims, the hair grows back, and it trims again</div>
+    </div>
+  </div>
+  <div class="more" hidden>
+    <div data-tab="plain"><p>This talk is about a simple-sounding question: <b>can a robot give you a haircut?</b></p><p>Cutting hair is something people do every day, but for a robot it is one of the hardest jobs there is. The "material" is thousands of soft, moving strands on a living, moving head, and mistakes near ears and eyes are not acceptable.</p><p>We'll walk from the classical engineering view (treat it like precision machining) to the newest AI view (a robot that understands "short on the sides, keep the top" and acts on it).</p></div>
+    <div data-tab="tech"><p>Thesis: robotic haircutting is a <b>closed-loop, safety-critical manipulation problem on a deformable, non-stationary workpiece</b>. It can be decomposed into localisation, hair modelling, coverage/toolpath planning and compliant control (CNC and mobile-robotics lenses), and then lifted into a learned policy, with teleoperation data as the bridge to vision-language-action (VLA) models.</p><p>The animation is a toy version of that loop: a 2-link arm follows a coverage path while strands regrow, so the system has to cut repeatedly until it converges to a target length.</p></div>
+    <div data-tab="refs"><ul><li>A. T. Khan, S. Li. CNC-Inspired Robotic Hair Cutting: A Comprehensive Survey on Precision Personal Care Automation. <i>J. Artificial Intelligence for Automation</i>, 2026.</li><li>A. T. Khan, S. Li. Robotic Haircutting Systems: A Survey of Methods, Challenges, and Hair Modeling Insights. <i>IEEE J. Selected Areas in Sensors</i>, 2026.</li><li>Z. Huang, A. T. Khan, S. Li. Haircutting robots: a mobile robotics perspective. <i>Int. J. Systems Science</i>, 2026.</li></ul></div>
+  </div>
+</section>
+
+<!-- ============ 2 ROADMAP ============ -->
+<section class="slide" data-title="The journey" data-section="0" data-demo="road">
+  <div class="kicker">Roadmap</div>
+  <h2>One question, six stops</h2>
+  <p class="lead">How do we get from a <b>machine that cuts</b> to a <b>robot that understands a hairstyle</b>? Click any stop to jump there.</p>
+  <div class="road" id="road"></div>
+  <div class="more" hidden>
+    <div data-tab="plain"><p>The talk is a journey from "the robot follows a fixed program" to "the robot understands what you want and adapts".</p><ul><li><b>Why:</b> who needs this and why now.</li><li><b>CNC lens:</b> borrow ideas from factory machines that cut metal very precisely.</li><li><b>Model & plan:</b> describe hair digitally, then plan where the clipper goes.</li><li><b>Control:</b> keep up with a moving head, and stay safe.</li><li><b>Human in the loop:</b> a barber operating or supervising robots.</li><li><b>VLA & future:</b> AI models that see, read and act.</li></ul></div>
+    <div data-tab="tech"><p>The arc moves from model-based to learning-based autonomy:</p><div class="eq">explicit models (CNC / CAM, coverage planning, impedance control)
+      → shared autonomy (teleoperation, supervision)
+      → learned policies  π(a | image, language, proprioception)</div><p>The teleoperation and supervision stages are not a detour. They are how you collect the demonstration data a VLA policy needs, and the safety envelope it has to run inside.</p></div>
+    <div data-tab="refs"><p>Structure follows the three survey lenses in our papers (CNC, sensing/hair modelling, mobile robotics), extended with the learning outlook in S. Li, <i>Automation</i> 6(3):47, 2025.</p></div>
+  </div>
+</section>
+
+<!-- ============ 3 WHY NOW ============ -->
+<section class="slide" data-title="Why now?" data-section="1" data-demo="market">
+  <div class="kicker">Why · motivation</div>
+  <h2>Why a haircutting robot, and why now?</h2>
+  <p class="lead">A <b>huge, everyday, labour-bound</b> service that has never been automated.</p>
+  <div class="body">
+    <div class="col" style="width:420px">
+      <div class="card"><h3 class="acc">Ageing populations</h3><p>More people who can't easily reach a salon; care homes and hospitals need grooming help.</p></div>
+      <div class="card"><h3 class="acc">Skilled-labour shortage</h3><p>Barbers are expensive and scarce; demand doesn't shrink.</p></div>
+      <div class="card"><h3 class="acc">Contactless demand</h3><p>The pandemic showed the value of low-contact personal care.</p></div>
+      <div class="card"><h3 class="acc">Cheaper hardware + AI</h3><p>Cobots, depth cameras and foundation models are now affordable.</p></div>
+    </div>
+    <div class="col grow">
+      <div class="card grow" style="display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline">
+          <h3>Global haircut spending (estimate)</h3><span class="tag">Li, 2025</span></div>
+        <div class="bars" id="mkBars"></div>
+        <div style="display:flex;gap:16px;align-items:flex-end;margin-top:auto">
+          <div class="slider grow"><span>If robots served <b id="mkPct">5</b>% of haircuts…</span><input id="mkSl" type="range" min="1" max="40" value="5"></div>
+          <div class="stat" style="min-width:210px"><span class="l">Addressable per year</span><span class="v acc" id="mkVal">$41 B</span></div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px">
+          <div class="stat"><span class="l">Shanghai</span><span class="v">¥9 B</span><span class="tiny muted">per year</span></div>
+          <div class="stat"><span class="l">London</span><span class="v">£3.5 B</span><span class="tiny muted">per year</span></div>
+          <div class="stat"><span class="l">New York City</span><span class="v">$4.0 B</span><span class="tiny muted">per year</span></div>
+        </div>
+        <p class="tiny muted" style="margin:0">Total ≈ USD 827 B/yr from population × monthly spend per income tier. Order-of-magnitude estimate, not a forecast.</p>
+      </div>
+    </div>
+  </div>
+  <div class="more" hidden>
+    <div data-tab="plain"><p>Almost everyone gets haircuts, many times a year, and right now every single one needs a skilled person's time. That makes it one of the biggest personal services in the world that has <b>never been automated</b>.</p><p>Four things are changing at once: there are more elderly people who need help, fewer barbers, more interest in low-contact services, and robots and AI have become much cheaper.</p><p>The slider shows how even a small share of haircuts adds up to a large market.</p></div>
+    <div data-tab="tech"><p>The estimate (Li, 2025) splits the world into income tiers and multiplies population × monthly haircut spend × 12:</p><div class="eq">High   ≈ 1.2 B people · $40/mo  → ≈ $576 B/yr
+Middle ≈ 2.0 B people           → ≈ $216 B/yr
+Low    ≈ 1.45 B people · $1/mo  → ≈ $35 B/yr
+Total  ≈ $827 B/yr</div><p>City-level checks in the same paper: roughly RMB 9 B/yr for Shanghai, GBP 3.5 B for London and USD 4 B for New York City.</p><p>These are top-down estimates under stated assumptions. They are useful for scale, not for business planning. The paper's argument is that addressable value is large even at single-digit adoption, which justifies investing in safety certification.</p></div>
+    <div data-tab="refs"><ul><li>S. Li. Haircutting Robots: From Theory to Practice. <i>Automation</i> 6(3):47, 2025. doi:10.3390/automation6030047</li><li>Khan & Li, JAIA 2026 (drivers: population ageing, labour shortages, contactless interaction).</li></ul></div>
+  </div>
+</section>
+
+<!-- ============ 4 WHY HARD ============ -->
+<section class="slide" data-title="Why is it hard?" data-section="1">
+  <div class="kicker">Why · the challenge</div>
+  <h2>Hair is the worst workpiece imaginable</h2>
+  <p class="lead">Compare a part on a CNC machine with a head in a barber's chair. <b>Click each row to reveal.</b></p>
+  <div class="rtable" id="hardTbl">
+    <div class="h"></div><div class="h">Machined part</div><div class="h acc">Human head + hair</div>
+  </div>
+  <div class="hint" style="margin-top:12px">Every row breaks an assumption that industrial automation depends on</div>
+  <div class="more" hidden>
+    <div data-tab="plain"><p>Factory robots work so well because everything is predictable: the part is clamped, it doesn't move, it's made of one material, and you can measure exactly whether it came out right.</p><p>A haircut breaks every one of those rules. The head moves, hair bends and springs back, every person's hair is different, mistakes can hurt someone, and "a good haircut" is partly a matter of taste.</p></div>
+    <div data-tab="tech"><ul><li><b>Non-stationary frame:</b> the workpiece frame <span class="mono">T_head(t)</span> must be estimated online. Breathing, talking and posture shifts are millimetre-to-centimetre disturbances.</li><li><b>Deformable, high-DOF state:</b> about 10⁵ strands with bending/twisting elasticity, friction, cohesion and humidity dependence. The state is only partially observable.</li><li><b>Irreversible operations:</b> material removal can't be undone, so you plan conservatively with multi-pass roughing and finishing.</li><li><b>Safety-critical contact:</b> human–robot contact near ears and eyes calls for force and speed limits and protective stops.</li><li><b>Ill-posed objective:</b> the target is an aesthetic, so you need learned or preference-based quality metrics.</li></ul></div>
+    <div data-tab="refs"><p>Challenges as identified in Khan & Li (JAIA 2026): head motion compensation, hair property variability, safety-critical control.</p></div>
+  </div>
+</section>
+
+<!-- ============ 5 TIMELINE ============ -->
+<section class="slide" data-title="A short history" data-section="1" data-demo="timeline">
+  <div class="kicker">Why · lineage</div>
+  <h2>Not a new dream, but a new toolbox</h2>
+  <p class="lead">From mechanical patents to robot arms to learned policies. <b>Click a milestone.</b></p>
+  <div class="era"><span style="width:27%;background:var(--panel2);color:var(--muted)">Mechanism era · open-loop</span><span style="width:43%;background:var(--blueBg);color:var(--blue)">Robot-arm era · closed-loop, task-specific</span><span style="width:30%;background:var(--accentBg);color:var(--accent)">Frameworks + learning era</span></div>
+  <div class="tl" id="tl"><div class="axis"></div></div>
+  <div class="card tlcard" id="tlCard" style="font-size:17px;padding:20px 24px"></div>
+  <div class="more" hidden>
+    <div data-tab="plain"><p>People have patented "automatic haircut machines" for decades, but the ideas were ahead of the technology. Cameras, robot arms and computers weren't good, safe or cheap enough.</p><p>In the last few years that changed. Researchers now use regular robot arms to comb, style and trim, and our recent surveys try to give the field a common map.</p></div>
+    <div data-tab="tech"><p>Three eras:</p><ul><li><b>Mechanism era (patents):</b> fixed apparatus that maps scalp position to cut length, taught by key positions. Essentially open-loop CAM.</li><li><b>Robot-arm era:</b> general-purpose manipulators with vision and force sensing for combing, detangling and styling. These are closed-loop but task-specific.</li><li><b>Learning era:</b> teleoperation baselines that produce data, plus foundation models (VLM/VLA) for instruction-conditioned control.</li></ul><p>The field was fragmented: perception, hair modelling and motion planning were studied in isolation. Our surveys propose unifying frameworks.</p></div>
+    <div data-tab="refs"><ul><li>US patent 4,602,542 "Automatic hair cutting apparatus".</li><li>US patents 9,656,400; 9,925,676; 10,259,131; 10,307,921 (automated hair cutting systems).</li><li>Design and Evaluation of a Hair Combing System Using a General-Purpose Robotic Arm, arXiv:2108.01233 (2021).</li><li>Front Hair Styling Robot System Using Path Planning for Root-Centric Strand Adjustment, arXiv:2501.10991 (2025).</li><li>S. Li, <i>Automation</i> 2025; Khan & Li, JAIA 2026; Khan & Li, IEEE JSAS 2026; Huang, Khan & Li, IJSS 2026; Huang et al., TeleHairing, arXiv:2610.07096 (2026).</li></ul></div>
+  </div>
+</section>
+
+<!-- ============ 6 OUR LENSES ============ -->
+<section class="slide" data-title="Our research line" data-section="1">
+  <div class="kicker">Our work</div>
+  <h2>Three lenses on one problem</h2>
+  <p class="lead">Our surveys borrow mature theory from neighbouring fields instead of starting from scratch. <b>Click a lens.</b></p>
+  <div class="body" style="flex-direction:column">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px" id="lenses">
+      <div class="card lens" data-go="7">
+        <div class="ic"><svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--accent)"><rect x="3" y="15" width="20" height="7" rx="1"/><path d="M13 3v8M9 7l4 4 4-4"/></svg></div>
+        <div class="venue">J. AI for Automation · 2026</div>
+        <h3>CNC / manufacturing lens</h3>
+        <p>Treat the head as a workpiece: architectures, sensing, hair modelling, toolpaths, control.</p><p class="keyq"><b>Key question:</b> what does industrial precision look like when the part is a person?</p><span class="jump">Jump to section →</span></div>
+      <div class="card lens" data-go="9">
+        <div class="ic"><svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--accent)"><circle cx="13" cy="13" r="4"/><path d="M13 2v4M13 20v4M2 13h4M20 13h4"/></svg></div>
+        <div class="venue">IEEE J. Selected Areas in Sensors · 2026</div>
+        <h3>Sensing & hair-modelling lens</h3>
+        <p>Survey of methods and challenges, with insights from hair modelling in graphics and vision.</p><p class="keyq"><b>Key question:</b> what must the robot sense, and how do we model the hair it senses?</p><span class="jump">Jump to section →</span></div>
+      <div class="card lens" data-go="12">
+        <div class="ic"><svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--accent)"><path d="M4 20c4-10 14-10 18 0"/><circle cx="13" cy="9" r="3"/><path d="M3 4l3 3M23 4l-3 3"/></svg></div>
+        <div class="venue">Int. J. Systems Science · 2026</div>
+        <h3>Mobile-robotics lens</h3>
+        <p>Localisation ↔ tool–head pose · Coverage ↔ trimming · Control ↔ compliant execution.</p><p class="keyq"><b>Key question:</b> can we treat a moving head like a robot treats a map it must cover?</p><span class="jump">Jump to section →</span></div>
+    </div>
+    <div class="card" style="display:flex;gap:18px;align-items:center">
+      <span class="tag teal">With collaborators · S. Li group, Oulu / VTT</span>
+      <span class="small"><b>Haircutting Robots: From Theory to Practice</b> (Automation, 2025): market, requirements, safety</span>
+      <span class="small"><b>TeleHairing</b> (arXiv, 2026): teleoperation baseline</span>
+    </div>
+  </div>
+  <div class="more" hidden>
+    <div data-tab="plain"><p>Rather than inventing everything from scratch, we asked: <b>which existing fields already solved part of this?</b></p><ul><li><b>Factory machining (CNC):</b> knows how to remove material precisely along planned paths.</li><li><b>Sensors and hair modelling:</b> computer graphics has spent decades simulating hair for films and games.</li><li><b>Mobile robots:</b> robot vacuums and lawnmowers already solve "where am I, and how do I cover the whole area?". Trimming hair is a coverage problem on a head.</li></ul></div>
+    <div data-tab="tech"><ul><li><b>CNC survey (JAIA 2026):</b> five dimensions. System architectures (gantry, manipulator, hybrid), sensing (vision, force, proximity, tactile), hair modelling (physics-based to neural reconstruction), toolpath planning (CNC-adapted coverage, multi-pass optimisation), and control (precision plus safety).</li><li><b>Sensors survey (IEEE JSAS 2026):</b> methods, challenges and hair-modelling insights from a sensing perspective.</li><li><b>Mobile-robotics review (IJSS 2026):</b> unified framework. Localisation is the tool–head spatial relationship, coverage planning is multi-pass coverage under safety and aesthetic constraints, and control is compliant, efficient, personalised execution. Learning-based and autonomous-systems techniques supply adaptability.</li></ul></div>
+    <div data-tab="refs"><ul><li>A. T. Khan, S. Li. CNC-Inspired Robotic Hair Cutting… <i>JAIA</i> 1(1), 2026.</li><li>A. T. Khan, S. Li. Robotic Haircutting Systems: A Survey of Methods, Challenges, and Hair Modeling Insights. <i>IEEE JSAS</i>, 2026.</li><li>Z. Huang, A. T. Khan, S. Li. Haircutting robots: a mobile robotics perspective. <i>IJSS</i>, 2026. doi:10.1080/00207721.2026.2687894</li><li>S. Li. <i>Automation</i> 6(3):47, 2025.</li><li>Z. Huang et al. TeleHairing. arXiv:2610.07096, 2026.</li></ul></div>
+  </div>
+</section>
+
+<!-- ============ 7 CNC LENS ============ -->
+<section class="slide" data-title="The CNC lens" data-section="2">
+  <div class="kicker">Precision automation · CNC lens</div>
+  <h2>A haircut is a machining job (almost)</h2>
+  <p class="lead">Every CNC concept has a haircutting counterpart. <b>Click a row</b> to see where the analogy holds, and where it breaks.</p>
+  <div class="body">
+    <div class="col grow"><div class="map" id="cncMap">
+      <div class="colh">CNC machining</div><div></div><div class="colh acc">Robotic haircutting</div>
+    </div></div>
+    <div class="col" style="width:360px">
+      <div class="card grow" id="cncNote"><h3>Select a row</h3><p class="muted">The analogy gives us decades of mature theory for free. Its failures show exactly where the research is.</p></div>
+    </div>
+  </div>
+  <div class="more" hidden>
+    <div data-tab="plain"><p>A CNC machine is a computer-controlled cutter in a factory. You give it a 3D design, software turns that into a path for the tool, and the machine follows the path very precisely.</p><p>A haircut can be described the same way: the <b>design</b> is the hairstyle, the <b>path</b> is where the clipper goes, and the <b>machine</b> is the robot arm. The big difference is that the "part" is a living person who moves, so the robot has to keep re-measuring.</p></div>
+    <div data-tab="tech"><p>The CAD → CAM → CNC → metrology chain maps to:</p><div class="eq">style spec (target length field L*(u,v) on the scalp)
+ → toolpath generation (coverage + multi-pass)
+ → execution (5-DOF: 3 translation + 2 rotation)
+ → evaluation (length/shape error, aesthetics)</div><p>Where it breaks: (1) <b>fixturing</b> is replaced by online head-pose estimation and compensation; (2) the <b>material model</b> is a deformable strand field, not a rigid solid, so the cut length depends on the combing/lifting state; (3) <b>tolerances</b> are asymmetric because cutting too short is irreversible.</p></div>
+    <div data-tab="refs"><p>Khan & Li, JAIA 2026 (CNC-inspired framework). S. Li, Automation 2025, models the head as a workpiece, plans toolpaths as in CNC/CAM, and recommends about 5 DOF.</p></div>
+  </div>
+</section>
+
+<!-- ============ 8 ARCHITECTURES ============ -->
+<section class="slide" data-title="System architectures" data-section="2" data-demo="arch">
+  <div class="kicker">Precision automation · hardware</div>
+  <h2>Three ways to hold a clipper</h2>
+  <p class="lead">Gantry, manipulator or hybrid: each trades <b>precision</b> against <b>reach</b> and <b>safety</b>.</p>
+  <div class="body">
+    <div class="col" style="width:520px">
+      <div class="ctrls" id="archTabs"><span class="chip on" data-k="gantry">Gantry</span><span class="chip" data-k="arm">Manipulator</span><span class="chip" data-k="hybrid">Hybrid</span></div>
+      <svg id="archSvg" viewBox="0 0 520 400" style="width:520px;height:400px;background:var(--panel);border:1px solid var(--line);border-radius:12px"></svg>
+    </div>
+    <div class="col grow">
+      <div class="card"><h3 id="archName">Gantry</h3><p id="archDesc"></p></div>
+      <div class="card"><div class="bars" id="archBars"></div><p class="tiny muted" style="margin-top:10px">Qualitative comparison for illustration.</p></div>
+    </div>
+  </div>
+  <div class="more" hidden>
+    <div data-tab="plain"><p><b>Gantry:</b> like a 3D printer frame over the head. Very precise and predictable, but bulky and boxed-in.</p><p><b>Robot arm:</b> like a human arm. It can reach around the head at any angle, but it's harder to make precise and safe.</p><p><b>Hybrid:</b> a frame or rail for big moves plus a small wrist for fine angles, combining the strengths of both.</p></div>
+    <div data-tab="tech"><ul><li><b>Gantry (Cartesian):</b> decoupled axes, high stiffness, simple kinematics and calibration, bounded workspace. A rotary stage is needed for wrap-around access. Natural CNC fit.</li><li><b>Serial manipulator (6–7 DOF):</b> dexterous orientation control, redundancy for avoiding the face and shoulders. Mature cobot safety features (force/torque limits), but posture-dependent stiffness.</li><li><b>Hybrid:</b> coarse positioning (rail, gantry or rotary ring) plus a compact wrist. It splits the bandwidth: low-frequency macro motion and high-frequency micro compensation.</li></ul><p>Li (2025) argues about 5 DOF (3T + 2R) suffice for clipper work and recommends direct-drive actuation for responsiveness, low backlash and stiffness.</p></div>
+    <div data-tab="refs"><p>Khan & Li, JAIA 2026 (architectures: gantry-based, manipulator-based, hybrid). S. Li, Automation 2025 (DOF and direct-drive).</p></div>
+  </div>
+</section>
+
+<!-- ============ 9 SENSING ============ -->
+<section class="slide" data-title="Sensing" data-section="2" data-demo="sense">
+  <div class="kicker">Precision automation · perception</div>
+  <h2>What does the robot need to feel?</h2>
+  <p class="lead">No single sensor is enough. <b>Toggle the modalities</b> to build up the robot's picture of the head.</p>
+  <div class="body">
+    <div class="col" style="width:520px">
+      <svg id="senseSvg" viewBox="0 0 520 420" style="width:520px;height:420px;background:var(--panel);border:1px solid var(--line);border-radius:12px"></svg>
+    </div>
+    <div class="col grow">
+      <div class="ctrls" id="senseTabs"><span class="chip on" data-k="vision">Vision</span><span class="chip" data-k="force">Force</span><span class="chip" data-k="prox">Proximity</span><span class="chip" data-k="tactile">Tactile</span></div>
+      <div class="card grow" id="senseCard"></div>
+      <div class="card"><div class="small"><b>Coverage of the robot's needs:</b></div><div class="bars" id="senseBars" style="margin-top:8px"></div></div>
+    </div>
+  </div>
+  <div class="more" hidden>
+    <div data-tab="plain"><p>A barber uses eyes, fingertips and a sense of where the scissors are. A robot needs the same, just with different hardware:</p><ul><li><b>Cameras</b> see the head, the hair and where the head is moving.</li><li><b>Force sensors</b> feel how hard the clipper presses on the scalp.</li><li><b>Proximity sensors</b> notice if something (an ear, a hand) is too close.</li><li><b>Touch sensors</b> in a comb can feel hair thickness and tangles.</li></ul></div>
+    <div data-tab="tech"><ul><li><b>Vision (RGB/RGB-D, multi-view):</b> head pose (landmarks plus PnP or learned), hair segmentation, orientation fields, strand/volume reconstruction. Weak under occlusion by the tool and for dark, glossy hair on depth sensors.</li><li><b>Force/torque:</b> contact regulation (impedance/admittance), collision detection, comb-drag as a proxy for tangles.</li><li><b>Proximity (capacitive, ToF):</b> pre-contact sensing for speed-and-separation monitoring near ears and eyes.</li><li><b>Tactile:</b> local strand density and length during lift-and-cut, much like a barber's fingers.</li></ul><p>Fusion is typically filter-based: an EKF/UKF on head pose with IMU or visual priors, and force feedback inside the control loop.</p></div>
+    <div data-tab="refs"><p>Sensing modalities per Khan & Li, JAIA 2026 and IEEE JSAS 2026. Head motion compensation via online pose estimation, visual servoing and inertial sensing (Li, Automation 2025).</p></div>
+  </div>
+</section>
+
+<!-- ============ 10 HAIR MODEL ============ -->
+<section class="slide" data-title="Hair modelling" data-section="3" data-demo="hair">
+  <div class="kicker">Model & plan · hair modelling</div>
+  <h2>Play with the material</h2>
+  <p class="lead">Strands are particle chains with stiffness and curl. <b>Comb</b> with the mouse, or pick <b>scissors</b> and drag to cut.</p>
+  <div class="body">
+    <canvas id="hairCv" data-w="760" data-h="455"></canvas>
+    <div class="col grow">
+      <div class="ctrls"><span class="chip on" id="hairComb">Comb</span><span class="chip" id="hairCut">Scissors</span><button class="btn ghost" id="hairReset">Regrow</button></div>
+      <div class="slider"><span>Stiffness <b id="hsV">0.35</b></span><input id="hsS" type="range" min="0" max="100" value="35"></div>
+      <div class="slider"><span>Curl <b id="hcV">0.20</b></span><input id="hcS" type="range" min="0" max="100" value="20"></div>
+      <div class="slider"><span>Gravity <b id="hgV">1.0</b></span><input id="hgS" type="range" min="0" max="200" value="100"></div>
+      <div class="ctrls"><span class="chip" data-p="straight">Straight</span><span class="chip" data-p="wavy">Wavy</span><span class="chip" data-p="coily">Coily</span></div>
+      <div class="card"><p class="small"><b>Same scissors, different hair, different result.</b> Cutting coily hair at the same position leaves a very different visible length. The robot has to model this to hit a target style.</p></div>
+    </div>
+  </div>
+  <div class="more" hidden>
+    <div data-tab="plain"><p>To plan a haircut, the robot needs a digital version of your hair. Each strand behaves like a tiny chain that bends, sags under gravity and springs back.</p><p>Try the <b>Coily</b> preset and cut: the strand shrinks back into its curls, so the hair ends up much shorter than where you cut. Barbers know this from experience. A robot has to learn or model it.</p></div>
+    <div data-tab="tech"><p>The demo uses <b>position-based dynamics</b>: Verlet integration, inextensible segment constraints, and a shape-matching term pulling each particle toward a curled rest pose, scaled by stiffness <i>k</i>:</p><div class="eq">xᵢ ← xᵢ + (xᵢ − xᵢᵖʳᵉᵛ)·d + g·Δt²
+|xᵢ − xᵢ₋₁| = ℓ                 (projected)
+xᵢ ← xᵢ + k·(R(θᵢ)·xᵢʳᵉˢᵗ − xᵢ)    (shape)</div><p>Modelling spectrum in the literature:</p><ul><li><b>Physics-based:</b> mass-spring, Cosserat rods / discrete elastic rods, guide-strand interpolation.</li><li><b>Data-driven / neural:</b> single- and multi-view strand reconstruction, implicit volumetric fields, learned orientation maps.</li></ul><p>For cutting, the key quantity is the <b>visible length after relaxation</b> L_vis(L_cut, curl, stiffness), which is nonlinear in curl.</p></div>
+    <div data-tab="refs"><ul><li>Khan & Li, JAIA 2026: hair modelling from physics-based simulation to neural reconstruction.</li><li>Khan & Li, IEEE JSAS 2026: hair modelling insights.</li><li>K. Ward et al. A Survey on Hair Modeling: Styling, Simulation, and Rendering. <i>IEEE TVCG</i> 13(2), 2007.</li></ul></div>
+  </div>
+</section>
+
+<!-- ============ 11 TOOLPATH ============ -->
+<section class="slide" data-title="Toolpath planning" data-section="3" data-demo="path">
+  <div class="kicker">Model & plan · coverage</div>
+  <h2>Where should the clipper go?</h2>
+  <p class="lead">The scalp as a map, the target a <b>fade</b>. Compare patterns, with and without <b>roughing + finishing</b>.</p>
+  <div class="body">
+    <canvas id="pathCv" data-w="620" data-h="455"></canvas>
+    <div class="col grow">
+      <div class="ctrls" id="pathPat"><span class="chip on" data-k="raster">Raster</span><span class="chip" data-k="spiral">Spiral</span><span class="chip" data-k="contour">Contour</span></div>
+      <div class="ctrls"><label class="chip on" id="pathMulti">Roughing + finishing</label><button class="btn" id="pathRun">▶ Run</button><button class="btn ghost" id="pathReset">Reset</button></div>
+      <div class="slider"><span>Tool width <b id="pwV">6</b> cells</span><input id="pwS" type="range" min="3" max="12" value="6"></div>
+      <div class="slider"><span>Speed <b id="psV">3×</b></span><input id="psS" type="range" min="1" max="10" value="3"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div class="stat"><span class="l">Coverage</span><span class="v" id="pCov">0%</span></div>
+        <div class="stat"><span class="l">Mean error</span><span class="v" id="pErr">–</span></div>
+        <div class="stat"><span class="l">Over-cut</span><span class="v red" id="pOver">0%</span></div>
+        <div class="stat"><span class="l">Path length</span><span class="v" id="pLen">0</span></div>
+      </div>
+      <div class="tiny muted">Colour = remaining excess length (mm). Red = cut below target.</div>
+    </div>
+  </div>
+  <div class="more" hidden>
+    <div data-tab="plain"><p>Think of mowing a lawn that has a pattern: shorter at the edges, longer in the middle. You need to go <b>everywhere</b> but never cut too short.</p><p>Like a careful barber, the robot first takes off most of the length (<b>roughing</b>), then goes back for precise <b>finishing</b>. Doing it in one pass is faster but riskier. Turn it off and watch the red "over-cut" number when the head moves (noise).</p></div>
+    <div data-tab="tech"><p>Coverage path planning (CPP) on a scalp parameterisation <i>(u,v)</i> with a target length field L*(u,v):</p><div class="eq">min  path length + λ·Σ |L(u,v) − L*(u,v)|
+s.t. coverage = 100%,  L ≥ L* − ε  (no over-cut),
+     tool orientation ⟂ scalp, keep-out zones</div><p>Boustrophedon/raster, spiral and contour-parallel patterns are classical CPP primitives from mobile robotics and CAM. Multi-pass (roughing → finishing) borrows from CNC: the first pass cuts to L* + δ, the second to L*. In the demo, cut error grows with the material removed per pass (σ_cut ∝ min(1, removal/22 mm), a proxy for clump pulling, deflection and pose noise). A single heavy pass straight to L* therefore over-cuts, while roughing absorbs the error in the δ margin and the light finishing pass stays accurate.</p></div>
+    <div data-tab="refs"><p>Khan & Li, JAIA 2026 (CNC-adapted coverage planning, multi-pass optimisation). Huang, Khan & Li, IJSS 2026 (trimming as multi-pass coverage under safety and aesthetic constraints).</p></div>
+  </div>
+</section>
+
+<!-- ============ 12 HEAD MOTION ============ -->
+<section class="slide" data-title="Head motion compensation" data-section="4" data-demo="track">
+  <div class="kicker">Control · localisation</div>
+  <h2>The workpiece won't sit still</h2>
+  <p class="lead">Three controllers chase the same point on a moving head. <b>Raise the sensing latency</b> and see who keeps up.</p>
+  <div class="body">
+    <canvas id="trkCv" data-w="700" data-h="470"></canvas>
+    <div class="col grow">
+      <div class="slider"><span>Head motion <b id="taV">12</b> mm</span><input id="taS" type="range" min="0" max="35" value="12"></div>
+      <div class="slider"><span>Sensing latency <b id="tlV">80</b> ms</span><input id="tlS" type="range" min="0" max="400" value="80"></div>
+      <div class="ctrls"><span class="chip on" id="trkFlinch">Random flinches</span></div>
+      <div class="card" style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;justify-content:space-between"><span class="small"><b style="color:var(--muted)">●</b> Open-loop</span><b id="e0" class="mono">–</b></div>
+        <div style="display:flex;justify-content:space-between"><span class="small"><b class="blue">●</b> Feedback (delayed pose)</span><b id="e1" class="mono">–</b></div>
+        <div style="display:flex;justify-content:space-between"><span class="small"><b class="acc">●</b> Feedback + prediction</span><b id="e2" class="mono">–</b></div>
+        <div class="tiny muted">RMS tracking error over the last 4 s</div>
+      </div>
+      <div class="card"><h3 style="font-size:15px">Rule of thumb</h3><p class="small"><span class="mono acc">error ≈ head speed × latency</span><br>At 50 mm/s and 100 ms you are already 5 mm off. Prediction buys time, but not during a flinch, so the safety layer must take over.</p></div>
+    </div>
+  </div>
+  <div class="more" hidden>
+    <div data-tab="plain"><p>Even when you try to sit still, your head moves: breathing, talking, looking at your phone. A clipper that ignores this will cut in the wrong place.</p><p><b>Grey</b> ignores the motion. <b>Blue</b> watches the head but always sees it slightly late. <b>Orange</b> also guesses where the head is going next, like catching a ball, and stays closest.</p></div>
+    <div data-tab="tech"><p>This is the localisation problem of the mobile-robotics lens: estimate <span class="mono">T_tool←head(t)</span> online. With sensing delay τ, a pure feedback controller tracks the stale pose x(t−τ), giving error ≈ ẋ·τ. A constant-velocity predictor compensates to first order:</p><div class="eq">x̂(t) = x(t−τ) + v̂(t−τ)·τ        (Smith-style prediction)
+e_fb ≈ |ẋ|·τ ,  e_pred ≈ ½|ẍ|·τ²</div><p>Prediction fails on abrupt events (flinches), so in practice you combine an EKF over pose with IMU/visual fusion, a bandwidth-limited tool controller, and a <b>safety layer</b> that retracts when the innovation exceeds a threshold.</p></div>
+    <div data-tab="refs"><p>Huang, Khan & Li, IJSS 2026 (localisation: tool–head spatial relationship). Li, Automation 2025 (online head pose estimation, visual servoing, inertial sensing; Smith predictive control). Khan & Li, JAIA 2026 (head motion compensation as a key challenge).</p></div>
+  </div>
+</section>
+
+<!-- ============ 13 SAFETY ============ -->
+<section class="slide" data-title="Safety-critical control" data-section="4" data-demo="safe">
+  <div class="kicker">Control · safety</div>
+  <h2>Slow down near what matters</h2>
+  <p class="lead">Speed scales with distance to protected zones (ear, hand). <b>Move your mouse in as a raised hand</b>, or trigger a flinch.</p>
+  <div class="body">
+    <canvas id="safeCv" data-w="660" data-h="470"></canvas>
+    <div class="col grow">
+      <div class="ctrls"><button class="btn" id="sfFlinch">Client flinches</button><button class="btn ghost" id="sfResume">Resume</button></div>
+      <div class="slider"><span>Slow-down zone <b id="sdV">70</b> mm</span><input id="sdS" type="range" min="20" max="140" value="70"></div>
+      <div class="slider"><span>Stop distance <b id="ssV">14</b> mm</span><input id="ssS" type="range" min="4" max="40" value="14"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div class="stat"><span class="l">Tool speed</span><span class="v" id="sfSpd">–</span></div><div class="stat"><span class="l">Separation</span><span class="v" id="sfSep">–</span></div></div>
+      <div class="card"><h3 style="font-size:15px">Layers of safety</h3><p class="small">Pre-task network and self-checks · sensor redundancy · speed &amp; separation · force limits · protective stop · client-approved paths · clippers over scissors</p></div>
+    </div>
+  </div>
+  <div class="more" hidden>
+    <div data-tab="plain"><p>A haircut happens centimetres from ears, eyes and skin, so safety is not optional. The robot follows a simple rule: <b>the closer it is to something sensitive, the slower it moves</b>, and if something gets too close it stops completely.</p><p>Safety comes in layers, like a building with smoke alarms, sprinklers and fire doors. Checks before starting, backup sensors, limits during cutting, and an emergency stop. Using clippers rather than open scissors is itself a safety choice.</p></div>
+    <div data-tab="tech"><p>Speed-and-separation monitoring with a linear scaling law:</p><div class="eq">v = v_max · clip( (d − d_stop) / (d_slow − d_stop), 0, 1 )
+d < d_stop  ⇒  protective stop (latched, manual resume)</div><p>Combined with impedance control at contact, F = K·Δx + D·Δẋ with saturated F_max. Additional layers from the literature: network-quality gating before teleoperated tasks, start-up self-diagnostics, redundant sensing, predictive maintenance, soft coverings, proximity-triggered automatic shutdown, and client-approved paths. Certification needs a hazard analysis that ties each layer to a failure mode.</p></div>
+    <div data-tab="refs"><p>Safety requirements per S. Li, Automation 2025 (network checks, self-diagnostics, redundancy, obstacle avoidance, soft coverings, clippers over scissors, cybersecurity, client-approved paths). Khan & Li, JAIA 2026 (safety-critical control).</p></div>
+  </div>
+</section>
+
+<!-- ============ 14 TELEOP ============ -->
+<section class="slide" data-title="Teleoperation" data-section="5" data-demo="tele">
+  <div class="kicker">Human in the loop · teleoperation</div>
+  <h2>A barber in Hong Kong, a robot in Finland</h2>
+  <p class="lead">Move your mouse as the remote barber. The robot gets your commands <b>late</b>, and you see its video <b>late</b> too.</p>
+  <div class="body">
+    <canvas id="teleCv" data-w="660" data-h="470"></canvas>
+    <div class="col grow">
+      <div class="ctrls" id="teleMode"><span class="chip on" data-ms="75.6">Local 76 ms</span><span class="chip" data-ms="95.7">Relay 96 ms</span><span class="chip" data-ms="190.5">HK → FI 191 ms</span><span class="chip" data-ms="500">Bad link 500 ms</span></div>
+      <div class="ctrls"><span class="chip on" id="teleAuto">Auto-trace</span><span class="small muted">or hover the canvas to drive</span></div>
+      <div class="slider"><span>Robot speed limit <b id="tvV">80</b> mm/s</span><input id="tvS" type="range" min="20" max="250" value="80"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div class="stat"><span class="l">Loop latency</span><span class="v" id="tLat">76 ms</span></div><div class="stat"><span class="l">Tracking RMSE</span><span class="v acc" id="tErr">–</span></div></div>
+      <div class="card"><p class="small"><b>TeleHairing (2026):</b> UR10e + clipper, phone camera + AprilTag as the master. Measured loop: 75.6 / 95.7 / 190.5 ms; command RMSE 6.7 / 5.1 / 45.1 mm (9.6 mm without the final withdrawal).</p></div>
+    </div>
+  </div>
+  <div class="more" hidden>
+    <div data-tab="plain"><p>Before robots can cut hair on their own, a human expert can <b>drive the robot remotely</b>, the way a surgeon uses a surgical robot. That's useful today, and every remote haircut also teaches us (and later the AI) how experts move.</p><p>The catch is delay. If the barber is far away, the robot reacts late and the barber sees the result late. Try the "Bad link" setting.</p></div>
+    <div data-tab="tech"><p>TeleHairing (Huang et al., S. Li group) is an operator-in-the-loop baseline: a smartphone runs browser-based monocular AprilTag pose estimation (30 fps) and sends Cartesian commands at 30 Hz to a UR10e, limited to 0.05 m/s and 15°/s, with a separate video channel.</p><ul><li>Total loop: <b>75.6 ms</b> local, <b>95.7 ms</b> cloud relay, <b>190.5 ms</b> Hong Kong → Finland. Most of the increase is in the master → cloud hop.</li><li>Command-following RMSE: 6.7 / 5.1 / 45.1 mm. Remote drops to 9.6 mm when the terminal withdrawal is excluded.</li><li>Detection loss: 23 events in 5 trials, about 2 s gaps, 6.5 mm mean hold drift.</li></ul><p>The paper notes its limits: a mannequin study with software timestamps, and an operator confound in remote trials. Classical delay-robust designs are passivity-based teleoperation and Smith predictors (Li, 2025).</p></div>
+    <div data-tab="refs"><ul><li>Z. Huang, A. Vilkki, J. Huang, B. Liao, C. Luo, L. Angrisani, S. Li. TeleHairing: A Teleoperation Baseline for Robotic Haircutting. arXiv:2610.07096, 2026.</li><li>S. Li, Automation 2025 (latency budget, passivity, Smith predictor).</li></ul></div>
+  </div>
+</section>
+
+<!-- ============ 15 SUPERVISED AUTONOMY ============ -->
+<section class="slide" data-title="Supervised autonomy" data-section="5" data-demo="fleet">
+  <div class="kicker">Human in the loop · supervision</div>
+  <h2>One barber, many robots</h2>
+  <p class="lead">Robots cut on their own; a supervisor <b>steps in only when needed</b>. You are the supervisor: click <b>Intervene</b>.</p>
+  <div class="body" style="flex-direction:column">
+    <div class="ctrls" style="gap:18px">
+      <div class="slider" style="width:220px"><span>Robots per barber <b id="fnV">5</b></span><input id="fnS" type="range" min="2" max="8" value="5"></div>
+      <div class="slider" style="width:260px"><span>Autonomy maturity <b id="fmV">medium</b></span><input id="fmS" type="range" min="0" max="100" value="45"></div>
+      <span class="chip on" id="fAuto">Auto-supervisor off</span>
+      <div class="stat" style="min-width:120px"><span class="l">Haircuts done</span><span class="v" id="fDone">0</span></div>
+      <div class="stat" style="min-width:120px"><span class="l">Interventions</span><span class="v acc" id="fInt">0</span></div>
+      <div class="stat" style="min-width:140px"><span class="l">Robot waiting</span><span class="v red" id="fWait">0%</span></div>
+    </div>
+    <div class="stations" id="stations"></div>
+    <div class="card" style="display:flex;gap:18px;align-items:center"><div style="width:260px"><div class="small"><b>Supervisor load</b> <span class="mono muted">ρ ≈ N · λ · h</span></div><div class="tiny muted">robots × alert rate × handling time</div></div><div class="grow"><div class="bar" style="grid-template-columns:1fr 60px"><div class="tr" style="height:14px"><div class="fl" id="fRho" style="width:0"></div></div><b id="fRhoV" class="mono">0%</b></div></div><div class="small muted" style="width:330px" id="fRhoTxt">As ρ → 100%, robots queue for the barber.</div></div>
+  </div>
+  <div class="more" hidden>
+    <div data-tab="plain"><p>Full independence is still far off, so the practical middle step is <b>one human supervising several robots</b>, like one pilot monitoring autopilot, or one worker watching several machines.</p><p>The robots do the routine work. When something unusual happens (a client moves, a sensor complains, someone asks a question), the human steps in. The better the robots get, the more of them one person can supervise.</p></div>
+    <div data-tab="tech"><p>Li (2025) proposes <b>supervised autonomy</b> with an example ratio of 1 barber : 5 robots. Intervention triggers: trajectory deviation, safety-sensor alerts, blocked paths, customer or operator requests.</p><p>This is a queueing problem. With per-robot alert rate λ, mean handling time h and N robots, supervisor utilisation is ρ ≈ N·λ·h, and waiting time grows sharply as ρ → 1. Raising autonomy (lower λ) is what allows larger N. The demo lets you feel that trade-off.</p><p>Every intervention is also a <b>labelled correction</b>, which makes it valuable training data (next section).</p></div>
+    <div data-tab="refs"><p>S. Li, Automation 2025: supervised autonomy, intervention triggers, robotic salons and a remote-barber platform business model.</p></div>
+  </div>
+</section>
+
+<!-- ============ 16 VLA ============ -->
+<section class="slide" data-title="Vision-Language-Action" data-section="6" data-demo="vla">
+  <div class="kicker">VLA · the next step</div>
+  <h2>"Short back and sides, keep 3 cm on top"</h2>
+  <p class="lead">A VLA model maps <b>camera images + an instruction</b> directly to <b>robot actions</b>. Try an instruction.</p>
+  <div class="pipe" id="vlaPipe">
+    <div class="pb"><b>Camera</b>head + hair</div><span class="ar">+</span>
+    <div class="pb"><b>Instruction</b>natural language</div><span class="ar">→</span>
+    <div class="pb"><b>Vision-language backbone</b>pretrained on the web</div><span class="ar">→</span>
+    <div class="pb"><b>Action head</b>tokens / flow</div><span class="ar">→</span>
+    <div class="pb"><b>Safety filter</b>limits, keep-outs</div><span class="ar">→</span>
+    <div class="pb"><b>Robot</b>clipper pose</div>
+  </div>
+  <div class="vlain" style="margin-top:12px"><input id="vlaIn" value="Short back and sides, keep 3 cm on top"><button class="btn" id="vlaGo">Run ▶</button></div>
+  <div class="ctrls" id="vlaPresets" style="margin-top:8px"></div>
+  <div class="body" style="margin-top:12px">
+    <canvas id="vlaCv" data-w="330" data-h="250"></canvas>
+    <div class="col grow"><pre class="code" id="vlaPlan" style="flex:1"></pre></div>
+    <div class="col grow"><pre class="code" id="vlaAct" style="flex:1"></pre></div>
+  </div>
+  <div class="tiny muted" style="margin-top:6px">Illustrative concept demo: a rule-based stand-in, not a trained model.</div>
+  <div class="more" hidden>
+    <div data-tab="plain"><p>Today's robots need engineers to program every move. <b>Vision-language-action (VLA) models</b> are a new kind of AI that can look at a scene, read a request in plain language, and directly produce robot movements.</p><p>For haircutting, that means you could simply <i>say</i> or <i>show</i> what you want, and the robot would translate it into where to cut and how short. A safety layer still checks every move before it reaches the robot.</p></div>
+    <div data-tab="tech"><p>A VLA is a policy π<sub>θ</sub>(a<sub>t:t+H</sub> | o<sub>t</sub>, ℓ, q<sub>t</sub>) over action chunks, conditioned on images o, language ℓ and proprioception q. It is built on a pretrained vision-language model, with actions either discretised into tokens (RT-2, OpenVLA style) or decoded by a diffusion/flow head (π0 style).</p><p>For haircutting we argue for a <b>hierarchical</b> design:</p><ul><li><b>High level (VLA/VLM):</b> instruction + images → structured style spec (zone lengths, fade profile) and sub-goals.</li><li><b>Mid level:</b> the CNC/coverage planner turns the spec into toolpaths, which keeps verifiability.</li><li><b>Low level:</b> a learned residual policy for contact-rich lift-and-cut, inside certified impedance and separation limits.</li></ul><p>Why not end-to-end? Data scarcity, irreversibility and certification all favour interpretable intermediate representations.</p></div>
+    <div data-tab="refs"><ul><li>Li, Automation 2025: VLA models (e.g., OpenVLA) could connect perception to cutting actions; LLMs for conversation and style recommendation.</li><li>Representative VLA work: RT-2 (Google DeepMind, 2023), OpenVLA (2024), π0 (Physical Intelligence, 2024).</li></ul></div>
+  </div>
+</section>
+
+<!-- ============ 17 DATA FLYWHEEL ============ -->
+<section class="slide" data-title="The data flywheel" data-section="6" data-demo="fly">
+  <div class="kicker">VLA · where the data comes from</div>
+  <h2>Every haircut teaches the next one</h2>
+  <p class="lead">There is no "ImageNet of haircuts". Teleoperation and supervision <b>generate</b> it. <b>Click a stage.</b></p>
+  <div class="body">
+    <svg id="flySvg" viewBox="0 0 560 450" style="width:560px;height:450px"></svg>
+    <div class="col grow"><div class="card grow" id="flyCard"></div>
+      <div class="card"><p class="small"><b>Also:</b> simulation (hair physics + domain randomisation) to pre-train policies before any real head is touched.</p></div></div>
+  </div>
+  <div class="more" hidden>
+    <div data-tab="plain"><p>AI learns from examples, and there are almost no recorded robot haircuts in the world. The plan is to <b>create the examples as we go</b>: barbers driving robots remotely produce expert demonstrations, the AI learns from them, the robot does more on its own, and every time a human corrects it, that correction becomes a new lesson.</p></div>
+    <div data-tab="tech"><p>A DAgger-style loop:</p><div class="eq">D₀ = teleop demos {(o, ℓ, q, a, F)}
+π₁ = BC / VLA fine-tune on D₀
+deploy π₁ under supervision → collect interventions Iₖ
+Dₖ₊₁ = Dₖ ∪ Iₖ (+ preference labels on outcomes)
+πₖ₊₁ = retrain</div><p>Logged modalities: multi-view video, tool pose, F/T, clipper state, language annotations, and outcome ratings. Open problems include privacy (faces), label quality for aesthetics, and covering hair-type diversity.</p></div>
+    <div data-tab="refs"><p>Li, Automation 2025: big-data feedback loop (customer feedback and motion data train models). Huang et al. 2026: TeleHairing logs as a quantitative reference for future autonomy. Inclusion in assistive haircare robotics (arXiv:2411.05137) on hair-type diversity.</p></div>
+  </div>
+</section>
+
+<!-- ============ 18 AUTONOMY LEVELS ============ -->
+<section class="slide" data-title="Levels of autonomy" data-section="6" data-demo="lvl">
+  <div class="kicker">VLA · roadmap</div>
+  <h2>How autonomous is a haircutting robot?</h2>
+  <p class="lead">A proposed scale, in the spirit of self-driving cars. <b>Click a level</b> to see who does what.</p>
+  <div class="lvls" id="lvls" style="margin-top:12px"></div>
+  <div class="body" style="margin-top:18px">
+    <div class="col grow"><div class="card grow"><h3 id="lvlT"></h3><p id="lvlD"></p><p class="small muted" id="lvlE"></p><div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--line)"><div class="tiny muted" style="text-transform:uppercase;letter-spacing:.1em">Bottleneck to the next level</div><p id="lvlB" style="font-size:16px;margin-top:6px"></p></div></div></div>
+    <div class="col grow"><div class="card grow" style="display:flex;flex-direction:column;gap:10px;justify-content:center" id="lvlShare"></div>
+      <div class="small muted" style="display:flex;gap:16px"><span><b class="teal">■</b> Robot</span><span><b style="color:var(--accent2)">■</b> Human</span></div></div>
+  </div>
+  <div class="more" hidden>
+    <div data-tab="plain"><p>Self-driving cars are described in levels from 0 (you drive) to 5 (the car does everything). The same idea helps for haircutting robots.</p><p>Today, research is around <b>level 1–2</b>: robots driven by people, or following set paths on a mannequin. The realistic next goal is <b>level 3</b>, where robots handle routine cuts and a human supervises several of them.</p></div>
+    <div data-tab="tech"><p>A proposed taxonomy (ours, by analogy to SAE J3016), defined by who owns perception, planning, execution and fallback:</p><ul><li><b>L0</b> smart tools (guarded clippers) · <b>L1</b> teleoperation / assisted positioning · <b>L2</b> scripted autonomous paths, 1:1 supervision, static head · <b>L3</b> online head compensation + routine styles, 1:N supervision, human is the fallback · <b>L4</b> instruction- and image-conditioned styles across hair types, remote support only · <b>L5</b> unrestricted.</li></ul><p>The bottlenecks are different at each step: L2→L3 is head-motion robustness and certification; L3→L4 is generalisation across hair types and styles (VLA plus data); L4→L5 is open-world safety and trust.</p></div>
+    <div data-tab="refs"><p>Taxonomy proposed for this talk. Li, Automation 2025: full autonomy "currently not feasible"; commercial use likely within five years via teleoperation and supervised autonomy.</p></div>
+  </div>
+</section>
+
+<!-- ============ 19 OPEN CHALLENGES ============ -->
+<section class="slide" data-title="Open challenges" data-section="6">
+  <div class="kicker">Open problems</div>
+  <h2>What we still don't know</h2>
+  <p class="lead">Eight open problems, and a good place for mathematical modelling. <b>Click to flip.</b></p>
+  <div class="flips" id="flips"></div>
+  <div class="more" hidden>
+    <div data-tab="plain"><p>These are the questions that still stand between today's prototypes and a robot you'd trust with your own hair. Many are fundamentally <b>modelling</b> questions: how hair behaves, how heads move, how to measure a "good" haircut, which fits this workshop well.</p></div>
+    <div data-tab="tech"><p>Where mathematical models are needed most:</p><ul><li>Reduced-order hair mechanics that run in real time and predict post-cut visible length.</li><li>Stochastic head-motion models (spectral + jump processes) for robust MPC and chance-constrained planning.</li><li>Coverage planning on curved manifolds with irreversible operations, as a constrained optimisation over the scalp.</li><li>Formal safety: control barrier functions over separation and force; verification of learned policies.</li><li>Quality metrics: learned aesthetic or preference models plus geometric error on reconstructed hair.</li></ul></div>
+    <div data-tab="refs"><p>Synthesised from Khan & Li (JAIA 2026, IEEE JSAS 2026), Huang, Khan & Li (IJSS 2026), Li (Automation 2025), and arXiv:2411.05137 (inclusion across hair types).</p></div>
+  </div>
+</section>
+
+<!-- ============ 20 FUTURE ============ -->
+<section class="slide" data-title="The future" data-section="6" data-demo="future">
+  <div class="kicker">Outlook</div>
+  <h2>What does the future look like?</h2>
+  <p class="lead">Step through time. Three settings where robotic haircutting changes who gets care, and how.</p>
+  <div class="horizon" id="horizon"><span class="chip on" data-h="0">Today</span><span class="chip" data-h="1">Next ~5 years</span><span class="chip" data-h="2">Long term</span></div>
+  <div class="scen" id="scen" style="margin-top:16px;flex:1"></div>
+  <div class="more" hidden>
+    <div data-tab="plain"><p>In the near future you're most likely to meet these robots in <b>salons, airports and malls</b>, supervised by staff, or driven by a barber from another city.</p><p>The most meaningful impact may be in <b>care homes and hospitals</b>, for people who can't easily get to a barber. Longer term, a general-purpose assistant might help with several grooming tasks at home.</p></div>
+    <div data-tab="tech"><p>Deployment models discussed in the literature: robotic salons (malls, airports, offices), a remote-barber platform (ride-hailing analogy), and revenue from hardware, maintenance and digital services. Li (2025) calls commercial use "highly likely" within five years, starting with teleoperation and supervised autonomy.</p><p>Long-term technical enablers: humanoid/bimanual platforms, VLA foundation policies fine-tuned on grooming data, VR/haptic interfaces for remote experts, and certification frameworks for close-contact service robots.</p></div>
+    <div data-tab="refs"><p>S. Li, Automation 2025 (business models, roadmap, VR/haptics/LLMs). Khan & Li, JAIA 2026 (healthcare and personal-care applications).</p></div>
+  </div>
+</section>
+
+<!-- ============ 21 CLOSING ============ -->
+<section class="slide" data-title="Take-home & thanks" data-section="6">
+  <div class="kicker">Take-home</div>
+  <h2>From precision automation to understanding</h2>
+  <div class="body" style="margin-top:10px">
+    <div class="col grow">
+      <div class="card"><h3><span class="acc">1 ·</span> Reuse mature theory</h3><p>CNC and mobile-robotics frameworks give haircutting a rigorous backbone: localisation, coverage, control.</p></div>
+      <div class="card"><h3><span class="acc">2 ·</span> Humans in the loop are the bridge</h3><p>Teleoperation and supervised autonomy are useful today and generate the data learning needs.</p></div>
+      <div class="card"><h3><span class="acc">3 ·</span> VLA models: high-level understanding, verified low-level control</h3><p>Language and vision set the goal; certified planners and controllers keep it safe.</p></div>
+      <div class="card"><h3><span class="acc">4 ·</span> It's a modelling problem</h3><p>Hair mechanics, head motion, quality metrics: open invitations to this community.</p></div>
+    </div>
+    <div class="col" style="width:440px">
+      <div class="card" style="text-align:center;padding:22px">
+        <div class="big acc">Thank you</div>
+        <p style="font-size:16px;margin-top:12px"><b>Ameer Tamoor Khan</b><br><span class="muted">Assistant Professor · PLEN<br>University of Copenhagen, Denmark</span></p>
+        <p class="tiny muted" style="margin-top:10px">Slides: <span class="mono acc">ameertamoorkhan.github.io/html-lab/iwmma2026-haircutting</span></p>
+      </div>
+      <div class="card"><h3 style="font-size:15px">Key papers</h3>
+        <p class="tiny">Khan & Li · CNC-Inspired Robotic Hair Cutting · <i>JAIA</i> 2026</p>
+        <p class="tiny">Khan & Li · Robotic Haircutting Systems survey · <i>IEEE JSAS</i> 2026</p>
+        <p class="tiny">Huang, Khan & Li · Haircutting robots: a mobile robotics perspective · <i>IJSS</i> 2026</p>
+        <p class="tiny">Li · Haircutting Robots: From Theory to Practice · <i>Automation</i> 2025</p>
+        <p class="tiny">Huang et al. · TeleHairing · arXiv 2026</p></div>
+    </div>
+  </div>
+  <div class="more" hidden>
+    <div data-tab="plain"><p>The short version: robots can't yet give you a great haircut on their own, but the pieces are coming together. Precise machines, smart sensors, humans helping from a distance, and AI that understands requests in plain language.</p><p>Questions welcome!</p></div>
+    <div data-tab="tech"><p>Suggested discussion prompts:</p><ul><li>Which hair-mechanics reduced-order model is accurate enough for cut-length prediction yet real-time?</li><li>How do we define and certify a safety envelope around a learned (VLA) policy?</li><li>What is a principled, measurable definition of haircut quality?</li><li>How much teleoperation data is needed before supervised autonomy pays off?</li></ul></div>
+    <div data-tab="refs"><ul><li>A. T. Khan, S. Li. CNC-Inspired Robotic Hair Cutting: A Comprehensive Survey on Precision Personal Care Automation. <i>Journal of Artificial Intelligence for Automation</i> 1(1), 2026.</li><li>A. T. Khan, S. Li. Robotic Haircutting Systems: A Survey of Methods, Challenges, and Hair Modeling Insights. <i>IEEE Journal of Selected Areas in Sensors</i>, 2026.</li><li>Z. Huang, A. T. Khan, S. Li. Haircutting robots: a mobile robotics perspective. <i>International Journal of Systems Science</i>, 2026. doi:10.1080/00207721.2026.2687894</li><li>S. Li. Haircutting Robots: From Theory to Practice. <i>Automation</i> 6(3):47, 2025. doi:10.3390/automation6030047</li><li>Z. Huang et al. TeleHairing: A Teleoperation Baseline for Robotic Haircutting. arXiv:2610.07096, 2026.</li></ul></div>
+  </div>
+</section>
+
+<footer id="footer">
+  <span class="who"><b>Ameer Tamoor Khan</b> · University of Copenhagen</span>
+  <span class="grow"></span>
+  <span>IWMMA 2026 · Krasnoyarsk</span>
+  <span class="grow"></span>
+  <button id="deepBtn" title="Deep dive (D)"><span class="plus">+</span>Deep dive <kbd>D</kbd></button>
+  <button class="iconbtn" id="ovBtn" title="Overview (O)"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg></button>
+  <button class="iconbtn" id="thBtn" title="Light/dark (T)"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 1.5a6.5 6.5 0 0 1 0 13z" fill="currentColor"/></svg></button>
+  <button class="iconbtn" id="fsBtn" title="Fullscreen (F)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1.5 5.5v-4h4M10.5 1.5h4v4M14.5 10.5v4h-4M5.5 14.5h-4v-4"/></svg></button>
+  <button class="navbtn" id="prevBtn" aria-label="Previous">‹</button>
+  <span class="num" id="num">1 / 21</span>
+  <button class="navbtn" id="nextBtn" aria-label="Next">›</button>
+</footer>
+</div></div>
+
+<div id="scrim"></div>
+<aside id="drawer" aria-hidden="true">
+  <button class="iconbtn x" id="dClose">✕ Esc</button>
+  <header><div class="dk" id="dKick">Deep dive</div><h3 id="dTitle"></h3>
+    <div class="tabs"><button data-t="plain" class="on">In plain words</button><button data-t="tech">Technical</button><button data-t="refs">Sources</button></div></header>
+  <div class="content" id="dBody"></div>
+</aside>
+
+<div id="overview"><h4>All slides <span class="kbd">O</span> to close</h4><div class="grid" id="ovGrid"></div></div>
+<div id="help">← → navigate · <b>D</b> deep dive · <b>O</b> overview · <b>F</b> fullscreen · <b>T</b> theme</div>
+
+<script src="app.js"></script>
+<script src="demos.js"></script>
+</body>
+</html>
