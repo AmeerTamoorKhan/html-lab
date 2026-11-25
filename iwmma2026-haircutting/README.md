@@ -17,7 +17,7 @@ Live page: https://ameertamoorkhan.github.io/html-lab/iwmma2026-haircutting/
 
 `#n` in the URL opens slide *n* directly (e.g. `#11`).
 
-## Interactive demos
-Hair strand physics with comb and scissors · coverage toolpaths with roughing/finishing · head-motion compensation under latency · speed-and-separation safety · teleoperation latency (TeleHairing numbers) · one-barber-many-robots supervision · VLA instruction → style spec → action chunk (rule-based illustration) · data flywheel · autonomy levels.
+## Self-running visuals
+Every visual animates on its own (no clicks needed): happy-face trimming intro, self-drawing roadmap, hair physics with automatic comb and cut, single-pass vs roughing+finishing toolpaths, head tracking under rising latency, scripted safety events, teleoperation latency modes, auto-supervised robot fleet, auto-typed VLA instructions, data flywheel, autonomy levels.
 
 Plain HTML/CSS/JS with no build step and no dependencies (Google Fonts are optional).
