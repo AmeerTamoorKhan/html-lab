@@ -145,6 +145,7 @@ body.lang-py .codetabs pre[data-lang=py],body.lang-r .codetabs pre[data-lang=r]{
 .ptable td.hl{background:var(--amberBg)}
 .ptable td.test{color:var(--purple);font-weight:600}
 .ptable td.train{color:var(--blue);font-weight:600}
+.cheat .cs-t td,.cheat .cs-t th{padding:4px 10px;font-size:14.5px;line-height:1.3}.cheat .cs-t code{font-size:13px}.cheat .cs-g{margin-top:8px;gap:12px}.cheat .codetabs pre{font-size:13.5px}.cheat .cs-g .card{padding:10px 14px}.cheat .cs-g h3{margin:0 0 4px;font-size:16px}.cheat .cs-g p{margin:0;font-size:14px;line-height:1.45}
 </style>
 </head>
 <body class="lang-py">
@@ -257,10 +258,10 @@ train   &lt;- df[idx, ];  test &lt;- df[-idx, ]</pre></div>
 
 <section class="slide" data-title="Why scaling matters" data-min="3" data-demo="scale" data-stage="prep">
  <h2>Why scale? Canyon vs bowl</h2>
- <p class="lead">Same learning rate, same start. Press Run.</p>
+ <p class="lead">Same learning rate, same start. Press Run. Right of each map: the same valley seen from the side.</p>
  <div class="body">
-  <div class="col grow"><div class="mini" style="font-weight:600">NOT SCALED (rainfall in mm, temp in °C)</div><canvas id="sc-a" width="520" height="320"></canvas><div class="stat"><div class="k">result</div><div class="v" id="sc-ra" style="font-size:18px"></div></div></div>
-  <div class="col grow"><div class="mini" style="font-weight:600">SCALED (mean 0, std 1)</div><canvas id="sc-b" width="520" height="320"></canvas><div class="stat"><div class="k">result</div><div class="v" id="sc-rb" style="font-size:18px"></div></div></div>
+  <div class="col grow"><div class="mini" style="font-weight:600">NOT SCALED (rainfall in mm, temp in °C)</div><div style="display:flex;gap:10px"><canvas id="sc-a" width="310" height="300"></canvas><canvas id="sc-sa" width="220" height="300"></canvas></div><div class="stat"><div class="k">result</div><div class="v" id="sc-ra" style="font-size:18px"></div></div></div>
+  <div class="col grow"><div class="mini" style="font-weight:600">SCALED (mean 0, std 1)</div><div style="display:flex;gap:10px"><canvas id="sc-b" width="310" height="300"></canvas><canvas id="sc-sb" width="220" height="300"></canvas></div><div class="stat"><div class="k">result</div><div class="v" id="sc-rb" style="font-size:18px"></div></div></div>
  </div>
  <div class="card" style="display:flex;gap:16px;align-items:center;margin-top:12px;padding:10px 16px"><div class="ctrl grow" style="margin:0"><span class="lab">Learning rate</span><input type="range" id="sc-lr" min="0.01" max="0.12" step="0.005" value="0.07"><span class="val" id="sc-lrv"></span></div><button class="btn primary" id="sc-run">▶ Run both</button></div>
  <aside class="notes">The contours are a map of the error (we'll meet "loss" soon); the star is the best weights. Left: crawls, and raising the learning rate past ~0.1 makes it explode. Right: fast at any setting. Forgetting to scale = loss stuck or NaN.</aside>
@@ -683,6 +684,29 @@ mae  &lt;- mean(abs(pred - y_test))</pre></div>
  <aside class="notes">Ask the room to guess before each click.</aside>
 </section>
 
+<!-- ============ CHEAT SHEET ============ -->
+<section class="slide cheat" data-title="Beginner cheat sheet" data-min="3" data-stage="data,split,prep,input,hidden,output,loss,opt,eval,predict">
+ <h2>📋 Cheat sheet: which settings for which problem?</h2>
+ <p class="lead">Find your question's row. Only the output layer and loss change. The <code>"strings"</code> are identical in Python and R.</p>
+ <table class="tb cs-t">
+  <tr><th>Your question</th><th>Plant-science example</th><th>Output layer</th><th>Loss</th><th>Watch (metric)</th></tr>
+  <tr><td><b class="b">A number</b><br><span class="mini">regression</span></td><td>yield (t/ha), biomass, soil moisture</td><td><b>1</b> unit · <code>"linear"</code></td><td><code>"mse"</code> <span class="mini">(<code>"mae"</code> if outliers)</span></td><td>MAE, RMSE, R²</td></tr>
+  <tr><td><b class="t">Yes / no</b><br><span class="mini">binary</span></td><td>diseased vs healthy leaf</td><td><b>1</b> unit · <code>"sigmoid"</code></td><td><code>"binary_crossentropy"</code></td><td>accuracy, precision, recall</td></tr>
+  <tr><td><b class="p">One of many</b><br><span class="mini">multi-class</span></td><td>which species / cultivar</td><td><b>K</b> units · <code>"softmax"</code></td><td><code>"sparse_categorical_crossentropy"</code><br><span class="mini">labels 0,1,2… (one-hot → <code>"categorical_crossentropy"</code>)</span></td><td>accuracy, confusion matrix</td></tr>
+  <tr><td><b class="a">Several yes/no</b><br><span class="mini">multi-label</span></td><td>which pests are on this plant</td><td><b>K</b> units · <code>"sigmoid"</code></td><td><code>"binary_crossentropy"</code></td><td>accuracy per label</td></tr>
+  <tr><td><b class="b">Several numbers</b><br><span class="mini">multi-output</span></td><td>N, P and K uptake together</td><td><b>K</b> units · <code>"linear"</code></td><td><code>"mse"</code> <span class="mini">(scale targets too)</span></td><td>MAE per output</td></tr>
+ </table>
+ <div class="grid3 cs-g">
+  <div class="card"><h3>🧹 Preprocess (always)</h3><p>① <b>split first</b> (train / val / test)<br>② fill or drop missing values<br>③ one-hot encode categories<br>④ scale numbers: mean 0, std 1<br><span class="mini">all statistics from the <b>training</b> set only</span></p></div>
+  <div class="card"><h3>🧠 Network &amp; training</h3><p>hidden: <code>"relu"</code>, 1–3 layers of 16–64<br>optimizer: <code>"adam"</code>, lr <b>0.001</b><br>batch size <b>32</b> · epochs ~100<br>+ <b>early stopping</b> on val loss (patience 10)</p></div>
+  <div class="card"><h3>🩺 If it goes wrong</h3><p><b>overfit</b> (val ≫ train): dropout 0.2–0.5, L2, smaller net, more data<br><b>underfit</b> (both high): bigger net, more epochs<br><b>NaN / stuck</b>: scale inputs, lower lr<br><span class="mini">always compare with a simple baseline</span></p></div>
+ </div>
+ <div class="codetabs" style="margin-top:10px"><pre data-lang="py">model.add(layers.Dense(1, activation="sigmoid"))
+model.compile(optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"])</pre><pre data-lang="r">model |> layer_dense(1, activation = "sigmoid")
+model |> compile(optimizer = "adam", loss = "binary_crossentropy", metrics = "accuracy")</pre></div>
+ <aside class="notes">A take-home summary. Point at the row for their own research question. Only the output layer and loss change between rows; everything else starts from the same defaults.</aside>
+</section>
+
 <section class="slide title-slide" data-title="Wrap-up" data-min="3" data-stage="data,split,prep,input,hidden,output,loss,opt,eval,predict">
  <h2 style="font-size:42px">That's the whole map 🌱</h2>
  <div class="grid2" style="margin-top:14px;gap:16px">
@@ -849,7 +873,7 @@ D.neuron={init(){const P=canvas('ne-c');let act='relu';const ids=['x0','x1','x2'
    // activation box
    const bx=430,by=80,bw=170,bh=160;g.strokeStyle=C.ink;g.lineWidth=2;g.beginPath();g.moveTo(sx+34,sy);g.lineTo(bx,sy);g.stroke();
    g.fillStyle=C.tealBg;rrect(g,bx,by,bw,bh,14);g.fill();g.strokeStyle=C.teal;g.stroke();
-   const lo=-4,hi=4,ymin=act==='sigmoid'?-0.2:-2,ymax=act==='sigmoid'?1.2:4;const X=v=>bx+12+(v-lo)/(hi-lo)*(bw-24),Y=v=>by+bh-14-(v-ymin)/(ymax-ymin)*(bh-40);
+   const lo=-4,hi=4,ymin={sigmoid:-0.2,relu:-1,linear:-4}[act],ymax={sigmoid:1.2,relu:4,linear:4}[act];const X=v=>bx+12+(v-lo)/(hi-lo)*(bw-24),Y=v=>by+bh-14-(v-ymin)/(ymax-ymin)*(bh-40);
    g.strokeStyle='#9fcfc6';g.lineWidth=1;g.beginPath();g.moveTo(X(lo),Y(0));g.lineTo(X(hi),Y(0));g.moveTo(X(0),Y(ymin));g.lineTo(X(0),Y(ymax));g.stroke();
    path(g,linspace(lo,hi,80).map(v=>[X(v),Y(clamp(ACT[act].f(v),ymin,ymax))]),C.teal,3);
    const zc=clamp(z,lo,hi);dot(g,X(zc),Y(clamp(a,ymin,ymax)),6,C.red,'#fff',2);
@@ -1078,8 +1102,30 @@ D.scale={init(){const PA=canvas('sc-a'),PB=canvas('sc-b');const fa=(x,y)=>0.5*(2
    path(g,s.trail.map(p=>[F.X(clamp(p[0],-9,9)),F.Y(clamp(p[1],-9,9))]),C.ink,2);const p=s.trail[s.trail.length-1];dot(g,F.X(clamp(p[0],-9,9)),F.Y(clamp(p[1],-9,9)),6,C.amber,'#fff',2);g.restore();}
   function draw(){drawOne(PA,FA,bgA,A,fa);drawOne(PB,FB,bgB,B,fb);$('sc-ra').textContent=A.res||(A.k?'step '+A.k+', loss '+fmt(fa(...A.p),3):'press Run');$('sc-rb').textContent=B.res||(B.k?'step '+B.k+', loss '+fmt(fb(...B.p),3):'press Run');}
   $('sc-run').onclick=()=>{if(A.res&&B.res)reset();run=!run;$('sc-run').textContent=run?'⏸ Pause':'▶ Run both';};
-  this.loop=Loop(dt=>{if(!run)return;acc+=dt;if(acc<90)return;acc=0;adv(A,fa,ga);adv(B,fb,gb);if(A.res&&B.res){run=false;$('sc-run').textContent='▶ Run both';}draw();});reset();},
- start(){this.loop.start();},stop(){this.loop.stop();}};
+  this.loop=Loop(dt=>{if(!run)return;acc+=dt;if(acc<90)return;acc=0;adv(A,fa,ga);adv(B,fb,gb);if(A.res&&B.res){run=false;$('sc-run').textContent='▶ Run both';}draw();});reset();
+  // side-view animation: bumpy steep canyon (ball hops wall to wall) vs smooth bowl (ball rolls straight down)
+  const SA=canvas('sc-sa'),SB=canvas('sc-sb');
+  const hL=u=>Math.min(1.08,2.1*u*u+0.09*Math.sin(23*u)*Math.abs(u)+0.03*Math.abs(Math.sin(41*u))),hR=u=>0.9*u*u;
+  const NH=34,TH=230,PER=NH*TH+1800;let t0=0;
+  function side(P,h,col,bg,ball,trail,title,sub,subc){const g=P.ctx,w=P.w,H=P.h,top=42,bot=H-44;cls(P);
+   const X=u=>12+(u+1)/2*(w-24),Y=v=>bot-v*(bot-top);
+   const pts=linspace(-1,1,160).map(u=>[X(u),Y(Math.min(1.1,h(u)))]);
+   g.save();g.beginPath();g.moveTo(X(-1),bot+30);pts.forEach(p=>g.lineTo(p[0],p[1]));g.lineTo(X(1),bot+30);g.closePath();g.fillStyle=bg;g.fill();g.restore();
+   path(g,pts,col,3);text(g,title,w/2,18,{align:'center',weight:700,size:13,color:col});
+   trail.forEach((p,i)=>dot(g,X(p[0]),Y(p[1])-7,3,rgba(C.amber,0.15+0.5*i/Math.max(1,trail.length)),null));
+   text(g,'★',X(0),Y(h(0))+6,{align:'center',size:18,color:C.red});
+   dot(g,X(ball[0]),Y(ball[1])-8,8,C.amber,'#fff',2);text(g,sub,w/2,H-14,{align:'center',size:12,weight:600,color:subc||C.muted});}
+  function anim(dt,t){if(!t0)t0=t;const e=(t-t0)%PER;
+   // left: hops across the canyon, shrinking slowly
+   const uk=k=>0.6*Math.pow(-0.91,k),k=Math.min(NH,Math.floor(e/TH)),s=k>=NH?0:(e-k*TH)/TH;
+   const u0=uk(k),u1=uk(Math.min(NH,k+1)),bu=u0+(u1-u0)*s,bh=hL(u0)+(hL(u1)-hL(u0))*s+0.10*4*s*(1-s)*(k<NH?1:0);
+   const trL=[];for(let j=Math.max(0,k-8);j<=k;j++)trL.push([uk(j),hL(uk(j))]);
+   side(SA,hL,C.blue,C.blueBg,[bu,bh],trL,'side view: steep, bumpy','hop '+k+(k>=NH?' · finally near the bottom':' · bouncing wall to wall'),k>=NH?C.ink:C.amber);
+   // right: rolls smoothly down, then rests
+   const ts=e/1000,ru=0.85*Math.exp(-ts/0.45),done=ts>2.2;
+   side(SB,hR,C.teal,C.tealBg,[ru,hR(ru)],[],'side view: smooth bowl',done?'✓ rolled straight to the bottom':'rolling…',done?C.tealD:C.muted);}
+  this.anim=Loop(anim);},
+ start(){this.loop.start();this.anim.start();},stop(){this.loop.stop();this.anim.stop();}};
 
 </script>
 <script>
@@ -1418,7 +1464,7 @@ const EXPLAIN={
  'Neural networks learn patterns from examples instead of following rules we write by hand. The rest of the course shows how.'],
 'What is a neural network?':[
  'The diagram is a small, already-trained network with 3 inputs (rainfall, temperature, soil N), two hidden layers and 1 output (yield). Every circle does a small calculation and every line carries a number multiplied by a <b>weight</b>. When you move a slider, the new values flow left to right through all the lines and circles, and a new yield comes out. The thickness of a line shows how much that connection is contributing for the current inputs.<br><br>Two important properties: (1) it is a <b>deterministic function</b>: the same inputs always give the same output; (2) the shape of the relationship (yield peaks near 24 °C, rises with rain and N, then levels off) was never typed in by anyone. It is stored in the 49 weights, which were learned from data.',
- 'Think of a huge mixing desk in a recording studio. The field\'s conditions go in, and the predicted harvest comes out. Each line in the picture is a knob on that desk. Someone (the training process) has already turned every knob to the right position by listening to many past harvests. Now you can feed in any field and get an estimate.',
+ 'Think of an experienced agronomist who has walked through thousands of fields and later saw each field\'s harvest. Tell them "600 mm of rain, 24 °C, plenty of nitrogen" and they give you a yield estimate straight away. They never wrote down a formula. They built up a gut feeling from all those past fields: "too hot is bad", "more rain helps, but only up to a point", "nitrogen matters most when water is not limiting".<br><br>A neural network builds the same kind of gut feeling, but from a spreadsheet of past fields instead of years of walking. Each circle in the picture is one small rule of thumb (for example "is it getting too hot?"), and each line says how much that rule counts. Training is the network looking at thousands of past fields and, little by little, adjusting how much each rule counts until its guesses match the real harvests. After that you can describe a brand-new field with the sliders, and it gives you its "expert" estimate in a fraction of a second.',
  'A neural network is just a function: numbers in, prediction out. What it "knows" lives entirely in its weights, and those weights are learned from data.'],
 'The big picture':[
  'Almost every supervised machine-learning project follows the same pipeline:<br>• <b>Data</b>: rows of examples with a known answer (the target).<br>• <b>Split</b>: hold some rows back so we can test honestly later.<br>• <b>Preprocess</b>: convert everything into clean, comparable numbers.<br>• <b>Input → Hidden layers → Output</b>: the network turns inputs into a prediction (the <i>forward pass</i>).<br>• <b>Loss</b>: measures how wrong the prediction is.<br>• <b>Optimizer</b>: adjusts the weights to reduce the loss.<br>The middle part (input → optimizer) is the <b>training loop</b> and repeats thousands of times. Only when training is finished do we <b>evaluate</b> on the locked-away test data and then <b>predict</b> new cases.',
@@ -1524,6 +1570,10 @@ const EXPLAIN={
  'Most training problems fall into a few patterns:<br>• <b>Loss becomes NaN or explodes</b>: learning rate too high, unscaled inputs, or missing values left in the data.<br>• <b>Loss barely moves</b>: learning rate too low, unscaled inputs, network too small, or a wrong output activation/loss pair.<br>• <b>Training good, validation bad</b>: overfitting → more data, early stopping, dropout, regularisation.<br>• <b>Both bad</b>: underfitting → bigger model, longer training, better features.<br>• <b>Test score suspiciously perfect</b>: data leakage (e.g. scaling before splitting, duplicated rows across splits, a feature that secretly contains the answer).<br>• <b>Different results every run</b>: normal, due to random initial weights and shuffling. Set a seed and report the average of several runs.',
  'Like the warning lights on a car dashboard: each symptom points to the two or three usual suspects to check first, before you start taking the engine apart.',
  'Check the learning rate, scaling and data splits first: they explain most problems beginners run into.'],
+'Beginner cheat sheet':[
+ 'This slide collects the standard starting choices that work for most tabular problems. The rule behind the table: the <b>output layer and the loss are set by the type of answer</b> (a number, yes/no, one of several classes, several numbers), while the <b>hidden layers are almost always ReLU</b>. A linear output with MSE models an unbounded number; a sigmoid output gives a probability for one yes/no question, and binary cross-entropy rewards giving high probability to the right answer; softmax spreads probability over several classes that sum to 1, paired with categorical cross-entropy (use the <i>sparse</i> version when labels are integers 0, 1, 2 rather than one-hot vectors). Several independent yes/no labels use one sigmoid per label with binary cross-entropy.<br><br>The preprocessing column follows one principle: compute every statistic (means, standard deviations, categories) on the <b>training set only</b>, then apply it to validation, test and new data. Adam with learning rate 0.001, batch size 32 and early stopping on validation loss is a robust default; tune only after you have a working baseline.',
+ 'Think of this as the recipe card on the fridge. First decide what kind of answer you want: a number (like yield), a yes or no (diseased or healthy), or a choice between several options (which species). That one decision tells you how to end the network and how to score it. Everything else has a sensible default you can start with and change later: ReLU inside, Adam to learn, scale your numbers, split your data before you do anything else, and stop training when the validation score stops getting better.',
+ 'Pick the row that matches your question, copy its output layer and loss, keep the defaults for the rest, and only start tuning once that first version works.'],
 'Wrap-up':[
  'A neural network is layers of neurons, each computing a weighted sum plus a bias followed by an activation. It is trained by repeating forward pass → loss → backpropagation → weight update over many batches and epochs, using an optimizer such as Adam. Good results depend as much on the pipeline as on the network: split before preprocessing, scale with training statistics, choose the output layer and loss to match the task, watch the validation loss (early stopping), and compare against a simple baseline.<br><br>In the hands-on notebook you will apply exactly this pipeline to the crop-yield regression and penguin classification datasets, in Python or R.',
  'A network learns the way people learn a skill: guess, see how wrong you were, adjust a little, and repeat many times. Give it clean data, test it fairly on examples it has never seen, and it can find patterns that would be very hard to write down by hand.',
