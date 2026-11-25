@@ -1,0 +1,1620 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Neural Networks Crash Course</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%233f9083%22/%3E%3Cg%20stroke%3D%22%23fff%22%20stroke-width%3D%223%22%20opacity%3D%22.85%22%3E%3Cpath%20d%3D%22M14%2020L32%2014M14%2020L32%2032M14%2020L32%2050M14%2044L32%2014M14%2044L32%2032M14%2044L32%2050M32%2014L50%2032M32%2032L50%2032M32%2050L50%2032%22/%3E%3C/g%3E%3Cg%20fill%3D%22%23fff%22%3E%3Ccircle%20cx%3D%2214%22%20cy%3D%2220%22%20r%3D%226%22/%3E%3Ccircle%20cx%3D%2214%22%20cy%3D%2244%22%20r%3D%226%22/%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2214%22%20r%3D%225.5%22/%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%225.5%22/%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2250%22%20r%3D%225.5%22/%3E%3C/g%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2232%22%20r%3D%227%22%20fill%3D%22%23fdf0c8%22%20stroke%3D%22%23fff%22%20stroke-width%3D%222%22/%3E%3C/svg%3E">
+<style>
+:root{
+ --ink:#1f2937;--ink2:#374151;--muted:#6b7280;--line:#e5e5e5;--soft:#f4f4f5;--card:#fafafa;--bg:#e9edf3;--paper:#ffffff;
+ --blue:#3563e9;--blueBg:#e3ebfd;--teal:#3f9083;--tealD:#245c53;--tealBg:#d9f4ee;--purple:#7247e3;--purpleBg:#ece7fd;
+ --amber:#d07a1f;--amberBg:#fdf0c8;--red:#d9534f;--redBg:#fbe3e2;--green:#4a9d5b;--greenBg:#e2f3e5;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--ink);
+ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Helvetica,Arial,sans-serif}
+#viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+#stage{width:1280px;height:720px;position:relative;flex:none;transform-origin:center center}
+.slide{position:absolute;inset:0;background:var(--paper);border-radius:18px;box-shadow:0 10px 40px rgba(31,41,55,.12);
+ padding:38px 56px 44px;display:none;flex-direction:column;overflow:hidden}
+.slide.active{display:flex;animation:fadein .35s ease}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.slide h2{margin:0 0 4px;font-size:34px;font-weight:700;letter-spacing:-.01em;color:#111827}
+.slide .kicker{font-size:13px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:6px}
+.slide .lead{font-size:18px;color:var(--muted);margin:0 0 18px;max-width:1050px;line-height:1.45}
+.slide p,.slide li{font-size:18px;line-height:1.5}
+.slide ul{margin:6px 0;padding-left:22px}
+.slide li{margin:4px 0}
+.body{flex:1;min-height:0;display:flex;gap:26px}
+.col{display:flex;flex-direction:column;gap:12px;min-width:0}
+.grow{flex:1}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px}
+.card h3{margin:0 0 6px;font-size:19px;color:#111827}
+.card p{margin:4px 0;font-size:16px;color:var(--ink2)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.ctrl{display:flex;align-items:center;gap:10px;margin:5px 0;font-size:15px}
+.ctrl .lab{flex:0 0 130px;color:#4b5563}
+.ctrl input[type=range]{flex:1;accent-color:var(--teal);min-width:60px}
+.ctrl .val{flex:0 0 74px;text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:6px 0}
+.btn{padding:7px 15px;border-radius:9px;border:1px solid #d4d4d8;background:#fff;cursor:pointer;font-size:15px;color:var(--ink);font-family:inherit}
+.btn:hover{background:var(--soft)}
+.btn.primary{background:var(--teal);color:#fff;border-color:var(--teal)}
+.btn.primary:hover{background:#357b70}
+.seg{display:inline-flex;background:var(--soft);border-radius:999px;padding:3px;gap:2px;flex-wrap:wrap}
+.seg button{border:none;background:transparent;padding:6px 14px;border-radius:999px;font-size:14.5px;color:#6b7280;cursor:pointer;font-family:inherit}
+.seg button.on{background:#fff;color:#111;font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+select{font-family:inherit;font-size:15px;padding:5px 9px;border-radius:8px;border:1px solid #d4d4d8;background:#fff}
+canvas{display:block;border-radius:12px;background:#fff}
+.stat{background:#fff;border:1px solid #ececec;border-radius:12px;padding:8px 12px;min-width:0}
+.stat .k{font-size:12.5px;color:var(--muted)}
+.stat .v{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
+.note{font-size:15px;color:var(--muted);line-height:1.5}
+.tip{background:var(--amberBg);border-radius:12px;padding:10px 14px;font-size:15.5px;color:#6b4410;line-height:1.45}
+.tip b{color:#5a3608}
+.good{background:var(--tealBg);border-radius:12px;padding:10px 14px;font-size:15.5px;color:var(--tealD);line-height:1.45}
+.formula{background:#fff;border:1px solid #ececec;border-radius:12px;padding:10px 16px;font-size:19px;font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-variant-numeric:tabular-nums}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+code{background:var(--soft);padding:1px 6px;border-radius:5px;font-size:.9em}
+pre{background:#1f2937;color:#e5e7eb;border-radius:12px;padding:14px 16px;font-size:14.5px;line-height:1.55;margin:0;overflow:auto;white-space:pre}
+pre .c{color:#9ca3af}pre .k{color:#93c5fd}pre .s{color:#fcd34d}pre .hl{background:rgba(63,144,131,.45);display:inline-block;width:100%;border-radius:4px}
+.pill{display:inline-block;padding:2px 10px;border-radius:999px;font-size:13px;font-weight:600}
+.b{color:var(--blue)}.t{color:var(--teal)}.p{color:var(--purple)}.a{color:var(--amber)}.r{color:var(--red)}.g{color:var(--green)}
+table.tb{border-collapse:collapse;width:100%;font-size:15.5px;background:#fff;border-radius:12px;overflow:hidden}
+table.tb th,table.tb td{padding:9px 12px;border-bottom:1px solid #f0f0f0;text-align:left;vertical-align:top}
+table.tb th{background:var(--soft);color:#4b5563;font-weight:600}
+.notes{display:none}
+.foot{position:absolute;left:56px;right:56px;bottom:14px;display:flex;justify-content:space-between;font-size:12.5px;color:#9ca3af;pointer-events:none}
+/* chrome */
+#progress{position:fixed;left:0;top:0;height:4px;background:var(--teal);transition:width .3s;z-index:20}
+#hud{position:fixed;right:14px;bottom:10px;opacity:.35;transition:opacity .2s;display:flex;gap:6px;align-items:center;z-index:20;font-size:13px;color:#6b7280}
+#hud:hover{opacity:1}
+#hud button{border:1px solid #d4d4d8;background:rgba(255,255,255,.9);border-radius:8px;padding:4px 10px;cursor:pointer;font-size:13px;color:#374151}
+#notesPanel{position:fixed;left:0;right:0;bottom:0;max-height:34vh;overflow:auto;background:rgba(17,24,39,.94);color:#e5e7eb;padding:14px 22px 40px;font-size:15px;line-height:1.5;display:none;z-index:15}
+#notesPanel b{color:#fcd34d}
+#overview{position:fixed;inset:0;background:rgba(233,237,243,.97);z-index:30;display:none;overflow:auto;padding:30px}
+#overview .ov{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;max-width:1300px;margin:0 auto}
+#overview .it{background:#fff;border-radius:12px;padding:12px 14px;cursor:pointer;border:2px solid transparent;font-size:14px}
+#overview .it:hover{border-color:var(--teal)}
+#overview .it .n{color:var(--teal);font-weight:700;margin-right:6px}
+#overview .it .m{color:#9ca3af;font-size:12px;margin-top:4px}
+#help{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(17,24,39,.5);z-index:40}
+#help .box{background:#fff;border-radius:16px;padding:22px 28px;font-size:15px;line-height:1.9;min-width:340px}
+kbd{background:var(--soft);border:1px solid #d4d4d8;border-bottom-width:2px;border-radius:5px;padding:0 6px;font-size:13px;font-family:inherit}
+/* title slide */
+#bb-card .lab{flex-basis:118px}#bb-card .val{flex-basis:82px;white-space:nowrap}
+.slide.has-bar{padding-top:66px}
+.pipebar{position:absolute;top:16px;left:56px;right:56px;display:flex;align-items:center;gap:3px;font-size:12.5px}
+.pipebar .pp{padding:4px 9px;border-radius:999px;background:#f4f4f5;color:#9ca3af;cursor:pointer;white-space:nowrap;font-weight:600;transition:all .2s}
+.pipebar .pp:hover{color:#374151}
+.pipebar .pp.on{color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.pipebar .ar{color:#d1d5db;font-size:11px}
+.pipebar .loopgrp{display:flex;gap:3px;align-items:center;border:1.5px dashed #a7d3ca;border-radius:999px;padding:2px 8px 2px 3px}
+.pipebar .loopgrp .lab{color:var(--teal);font-weight:700;font-size:12px;margin-left:2px}
+.codetabs{display:flex;flex-direction:column;min-height:0}
+.codetabs .tabbar{display:flex;gap:3px}
+.codetabs .tabbar button{border:none;padding:4px 14px;border-radius:8px 8px 0 0;background:#e5e7eb;color:#6b7280;font-size:13px;cursor:pointer;font-family:inherit;font-weight:600}
+.codetabs .tabbar button.on{background:#1f2937;color:#fff}
+.codetabs pre{display:none;border-top-left-radius:0;flex:1}
+body.lang-py .codetabs pre[data-lang=py],body.lang-r .codetabs pre[data-lang=r]{display:block}
+.slide h2{margin-top:6px}
+.slidebtns{position:absolute;bottom:8px;left:50px;display:flex;gap:6px;z-index:5}
+.slidebtns button{border:1px solid #d4d4d8;background:#fff;border-radius:999px;padding:5px 12px;font-size:13px;font-weight:600;cursor:pointer;color:#374151;font-family:inherit}
+.slidebtns button:hover{background:var(--tealBg);border-color:var(--teal);color:var(--tealD)}
+#modal{position:fixed;inset:0;background:rgba(17,24,39,.55);z-index:50;display:none;align-items:center;justify-content:center;padding:20px}
+#modal .mbox{background:#fff;border-radius:18px;padding:22px 26px 24px;width:min(1180px,96vw);max-height:94vh;overflow:auto;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:fadein .25s ease}
+#modal .mclose{position:absolute;top:12px;right:14px;border:none;background:var(--soft);border-radius:999px;width:34px;height:34px;font-size:16px;cursor:pointer}
+#modal h3{margin:0 0 4px;font-size:24px}
+#modal .ex{font-size:16.5px;line-height:1.6;color:#374151}
+#modal .ex b{color:#111827}
+.mprog{display:flex;gap:4px;margin:10px 0 4px}
+.mprog span{flex:1;height:8px;border-radius:4px;background:#e5e7eb}
+.title-slide{background:linear-gradient(135deg,#f3fbf8 0%,#eef3fe 55%,#f4f0fe 100%)!important}
+.big{font-size:60px;font-weight:800;letter-spacing:-.02em;line-height:1.05;margin:0;color:#111827}
+/* misc components */
+.flow{display:flex;align-items:center;gap:10px}
+.flow .bx{border-radius:12px;padding:12px 16px;font-size:16px;font-weight:600;text-align:center}
+.flow .ar{font-size:24px;color:#9ca3af}
+.reveal-card{cursor:pointer;transition:transform .15s}
+.reveal-card:hover{transform:translateY(-2px)}
+.reveal-card .ans{display:none;margin-top:8px}
+.reveal-card.open .ans{display:block}
+.reveal-card .hint{font-size:12.5px;color:#9ca3af}
+.reveal-card.open .hint{display:none}
+.loopnode{position:absolute;width:200px;padding:12px 14px;border-radius:14px;border:2px solid var(--line);background:#fff;text-align:center;transition:all .3s}
+.loopnode h4{margin:0 0 4px;font-size:16px;white-space:nowrap}
+.loopnode p{margin:0;font-size:13.5px;color:var(--muted);line-height:1.35}
+.loopnode.on{transform:scale(1.07);box-shadow:0 8px 24px rgba(0,0,0,.12)}
+.cm td{width:84px;height:62px;text-align:center;font-size:20px;font-weight:700;cursor:pointer;border-radius:8px}
+.cm th{font-size:13px;color:#6b7280;font-weight:600;padding:4px}
+.quiz{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;background:#fff;border:1px solid #ececec;border-radius:12px;padding:10px 14px;margin-bottom:8px}
+.quiz .q{font-size:16px}
+.quiz .fb{grid-column:1/3;font-size:14.5px;display:none;padding-top:2px}
+.quiz.done .fb{display:block}
+.quiz button.sel-ok{background:var(--tealBg);border-color:var(--teal)}
+.quiz button.sel-no{background:var(--redBg);border-color:var(--red)}
+.mini{font-size:13px;color:var(--muted)}
+.num{font-variant-numeric:tabular-nums}
+.ptable{border-collapse:collapse;font-size:15px;background:#fff;font-variant-numeric:tabular-nums}
+.ptable th,.ptable td{padding:6px 11px;border-bottom:1px solid #f0f0f0;text-align:right}
+.ptable th{background:var(--soft);color:#4b5563;font-weight:600}
+.ptable td.new{background:var(--tealBg)}
+.ptable td.hl{background:var(--amberBg)}
+.ptable td.test{color:var(--purple);font-weight:600}
+.ptable td.train{color:var(--blue);font-weight:600}
+</style>
+</head>
+<body class="lang-py">
+<div id="progress"></div>
+<div id="viewport"><div id="stage">
+
+<!-- ============ INTRO ============ -->
+<section class="slide title-slide" data-title="Title" data-min="1">
+ <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:18px;max-width:900px">
+  <div class="kicker">Plant &amp; Environmental Science · ML Workshop</div>
+  <h1 class="big">Neural Networks<br>Crash Course</h1>
+  <p class="lead" style="font-size:24px;margin:0">Play first. Maths later.</p>
+  <div class="flow" style="margin-top:14px">
+   <div class="bx" style="background:var(--tealBg);color:var(--tealD)">🌾 crop yield</div>
+   <div class="bx" style="background:var(--blueBg);color:var(--blue)">🐧 penguins</div>
+   <div class="bx" style="background:var(--purpleBg);color:var(--purple)">🍃 leaf health</div>
+  </div>
+  <p class="mini" style="margin-top:30px"><kbd>←</kbd> <kbd>→</kbd> navigate · <kbd>N</kbd> notes · <kbd>O</kbd> overview · <kbd>P</kbd> pipeline · <kbd>E</kbd> explain · <kbd>L</kbd> Python ⇄ R · <kbd>F</kbd> fullscreen · <kbd>?</kbd> help</p>
+ </div>
+ <aside class="notes">Welcome. 90 minutes, almost every slide is something to play with. Ask the audience to call out slider values. Code on slides has Python and R tabs (press L to flip all of them).</aside>
+</section>
+
+<section class="slide" data-title="What is a neural network?" data-min="3" data-demo="blackbox">
+ <h2>A neural network = a function with knobs</h2>
+ <p class="lead">Numbers in → prediction out. The lines are the knobs (weights).</p>
+ <div class="body">
+  <div class="col" style="flex:0 0 350px">
+   <div class="card" id="bb-card">
+    <h3>Describe a field</h3>
+    <div class="ctrl"><span class="lab">🌧 Rainfall</span><input type="range" id="bb-r" min="250" max="1050" step="10" value="650"><span class="val" id="bb-rv"></span></div>
+    <div class="ctrl"><span class="lab">🌡 Temperature</span><input type="range" id="bb-t" min="14" max="36" step="0.5" value="24"><span class="val" id="bb-tv"></span></div>
+    <div class="ctrl"><span class="lab">🧪 Soil nitrogen</span><input type="range" id="bb-n" min="20" max="200" step="5" value="100"><span class="val" id="bb-nv"></span></div>
+   </div>
+   <div class="stat" style="text-align:center"><div class="k">Predicted yield</div><div class="v" id="bb-out" style="font-size:40px;color:var(--teal)"></div></div>
+  </div>
+  <div class="col grow"><canvas id="bb-c" width="790" height="440"></canvas></div>
+ </div>
+ <aside class="notes">This network is already trained. Move sliders: yield peaks around 24 °C, rises with rain and N. Nobody typed those rules in: it learned them from examples. Today: how.</aside>
+</section>
+
+<section class="slide" data-title="The big picture" data-min="5" data-demo="pipe">
+ <h2>The big picture: every neural network project</h2>
+ <p class="lead">Click a box. Press ▶ to send a field through it.</p>
+ <canvas id="pi-c" width="1168" height="360"></canvas>
+ <div style="display:flex;gap:14px;align-items:stretch;margin-top:10px">
+  <div class="card grow" id="pi-info" style="padding:12px 18px;font-size:18px;min-height:74px"></div>
+  <div class="btns" style="flex-direction:column;align-items:stretch;margin:0"><button class="btn primary" id="pi-play">▶ Play</button><button class="btn" id="pi-go">Go to this stage →</button></div>
+ </div>
+ <aside class="notes">This is the map for the whole session. The same strip sits at the top of every slide with the current stage lit up (click a pill to jump). Press Play: data is split, cleaned, goes through the network, gets a loss, the optimizer updates the weights, and that loop repeats many times (epochs). Only after training do we evaluate on the locked-away test set and predict new fields.</aside>
+</section>
+
+<!-- ============ DATA ============ -->
+<section class="slide" data-title="Data & the question" data-min="5" data-demo="target" data-stage="data">
+ <h2>Step 1 · Data: what do you want to predict?</h2>
+ <p class="lead">Click a column to make it the <b class="a">target</b>. The rest become <b class="b">features</b>.</p>
+ <div id="tg-tab"></div>
+ <div class="grid2" style="margin-top:16px;gap:16px">
+  <div class="card" id="tg-type" style="min-height:110px"></div>
+  <div class="card" id="tg-feat" style="min-height:110px"></div>
+ </div>
+ <aside class="notes">Rows = examples (fields). Columns = measurements. Pick the target first: a number → regression; a category → classification. That single choice decides the output layer and loss later on. Try yield, then health, then soil_type.</aside>
+</section>
+
+<!-- ============ SPLIT ============ -->
+<section class="slide" data-title="Train / validation / test split" data-min="4" data-demo="split" data-stage="split">
+ <h2>Step 2 · Split: keep some data secret</h2>
+ <p class="lead">Learn on one part, check on another, judge on the last.</p>
+ <div class="body">
+  <div class="col grow"><canvas id="sp-c" width="640" height="420"></canvas></div>
+  <div class="col" style="flex:0 0 420px">
+   <div class="card">
+    <div class="ctrl"><span class="lab">Validation %</span><input type="range" id="sp-v" min="0" max="40" step="5" value="15"><span class="val" id="sp-vv"></span></div>
+    <div class="ctrl"><span class="lab">Test %</span><input type="range" id="sp-t" min="5" max="40" step="5" value="20"><span class="val" id="sp-tv"></span></div>
+    <div class="btns"><button class="btn" id="sp-sh">🔀 Shuffle</button></div>
+   </div>
+   <div class="card" style="font-size:17px;line-height:1.9">
+    <span class="pill" style="background:var(--blueBg);color:var(--blue)">Train</span> <span id="sp-n0"></span> the network learns from these<br>
+    <span class="pill" style="background:var(--amberBg);color:#8a4f12">Validation</span> <span id="sp-n1"></span> check while tuning<br>
+    <span class="pill" style="background:var(--purpleBg);color:var(--purple)">Test</span> <span id="sp-n2"></span> 🔒 used once, at the end
+   </div>
+   <div class="codetabs"><pre data-lang="py">X_train, X_test, y_train, y_test = \
+    train_test_split(X, y, test_size=<span class="s">0.2</span>)</pre><pre data-lang="r">idx     &lt;- sample(nrow(df), <span class="s">0.8</span> * nrow(df))
+train   &lt;- df[idx, ];  test &lt;- df[-idx, ]</pre></div>
+  </div>
+ </div>
+ <aside class="notes">Each square = one field (600 fields, 1 square = 6). Why? A student who memorised the exam answers isn't necessarily smart. The test set is the real exam, so never peek. Validation is used during training (Keras: validation_split).</aside>
+</section>
+
+<!-- ============ PREPROCESS ============ -->
+<section class="slide" data-title="Preprocessing" data-min="5" data-demo="prep" data-stage="prep">
+ <h2>Step 3 · Preprocess: clean numbers only</h2>
+ <p class="lead">Click each step and watch the table.</p>
+ <div class="body">
+  <div class="col" style="flex:0 0 330px">
+   <div class="seg" id="pp-seg" style="flex-direction:column;border-radius:14px;align-items:stretch">
+    <button data-v="0" class="on" style="text-align:left;border-radius:10px">0 · Raw data</button>
+    <button data-v="1" style="text-align:left;border-radius:10px">1 · Text → 0/1 columns</button>
+    <button data-v="2" style="text-align:left;border-radius:10px">2 · Mark train / test</button>
+    <button data-v="3" style="text-align:left;border-radius:10px">3 · Fill gaps</button>
+    <button data-v="4" style="text-align:left;border-radius:10px">4 · Scale</button>
+   </div>
+   <div class="card" id="pp-txt" style="font-size:16px"></div>
+  </div>
+  <div class="col grow"><div id="pp-tab" style="overflow:auto"></div>
+   <div class="codetabs"><pre data-lang="py" id="pp-py"></pre><pre data-lang="r" id="pp-r"></pre></div>
+  </div>
+ </div>
+ <aside class="notes">Golden rule: compute medians, means and standard deviations from the training rows only, then apply them to test rows. Why not clay=1, loam=2, sandy=3? It would claim sandy is "3× clay". One-hot avoids inventing an order.</aside>
+</section>
+
+<section class="slide" data-title="Why scaling matters" data-min="3" data-demo="scale" data-stage="prep">
+ <h2>Why scale? Canyon vs bowl</h2>
+ <p class="lead">Same learning rate, same start. Press Run.</p>
+ <div class="body">
+  <div class="col grow"><div class="mini" style="font-weight:600">NOT SCALED (rainfall in mm, temp in °C)</div><canvas id="sc-a" width="520" height="320"></canvas><div class="stat"><div class="k">result</div><div class="v" id="sc-ra" style="font-size:18px"></div></div></div>
+  <div class="col grow"><div class="mini" style="font-weight:600">SCALED (mean 0, std 1)</div><canvas id="sc-b" width="520" height="320"></canvas><div class="stat"><div class="k">result</div><div class="v" id="sc-rb" style="font-size:18px"></div></div></div>
+ </div>
+ <div class="card" style="display:flex;gap:16px;align-items:center;margin-top:12px;padding:10px 16px"><div class="ctrl grow" style="margin:0"><span class="lab">Learning rate</span><input type="range" id="sc-lr" min="0.01" max="0.12" step="0.005" value="0.07"><span class="val" id="sc-lrv"></span></div><button class="btn primary" id="sc-run">▶ Run both</button></div>
+ <aside class="notes">The contours are a map of the error (we'll meet "loss" soon); the star is the best weights. Left: crawls, and raising the learning rate past ~0.1 makes it explode. Right: fast at any setting. Forgetting to scale = loss stuck or NaN.</aside>
+</section>
+
+<!-- ============ INPUT ============ -->
+<section class="slide" data-title="Input layer" data-min="2" data-demo="inputs" data-stage="input">
+ <h2>Step 4 · Input layer: one circle per column</h2>
+ <p class="lead">Tick the features you use. Each one becomes an input.</p>
+ <div class="body">
+  <div class="col" style="flex:0 0 330px">
+   <div class="card" id="in-box" style="font-size:17px;line-height:2"></div>
+   <div class="stat" style="text-align:center"><div class="k">input size</div><div class="v" id="in-n" style="font-size:40px;color:var(--blue)"></div></div>
+   <div class="codetabs"><pre data-lang="py" id="in-py"></pre><pre data-lang="r" id="in-r"></pre></div>
+  </div>
+  <div class="col grow"><canvas id="in-c" width="790" height="460"></canvas></div>
+ </div>
+ <aside class="notes">The input layer does no computing: it just holds one row of (preprocessed) numbers. Note soil type adds 3 inputs after one-hot encoding.</aside>
+</section>
+
+<!-- ============ HIDDEN ============ -->
+<section class="slide" data-title="The neuron" data-min="4" data-demo="neuron" data-stage="hidden">
+ <h2>Step 5 · Inside a neuron: multiply, add, squash</h2>
+ <p class="lead"><b class="b">weights</b> × inputs, + <b class="p">bias</b>, then an <b class="t">activation</b>.</p>
+ <div class="body">
+  <div class="col" style="flex:0 0 400px">
+   <div class="card" style="padding:12px 16px">
+    <div class="mini" style="font-weight:600;margin-bottom:2px">INPUTS (scaled)</div>
+    <div class="ctrl"><span class="lab">x₁ rainfall</span><input type="range" id="ne-x0" min="-2" max="2" step="0.1" value="1"><span class="val" id="ne-x0v"></span></div>
+    <div class="ctrl"><span class="lab">x₂ temperature</span><input type="range" id="ne-x1" min="-2" max="2" step="0.1" value="-0.5"><span class="val" id="ne-x1v"></span></div>
+    <div class="ctrl"><span class="lab">x₃ soil N</span><input type="range" id="ne-x2" min="-2" max="2" step="0.1" value="0.8"><span class="val" id="ne-x2v"></span></div>
+    <div class="mini" style="font-weight:600;margin:8px 0 2px">KNOBS (learned)</div>
+    <div class="ctrl"><span class="lab b">w₁</span><input type="range" id="ne-w0" min="-2" max="2" step="0.1" value="0.9"><span class="val" id="ne-w0v"></span></div>
+    <div class="ctrl"><span class="lab b">w₂</span><input type="range" id="ne-w1" min="-2" max="2" step="0.1" value="-1.2"><span class="val" id="ne-w1v"></span></div>
+    <div class="ctrl"><span class="lab b">w₃</span><input type="range" id="ne-w2" min="-2" max="2" step="0.1" value="0.5"><span class="val" id="ne-w2v"></span></div>
+    <div class="ctrl"><span class="lab p">bias b</span><input type="range" id="ne-b" min="-3" max="3" step="0.1" value="-0.5"><span class="val" id="ne-bv"></span></div>
+    <div class="ctrl"><span class="lab t">activation</span><div class="seg" id="ne-act"><button data-v="linear">none</button><button data-v="relu" class="on">ReLU</button><button data-v="sigmoid">sigmoid</button></div></div>
+   </div>
+  </div>
+  <div class="col grow">
+   <canvas id="ne-c" width="740" height="330"></canvas>
+   <div class="formula" id="ne-f"></div>
+  </div>
+ </div>
+ <aside class="notes">A weight = how much and in which direction an input matters. Set w₂ to 0 → temperature ignored. Make z negative with ReLU → the neuron goes silent. One neuron with no activation is exactly linear regression.</aside>
+</section>
+
+<section class="slide" data-title="Weights & bias: you are the optimizer" data-min="4" data-demo="fitline" data-stage="hidden">
+ <h2>Game: you are the training algorithm</h2>
+ <p class="lead">Move <b class="b">w</b> and <b class="p">b</b>. Make the <span class="r">red lines</span> short.</p>
+ <div class="body">
+  <div class="col grow"><canvas id="fl-c" width="720" height="470"></canvas></div>
+  <div class="col" style="flex:0 0 380px">
+   <div class="card">
+    <div class="ctrl"><span class="lab b">weight w (slope)</span><input type="range" id="fl-w" min="-2" max="10" step="0.05" value="1"><span class="val" id="fl-wv"></span></div>
+    <div class="ctrl"><span class="lab p">bias b (shift)</span><input type="range" id="fl-b" min="-4" max="8" step="0.05" value="1"><span class="val" id="fl-bv"></span></div>
+   </div>
+   <div class="grid2" style="gap:10px">
+    <div class="stat"><div class="k">your error</div><div class="v" id="fl-mse"></div></div>
+    <div class="stat"><div class="k">best possible</div><div class="v" id="fl-best" style="color:var(--muted)">?</div></div>
+   </div>
+   <div style="height:14px;background:var(--soft);border-radius:8px;overflow:hidden"><div id="fl-bar" style="height:100%;width:0;background:var(--teal);transition:width .2s"></div></div>
+   <div class="btns"><button class="btn" id="fl-show">Show the best line</button><button class="btn" id="fl-reset">Reset</button></div>
+   <div class="good">Training = this game, automatic, with thousands of knobs.</div>
+  </div>
+ </div>
+ <aside class="notes">Volunteer drives, room shouts "higher/lower". That nudge-check-nudge is exactly what the optimizer will do later. The error number is the loss.</aside>
+</section>
+
+<section class="slide" data-title="Activation functions" data-min="3" data-demo="acts" data-stage="hidden">
+ <h2>Activation functions</h2>
+ <p class="lead">Hover the plot. Pick one.</p>
+ <div class="body">
+  <div class="col grow">
+   <div class="seg" id="ac-seg" style="align-self:flex-start"><button data-v="relu" class="on">ReLU</button><button data-v="sigmoid">Sigmoid</button><button data-v="tanh">Tanh</button><button data-v="linear">None</button></div>
+   <canvas id="ac-c" width="680" height="420"></canvas>
+  </div>
+  <div class="col" style="flex:0 0 420px">
+   <div class="card" id="ac-info" style="min-height:210px"></div>
+   <table class="tb" style="font-size:15px">
+    <tr><th>Where</th><th>Use</th></tr>
+    <tr><td>Hidden layers</td><td><b class="t">ReLU</b></td></tr>
+    <tr><td>Output: a number</td><td><b>None</b></td></tr>
+    <tr><td>Output: yes / no</td><td><b class="p">Sigmoid</b></td></tr>
+    <tr><td>Output: one of K</td><td><b class="a">Softmax</b></td></tr>
+   </table>
+  </div>
+ </div>
+ <aside class="notes">Dashed line = slope. Flat ends (sigmoid/tanh) → learning stalls ("vanishing gradient"). That's why ReLU is the default for hidden layers. The table is all they need to remember.</aside>
+</section>
+
+<section class="slide" data-title="Why activations matter" data-min="3" data-demo="hinges" data-stage="hidden">
+ <h2>Why activations? Curves from bends</h2>
+ <p class="lead">Each ReLU neuron = one bend. Add neurons. Then switch activation off.</p>
+ <div class="body">
+  <div class="col grow"><canvas id="hi-c" width="740" height="460"></canvas></div>
+  <div class="col" style="flex:0 0 360px">
+   <div class="card">
+    <div class="ctrl"><span class="lab">Hidden neurons</span><input type="range" id="hi-n" min="1" max="16" step="1" value="2"><span class="val" id="hi-nv"></span></div>
+    <div class="ctrl"><span class="lab">Activation</span><div class="seg" id="hi-act"><button data-v="relu" class="on">ReLU</button><button data-v="linear">none</button></div></div>
+    <label class="mini" style="display:flex;gap:6px;align-items:center;margin-top:8px;cursor:pointer"><input type="checkbox" id="hi-parts" checked> show each neuron</label>
+   </div>
+   <div class="stat"><div class="k">error</div><div class="v" id="hi-err"></div></div>
+   <div class="tip" id="hi-msg"></div>
+  </div>
+ </div>
+ <aside class="notes">1 → 16 neurons: the hump appears. Activation "none": always a straight line, however many neurons, because lines added together are a line.</aside>
+</section>
+
+<section class="slide" data-title="Hidden layers & architecture" data-min="4" data-demo="arch" data-stage="hidden">
+ <h2>Stack neurons into layers</h2>
+ <p class="lead">Build a network. Watch the code and the knob count.</p>
+ <div class="body">
+  <div class="col" style="flex:0 0 360px">
+   <div class="card">
+    <div class="ctrl"><span class="lab">Inputs</span><input type="range" id="ar-i" min="1" max="8" step="1" value="3"><span class="val" id="ar-iv"></span></div>
+    <div class="ctrl"><span class="lab">Hidden layers</span><input type="range" id="ar-l" min="0" max="4" step="1" value="2"><span class="val" id="ar-lv"></span></div>
+    <div class="ctrl"><span class="lab">Neurons / layer</span><input type="range" id="ar-h" min="1" max="16" step="1" value="8"><span class="val" id="ar-hv"></span></div>
+    <div class="ctrl"><span class="lab">Outputs</span><input type="range" id="ar-o" min="1" max="5" step="1" value="1"><span class="val" id="ar-ov"></span></div>
+    <div class="btns"><button class="btn primary" id="ar-go">▶ Forward pass</button></div>
+   </div>
+   <div class="stat"><div class="k">knobs (weights + biases)</div><div class="v" id="ar-p"></div></div>
+   <div class="note" id="ar-break" style="font-size:14px"></div>
+  </div>
+  <div class="col grow">
+   <canvas id="ar-c" width="760" height="290"></canvas>
+   <div class="codetabs"><pre data-lang="py" id="ar-py" style="font-size:13px;line-height:1.45"></pre><pre data-lang="r" id="ar-r" style="font-size:13px;line-height:1.45"></pre></div>
+  </div>
+ </div>
+ <aside class="notes">"Deep" learning = many hidden layers. Tabular data: 1–3 hidden layers of 16–128 neurons is plenty.</aside>
+</section>
+
+<!-- ============ OUTPUT ============ -->
+<section class="slide" data-title="Output layer: pick the ending" data-min="3" data-demo="task" data-stage="output">
+ <h2>Step 6 · Output layer: match it to your question</h2>
+ <p class="lead">Click a task.</p>
+ <div class="body">
+  <div class="col" style="flex:0 0 330px" id="tk-list"></div>
+  <div class="col grow">
+   <div class="grid3" id="tk-cards" style="gap:12px"></div>
+   <div class="codetabs"><pre data-lang="py" id="tk-py"></pre><pre data-lang="r" id="tk-r"></pre></div>
+  </div>
+ </div>
+ <aside class="notes">Hidden layers stay the same; only the ending changes. Most common beginner bug: mismatched output activation and loss. Use as a lookup table.</aside>
+</section>
+
+<section class="slide" data-title="Softmax" data-min="2" data-demo="softmax" data-stage="output">
+ <h2>Classes: scores → probabilities (softmax)</h2>
+ <p class="lead">Move the scores. Probabilities always add to 100%.</p>
+ <div class="body">
+  <div class="col" style="flex:0 0 400px">
+   <div class="card">
+    <div class="ctrl"><span class="lab b">Adelie</span><input type="range" id="sm-0" min="-4" max="6" step="0.1" value="2.0"><span class="val" id="sm-0v"></span></div>
+    <div class="ctrl"><span class="lab a">Chinstrap</span><input type="range" id="sm-1" min="-4" max="6" step="0.1" value="1.0"><span class="val" id="sm-1v"></span></div>
+    <div class="ctrl"><span class="lab p">Gentoo</span><input type="range" id="sm-2" min="-4" max="6" step="0.1" value="0.1"><span class="val" id="sm-2v"></span></div>
+   </div>
+   <canvas id="sm-g" width="400" height="236"></canvas>
+   <div class="tip" style="font-size:14px">Equal scores → 33 / 33 / 33: the model doesn't know.</div>
+  </div>
+  <div class="col grow"><canvas id="sm-c" width="700" height="430"></canvas></div>
+ </div>
+ <aside class="notes">Prediction = highest probability. The probability itself is useful: flag uncertain samples for a human to check.</aside>
+</section>
+
+<!-- ============ LOSS ============ -->
+<section class="slide" data-title="Loss" data-min="5" data-demo="loss" data-stage="loss">
+ <h2>Step 7 · Loss: one number for "how wrong"</h2>
+ <p class="lead">Drag the sliders. Lower is better.</p>
+ <div class="grid2" style="flex:1;min-height:0">
+  <div class="card col">
+   <h3>Numbers: <span class="b">MSE</span> / <span class="a">MAE</span></h3>
+   <div class="ctrl"><span class="lab">Prediction (true = 6)</span><input type="range" id="lo-p" min="2" max="10" step="0.05" value="7.2"><span class="val" id="lo-pv"></span></div>
+   <canvas id="lo-c1" width="520" height="250"></canvas>
+   <div class="grid3" style="gap:8px"><div class="stat"><div class="k">error</div><div class="v" id="lo-e"></div></div><div class="stat"><div class="k b">MSE</div><div class="v b" id="lo-mse"></div></div><div class="stat"><div class="k a">MAE</div><div class="v a" id="lo-mae"></div></div></div>
+  </div>
+  <div class="card col">
+   <h3>Classes: <span class="p">cross-entropy</span></h3>
+   <div class="ctrl"><span class="lab">P(true class)</span><input type="range" id="lo-q" min="0.01" max="0.99" step="0.01" value="0.7"><span class="val" id="lo-qv"></span></div>
+   <canvas id="lo-c2" width="520" height="250"></canvas>
+   <div class="grid2" style="gap:8px"><div class="stat"><div class="k p">loss</div><div class="v p" id="lo-ce"></div></div><div class="stat"><div class="k">verdict</div><div class="v" id="lo-verd" style="font-size:17px"></div></div></div>
+  </div>
+ </div>
+ <aside class="notes">MSE squares errors (big misses hurt a lot); MAE is "off by X t/ha on average". Cross-entropy: confidently wrong explodes. You just pick one in compile(loss=...).</aside>
+</section>
+
+<!-- ============ OPTIMIZER ============ -->
+<section class="slide" data-title="Gradient descent" data-min="5" data-demo="gd" data-stage="opt">
+ <h2>Step 8 · Optimizer: walk downhill</h2>
+ <p class="lead">Feel the slope, take a step, repeat. Step size = <b>learning rate</b>.</p>
+ <div class="body">
+  <div class="col grow"><canvas id="gd-c" width="730" height="450"></canvas></div>
+  <div class="col" style="flex:0 0 370px">
+   <div class="card">
+    <div class="ctrl"><span class="lab">Learning rate</span><input type="range" id="gd-lr" min="0" max="100" step="1" value="72"><span class="val" id="gd-lrv"></span></div>
+    <div class="btns"><button class="btn primary" id="gd-run">▶ Run</button><button class="btn" id="gd-step">One step</button><button class="btn" id="gd-reset">Reset</button></div>
+    <p class="mini">Click the curve to choose a start.</p>
+   </div>
+   <div class="grid2" style="gap:10px"><div class="stat"><div class="k">step</div><div class="v" id="gd-n">0</div></div><div class="stat"><div class="k">loss</div><div class="v" id="gd-l"></div></div></div>
+   <div class="tip" id="gd-msg"></div>
+  </div>
+ </div>
+ <aside class="notes">Try tiny (slow), medium (smooth), huge (bounces / explodes). Start on the right: stuck in a local minimum. Learning rate is THE most important knob.</aside>
+</section>
+
+<section class="slide" data-title="Optimizers race" data-min="4" data-demo="opt" data-stage="opt">
+ <h2>Smarter walkers: SGD vs Momentum vs Adam</h2>
+ <p class="lead">Press Race. Click the map for a new start.</p>
+ <div class="body">
+  <div class="col grow"><canvas id="op-c" width="740" height="450"></canvas></div>
+  <div class="col" style="flex:0 0 360px">
+   <div class="card">
+    <div class="ctrl"><span class="lab">Learning rate</span><input type="range" id="op-lr" min="0.02" max="0.48" step="0.01" value="0.4"><span class="val" id="op-lrv"></span></div>
+    <label class="mini" style="display:flex;gap:6px;align-items:center;cursor:pointer;margin:6px 0"><input type="checkbox" id="op-noise"> mini-batch noise</label>
+    <div class="btns"><button class="btn primary" id="op-run">▶ Race</button><button class="btn" id="op-reset">Reset</button></div>
+   </div>
+   <div class="card" style="padding:10px 14px" id="op-leg"></div>
+   <div class="good">Just use <code>"adam"</code>.</div>
+  </div>
+ </div>
+ <aside class="notes">Narrow valleys are common. SGD zig-zags, Momentum builds speed, Adam adapts the step for each weight. Keras/keras3 default Adam learning rate 0.001 is usually fine.</aside>
+</section>
+
+<!-- ============ TRAINING LOOP ============ -->
+<section class="slide" data-title="Batches & epochs" data-min="3" data-demo="batch" data-stage="input,hidden,output,loss,opt">
+ <h2>Step 9 · The loop: batches and epochs</h2>
+ <p class="lead">One step per <b>batch</b>. All batches once = one <b>epoch</b>.</p>
+ <div class="body">
+  <div class="col" style="flex:0 0 380px">
+   <div class="card">
+    <div class="ctrl"><span class="lab">Training rows</span><input type="range" id="ba-n" min="40" max="400" step="20" value="240"><span class="val" id="ba-nv"></span></div>
+    <div class="ctrl"><span class="lab">Batch size</span><div class="seg" id="ba-b"><button data-v="8">8</button><button data-v="16">16</button><button data-v="32" class="on">32</button><button data-v="64">64</button></div></div>
+    <div class="ctrl"><span class="lab">Epochs</span><input type="range" id="ba-e" min="1" max="200" step="1" value="50"><span class="val" id="ba-ev"></span></div>
+   </div>
+   <div class="grid2" style="gap:10px"><div class="stat"><div class="k">steps / epoch</div><div class="v" id="ba-spe"></div></div><div class="stat"><div class="k">total updates</div><div class="v" id="ba-tot"></div></div></div>
+   <div class="codetabs"><pre data-lang="py" id="ba-py"></pre><pre data-lang="r" id="ba-r"></pre></div>
+  </div>
+  <div class="col grow"><canvas id="ba-c" width="720" height="420"></canvas><div class="note" id="ba-cap"></div></div>
+ </div>
+ <aside class="notes">Each square = one training row, colour = its batch this epoch (reshuffled every epoch). Batch size 32 is a fine default.</aside>
+</section>
+
+<section class="slide" data-title="The training loop" data-min="3" data-demo="loop" data-stage="input,hidden,output,loss,opt">
+ <h2>Four moves, repeated thousands of times</h2>
+ <p class="lead"><code>fit()</code> does all of this for you.</p>
+ <div class="body">
+  <div class="grow" style="position:relative;min-width:0" id="lp-wrap">
+   <div class="loopnode" data-i="0" style="left:200px;top:0"><h4 class="b">1 · Forward</h4><p>batch → predictions</p></div>
+   <div class="loopnode" data-i="1" style="left:430px;top:170px"><h4 class="r">2 · Loss</h4><p>how wrong?</p></div>
+   <div class="loopnode" data-i="2" style="left:200px;top:340px"><h4 class="p">3 · Backprop</h4><p>who's to blame?</p></div>
+   <div class="loopnode" data-i="3" style="left:-10px;top:170px"><h4 class="t">4 · Update</h4><p>nudge weights downhill</p></div>
+   <canvas id="lp-c" width="640" height="460" style="position:absolute;left:0;top:0;background:transparent;pointer-events:none"></canvas>
+   <div style="position:absolute;left:240px;top:200px;width:150px;text-align:center"><div class="mini">epoch</div><div id="lp-ep" style="font-size:34px;font-weight:800" class="num">1</div><div class="mini">loss</div><div id="lp-loss" style="font-size:22px;font-weight:700;color:var(--red)" class="num"></div></div>
+  </div>
+  <div class="col" style="flex:0 0 470px">
+   <div class="codetabs"><pre data-lang="py" id="lp-py" style="font-size:13.5px"></pre><pre data-lang="r" id="lp-r" style="font-size:13.5px"></pre></div>
+   <div class="card" id="lp-txt" style="min-height:90px"></div>
+   <div class="btns"><button class="btn primary" id="lp-play">⏸ Pause</button><button class="btn" id="lp-next">Next step</button></div>
+  </div>
+ </div>
+ <aside class="notes">The code is what fit() does internally, simplified; nobody writes this by hand. Backprop = calculus chain rule, automatic.</aside>
+</section>
+
+<section class="slide" data-title="Live playground" data-min="10" data-demo="play" data-stage="input,hidden,output,loss,opt">
+ <h2>Playground: train a real network</h2>
+ <div class="body" style="gap:18px">
+  <div class="col" style="flex:0 0 300px;gap:8px">
+   <div class="card" style="padding:10px 14px">
+    <div class="mini" style="font-weight:600">DATA: healthy 🟢 vs stressed 🟠</div>
+    <div class="seg" id="pg-data" style="margin:6px 0"><button data-v="clusters">Easy</button><button data-v="circle" class="on">Circle</button><button data-v="xor">XOR</button><button data-v="spiral">Spiral</button></div>
+    <div class="ctrl"><span class="lab" style="flex-basis:80px">Noise</span><input type="range" id="pg-noise" min="0" max="0.5" step="0.05" value="0.1"><span class="val" id="pg-noisev" style="flex-basis:44px"></span></div>
+   </div>
+   <div class="card" style="padding:10px 14px">
+    <div class="mini" style="font-weight:600">NETWORK</div>
+    <div class="ctrl"><span class="lab" style="flex-basis:70px">Layers</span><div class="seg" id="pg-l"><button data-v="0">0</button><button data-v="1">1</button><button data-v="2" class="on">2</button><button data-v="3">3</button></div></div>
+    <div class="ctrl"><span class="lab" style="flex-basis:80px">Neurons</span><input type="range" id="pg-h" min="1" max="8" step="1" value="6"><span class="val" id="pg-hv" style="flex-basis:44px"></span></div>
+    <div class="ctrl"><span class="lab" style="flex-basis:110px">Activation</span><select id="pg-act"><option value="relu">ReLU</option><option value="tanh" selected>tanh</option><option value="sigmoid">sigmoid</option><option value="linear">none</option></select></div>
+    <div class="ctrl"><span class="lab" style="flex-basis:110px">Learning rate</span><select id="pg-lr"><option>0.001</option><option>0.003</option><option>0.01</option><option selected>0.03</option><option>0.1</option><option>0.3</option><option>1</option></select></div>
+   </div>
+   <div class="btns"><button class="btn primary" id="pg-run">▶ Train</button><button class="btn" id="pg-step">+1 epoch</button><button class="btn" id="pg-reset">↺ Reset</button></div>
+   <div class="grid2" style="gap:8px">
+    <div class="stat"><div class="k">epoch</div><div class="v" id="pg-ep">0</div></div>
+    <div class="stat"><div class="k">test accuracy</div><div class="v" id="pg-acc">–</div></div>
+   </div>
+  </div>
+  <div class="col" style="flex:0 0 390px;gap:6px">
+   <canvas id="pg-c" width="390" height="390"></canvas>
+   <div class="mini">Colour = the network's guess. Dots = training, rings = test.</div>
+  </div>
+  <div class="col grow" style="gap:8px">
+   <canvas id="pg-net" width="330" height="250"></canvas>
+   <canvas id="pg-loss" width="330" height="200"></canvas>
+  </div>
+ </div>
+ <aside class="notes">(1) Easy + 0 layers: a line is enough. (2) Circle + 0 layers: impossible; 1 layer of 3–4 → solved. (3) Activation none: fails again. (4) Spiral: more neurons, patience. (5) Learning rate 1: chaos. (6) Noise 0.4 + big net: test loss rises = overfitting → next stage. Edges: blue = positive weight, orange = negative.</aside>
+</section>
+
+<!-- ============ EVALUATE ============ -->
+<section class="slide" data-title="Overfitting" data-min="6" data-demo="over" data-stage="eval">
+ <h2>Step 10 · Evaluate: did it learn, or memorise?</h2>
+ <p class="lead">Change <b>one</b> setting, press Train, compare the scoreboard.</p>
+ <div class="body" style="gap:18px">
+  <div class="col grow" style="gap:8px"><canvas id="ov-fit" width="560" height="300"></canvas>
+   <div class="card" style="padding:8px 12px"><div class="mini" style="font-weight:700;margin-bottom:4px">🏆 SCOREBOARD (finished runs)</div><div id="ov-board" class="mini">No runs yet.</div></div>
+  </div>
+  <div class="col" style="flex:0 0 520px;gap:8px">
+   <div class="card" style="padding:10px 14px">
+    <div class="ctrl"><span class="lab">Network size</span><div class="seg" id="ov-size"><button data-v="s">Tiny · 1 neuron</button><button data-v="m">Medium · 3</button><button data-v="l" class="on">Huge · 2×60</button></div></div>
+    <div class="ctrl"><span class="lab">Training fields</span><input type="range" id="ov-n" min="6" max="80" step="2" value="12"><span class="val" id="ov-nv"></span></div>
+    <div class="ctrl"><span class="lab">Regularisation</span><div class="seg" id="ov-l2"><button data-v="0" class="on">off</button><button data-v="0.003">weak</button><button data-v="0.02">strong</button></div></div>
+    <div class="btns"><button class="btn primary" id="ov-run">▶ Train</button><button class="btn" id="ov-reset">↺ New data</button><span class="mini" id="ov-ep" style="margin-left:auto"></span></div>
+   </div>
+   <canvas id="ov-loss" width="520" height="210"></canvas>
+   <div class="tip" id="ov-msg"></div>
+  </div>
+ </div>
+ <aside class="notes">Suggested runs (each ~10 s): (1) Huge, 12 fields → overfit: wiggly curve, validation error rises. (2) Tiny → underfit: an S-curve that can't make the hump, both errors high. (3) Medium → good: smooth hump, errors close. (4) Huge + 80 fields → overfitting mostly gone (more data). (5) Huge + 12 fields + strong regularisation → smooth again. The scoreboard keeps each run so you can compare. Dashed grey = true relationship; best possible error ≈ 0.25 (the noise).</aside>
+</section>
+
+<section class="slide" data-title="Fixing under/overfitting" data-min="3" data-stage="eval">
+ <h2>Underfit, just right, overfit: what causes each?</h2>
+ <p class="mini" style="margin:0 0 8px">Top: the model's curve through the data. Bottom: <b class="b">— training</b> and <b class="a">— validation</b> error over epochs.</p>
+ <div class="grid3" style="gap:14px"><div class="card" style="border-top:5px solid var(--blue);padding:12px 14px"><h3>😴 Underfit</h3>
+ <svg viewBox="0 0 200 90" style="width:100%;height:84px;background:#fff;border-radius:8px"><circle cx="12" cy="72" r="3.6" fill="#3563e9"/><circle cx="30" cy="58" r="3.6" fill="#3563e9"/><circle cx="48" cy="40" r="3.6" fill="#3563e9"/><circle cx="66" cy="30" r="3.6" fill="#3563e9"/><circle cx="84" cy="22" r="3.6" fill="#3563e9"/><circle cx="102" cy="26" r="3.6" fill="#3563e9"/><circle cx="120" cy="20" r="3.6" fill="#3563e9"/><circle cx="138" cy="34" r="3.6" fill="#3563e9"/><circle cx="156" cy="48" r="3.6" fill="#3563e9"/><circle cx="174" cy="62" r="3.6" fill="#3563e9"/><circle cx="190" cy="74" r="3.6" fill="#3563e9"/><path d="M5,62 L195,38" stroke="#3f9083" stroke-width="3" fill="none"/></svg>
+ <svg viewBox="0 0 200 60" style="width:100%;height:52px;margin-top:4px;background:#fff;border-radius:8px"><path d="M5,12 C60,32 120,35 195,36" stroke="#3563e9" stroke-width="3" fill="none"/><path d="M5,10 C60,30 120,33 195,34" stroke="#d07a1f" stroke-width="3" fill="none"/></svg>
+ <p style="font-size:14.5px;margin:6px 0 2px"><b>You see:</b> a stiff line that misses the hump; both errors stay <b>high</b>.</p>
+ <p style="font-size:14.5px;margin:2px 0"><b>Caused by:</b> model <b>too simple</b> (too few neurons/layers), too few epochs, or too much regularisation.</p>
+ <p style="font-size:14.5px;margin:2px 0" class="t"><b>Fix:</b> bigger network, train longer, less regularisation, better features.</p></div><div class="card" style="border-top:5px solid var(--teal);padding:12px 14px"><h3>✅ Just right</h3>
+ <svg viewBox="0 0 200 90" style="width:100%;height:84px;background:#fff;border-radius:8px"><circle cx="12" cy="72" r="3.6" fill="#3563e9"/><circle cx="30" cy="58" r="3.6" fill="#3563e9"/><circle cx="48" cy="40" r="3.6" fill="#3563e9"/><circle cx="66" cy="30" r="3.6" fill="#3563e9"/><circle cx="84" cy="22" r="3.6" fill="#3563e9"/><circle cx="102" cy="26" r="3.6" fill="#3563e9"/><circle cx="120" cy="20" r="3.6" fill="#3563e9"/><circle cx="138" cy="34" r="3.6" fill="#3563e9"/><circle cx="156" cy="48" r="3.6" fill="#3563e9"/><circle cx="174" cy="62" r="3.6" fill="#3563e9"/><circle cx="190" cy="74" r="3.6" fill="#3563e9"/><path d="M5,80 C60,5 140,5 195,80" stroke="#3f9083" stroke-width="3" fill="none"/></svg>
+ <svg viewBox="0 0 200 60" style="width:100%;height:52px;margin-top:4px;background:#fff;border-radius:8px"><path d="M5,8 C40,44 100,50 195,52" stroke="#3563e9" stroke-width="3" fill="none"/><path d="M5,6 C40,40 100,46 195,47" stroke="#d07a1f" stroke-width="3" fill="none"/></svg>
+ <p style="font-size:14.5px;margin:6px 0 2px"><b>You see:</b> a smooth curve through the middle of the dots; both errors <b>low and close</b>.</p>
+ <p style="font-size:14.5px;margin:2px 0"><b>Caused by:</b> model size matches the amount of data; stopped at the right time.</p>
+ <p style="font-size:14.5px;margin:2px 0" class="t"><b>Fix:</b> nothing! Evaluate once on the test set.</p></div><div class="card" style="border-top:5px solid var(--amber);padding:12px 14px"><h3>🤓 Overfit</h3>
+ <svg viewBox="0 0 200 90" style="width:100%;height:84px;background:#fff;border-radius:8px"><circle cx="12" cy="72" r="3.6" fill="#3563e9"/><circle cx="30" cy="58" r="3.6" fill="#3563e9"/><circle cx="48" cy="40" r="3.6" fill="#3563e9"/><circle cx="66" cy="30" r="3.6" fill="#3563e9"/><circle cx="84" cy="22" r="3.6" fill="#3563e9"/><circle cx="102" cy="26" r="3.6" fill="#3563e9"/><circle cx="120" cy="20" r="3.6" fill="#3563e9"/><circle cx="138" cy="34" r="3.6" fill="#3563e9"/><circle cx="156" cy="48" r="3.6" fill="#3563e9"/><circle cx="174" cy="62" r="3.6" fill="#3563e9"/><circle cx="190" cy="74" r="3.6" fill="#3563e9"/><path d="M12,72 Q21.0,81.0 30,58 Q39.0,33.0 48,40 Q57.0,51.0 66,30 Q75.0,10.0 84,22 Q93.0,40.0 102,26 Q111.0,7.0 120,20 Q129.0,43.0 138,34 Q147.0,25.0 156,48 Q165.0,71.0 174,62 Q182.0,52.0 190,74" stroke="#3f9083" stroke-width="2.6" fill="none"/></svg>
+ <svg viewBox="0 0 200 60" style="width:100%;height:52px;margin-top:4px;background:#fff;border-radius:8px"><path d="M5,8 C40,44 100,54 195,57" stroke="#3563e9" stroke-width="3" fill="none"/><path d="M5,6 C40,40 80,40 195,16" stroke="#d07a1f" stroke-width="3" fill="none"/></svg>
+ <p style="font-size:14.5px;margin:6px 0 2px"><b>You see:</b> a wiggly curve hitting <b>every</b> dot; training error tiny, validation error <b>rising</b>.</p>
+ <p style="font-size:14.5px;margin:2px 0"><b>Caused by:</b> model <b>too complex for the data</b>: too many parameters, too few/noisy examples, trained too long.</p>
+ <p style="font-size:14.5px;margin:2px 0" class="t"><b>Fix:</b> more data, early stopping, dropout, regularisation, smaller network.</p></div></div>
+ <div class="codetabs" style="margin-top:10px"><pre data-lang="py" style="font-size:13px">layers.Dropout(<span class="s">0.3</span>)
+stop = keras.callbacks.EarlyStopping(patience=<span class="s">20</span>, restore_best_weights=<span class="k">True</span>)
+model.fit(X_train, y_train, validation_split=<span class="s">0.2</span>, epochs=<span class="s">500</span>, callbacks=[stop])</pre><pre data-lang="r" style="font-size:13px">layer_dropout(rate = <span class="s">0.3</span>)
+stop &lt;- callback_early_stopping(patience = <span class="s">20</span>, restore_best_weights = <span class="k">TRUE</span>)
+model |&gt; fit(x_train, y_train, validation_split = <span class="s">0.2</span>, epochs = <span class="s">500</span>, callbacks = list(stop))</pre></div>
+ <aside class="notes">Think of model capacity vs data. Underfit: the model can't express the pattern. Overfit: it has so much freedom that it also learns the noise. Same picture as the overfitting lab you just ran.</aside>
+</section>
+
+<section class="slide" data-title="Confusion matrix" data-min="4" data-demo="cm" data-stage="eval">
+ <h2>Classifiers: where does it get confused?</h2>
+ <p class="lead">Rows = truth, columns = guess. Click a cell, read the formulas.</p>
+ <div class="body">
+  <div class="col" style="flex:0 0 440px"><table class="cm" id="cm-t"></table>
+   <div class="mini" id="cm-leg" style="margin-top:8px"></div>
+   <div class="card" id="cm-info" style="margin-top:6px;padding:10px 14px;font-size:15px"></div>
+  </div>
+  <div class="col grow">
+   <div class="card" id="cm-f" style="padding:12px 16px"></div>
+   <div class="card" style="padding:10px 14px"><div id="cm-pc"></div></div>
+  </div>
+ </div>
+ <aside class="notes">TP = correctly found, FP = false alarms (predicted this class but wrong), FN = missed (really this class but predicted something else). Precision: when it says Chinstrap, how often right? Recall: of all real Chinstraps, how many found? F1 balances the two.</aside>
+</section>
+
+<!-- ============ PREDICT ============ -->
+<section class="slide" data-title="Predict new data" data-min="4" data-demo="predict" data-stage="predict">
+ <h2>Step 11 · Predict: how close are we to reality?</h2>
+ <p class="lead">Pick a test field (real yield known), or make your own. Then try forgetting to scale.</p>
+ <div class="body">
+  <div class="col" style="flex:0 0 370px">
+   <div class="card">
+    <div class="ctrl"><span class="lab">🌧 Rainfall</span><input type="range" id="pr-r" min="250" max="1050" step="10" value="720"><span class="val" id="pr-rv"></span></div>
+    <div class="ctrl"><span class="lab">🌡 Temperature</span><input type="range" id="pr-t" min="14" max="36" step="0.5" value="23"><span class="val" id="pr-tv"></span></div>
+    <div class="ctrl"><span class="lab">🧪 Soil N</span><input type="range" id="pr-n" min="20" max="200" step="5" value="120"><span class="val" id="pr-nv"></span></div>
+    <label style="display:flex;gap:8px;align-items:center;margin-top:8px;font-size:16px;cursor:pointer"><input type="checkbox" id="pr-skip"> forget to scale 🙈</label>
+   </div>
+   <div class="codetabs"><pre data-lang="py" style="font-size:13px"><span class="c"># use the TRAINING scaler</span>
+X    = scaler.transform(X_test)
+pred = model.predict(X)
+mae  = abs(pred - y_test).mean()</pre><pre data-lang="r" style="font-size:13px"><span class="c"># use the TRAINING mean and sd</span>
+x    &lt;- scale(x_test, mu, sdv)
+pred &lt;- predict(model, x)
+mae  &lt;- mean(abs(pred - y_test))</pre></div>
+  </div>
+  <div class="col grow" style="gap:8px"><canvas id="pr-c" width="770" height="235"></canvas><div id="pr-tab"></div></div>
+ </div>
+ <aside class="notes">Click through the test fields: predictions are close but never perfect (MAE ≈ 0.3 t/ha). Then tick "forget to scale": every prediction becomes absurd, with no error message. Always save and reuse the training scaler (or mean and sd).</aside>
+</section>
+
+<!-- ============ WRAP ============ -->
+<section class="slide" data-title="Should you use a NN?" data-min="5" data-demo="quiz">
+ <h2>Game: 🧠 neural net or 📏 simpler model?</h2>
+ <p class="lead">Guess first (show of hands!), then click.</p>
+ <div class="body" style="gap:16px">
+  <div class="grow" id="qz" style="overflow-y:auto;min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:10px;align-content:start;padding-right:4px"></div>
+  <div class="col" style="flex:0 0 250px">
+   <div class="stat" style="text-align:center"><div class="k">score</div><div class="v" id="qz-s" style="font-size:34px">0 / 0</div><div class="mini" id="qz-streak"></div></div>
+   <div class="card" style="border-top:5px solid var(--teal);padding:10px 14px"><h3>🧠 NN loves</h3><p style="font-size:15px">photos, sound, spectra, satellite pixels, LOTS of examples</p></div>
+   <div class="card" style="border-top:5px solid var(--amber);padding:10px 14px"><h3>📏 Simple wins</h3><p style="font-size:15px">small spreadsheets, "explain the coefficient", few examples</p></div>
+   <button class="btn" id="qz-reset">↺ Play again</button>
+  </div>
+ </div>
+ <aside class="notes">Read each scenario aloud, hands up for NN vs simpler, then click. The twist cards (bee photos, the 1-million-row spreadsheet) start good discussions: data size and type matter more than the topic.</aside>
+</section>
+
+<section class="slide" data-title="The whole recipe in code" data-min="4" data-demo="recipe" data-stage="data,split,prep,input,hidden,output,loss,opt,eval,predict">
+ <h2>The whole pipeline in code</h2>
+ <p class="lead">Hover a line to light up its stage.</p>
+ <div class="codetabs" style="flex:1;min-height:0"><pre data-lang="py" id="rc-py" style="font-size:14px;line-height:1.55"></pre><pre data-lang="r" id="rc-r" style="font-size:14px;line-height:1.55"></pre></div>
+ <aside class="notes">Every line maps to a stage on the strip. For classification, change only the last layer and the loss (see Output slide). This is the template for the hands-on notebooks.</aside>
+</section>
+
+<section class="slide" data-title="When training goes wrong" data-min="3">
+ <h2>Help! Click a symptom</h2>
+ <div class="grid3" style="gap:14px;margin-top:10px">
+  <div class="card reveal-card"><h3>📈 Loss is NaN</h3><div class="hint">click</div><div class="ans"><p>learning rate ↓ · scale inputs · remove NaNs</p></div></div>
+  <div class="card reveal-card"><h3>😐 Loss won't move</h3><div class="hint">click</div><div class="ans"><p>learning rate ↑ · scale inputs · check output layer</p></div></div>
+  <div class="card reveal-card"><h3>🎯 Train good, val bad</h3><div class="hint">click</div><div class="ans"><p>overfitting: more data · early stopping · dropout</p></div></div>
+  <div class="card reveal-card"><h3>🐌 Both bad</h3><div class="hint">click</div><div class="ans"><p>underfitting: bigger network · train longer</p></div></div>
+  <div class="card reveal-card"><h3>🤯 Test too perfect</h3><div class="hint">click</div><div class="ans"><p>leakage: scaled before splitting? duplicates?</p></div></div>
+  <div class="card reveal-card"><h3>🎲 Different every run</h3><div class="hint">click</div><div class="ans"><p>normal (random start). Set a seed.</p></div></div>
+ </div>
+ <aside class="notes">Ask the room to guess before each click.</aside>
+</section>
+
+<section class="slide title-slide" data-title="Wrap-up" data-min="3" data-stage="data,split,prep,input,hidden,output,loss,opt,eval,predict">
+ <h2 style="font-size:42px">That's the whole map 🌱</h2>
+ <div class="grid2" style="margin-top:14px;gap:16px">
+  <div class="card"><h3>🧱 Network</h3><p>neurons = weights × inputs + bias → activation</p></div>
+  <div class="card"><h3>📉 Learning</h3><p>forward → loss → backprop → update, repeat</p></div>
+  <div class="card"><h3>🔧 Knobs you'll turn</h3><p>layers · neurons · learning rate · epochs · dropout</p></div>
+  <div class="card"><h3>🧪 Habits</h3><p>split first · scale · watch validation · beat a baseline</p></div>
+ </div>
+ <div class="good" style="margin-top:20px;font-size:19px"><b>Next:</b> open the notebook and build it yourself.</div>
+ <aside class="notes">Questions, then hands-on.</aside>
+</section>
+
+</div></div>
+<div id="hud"><span id="counter" style="display:none"></span><button id="hb-lang" title="Python / R (L)">Py ⇄ R</button><button id="hb-prev" title="Previous (←)">‹</button><button id="hb-next" title="Next (→)">›</button><button id="hb-notes" title="Speaker notes (N)">Notes</button><button id="hb-ov" title="Overview (O)">▦</button><button id="hb-fs" title="Fullscreen (F)">⛶</button></div>
+<div id="notesPanel"></div>
+<div id="overview"><div class="ov" id="ovgrid"></div></div>
+<div id="modal"><div class="mbox"><button class="mclose" title="Close (Esc)">✕</button><div id="mbody"></div><div id="mpipe" style="display:none"><canvas id="mp-c" width="1120" height="360"></canvas></div></div></div>
+<div id="help"><div class="box"><b style="font-size:18px">Keyboard</b><br>
+<kbd>→</kbd> <kbd>Space</kbd> next · <kbd>←</kbd> previous · <kbd>Home</kbd>/<kbd>End</kbd><br>
+<kbd>N</kbd> notes + timing · <kbd>O</kbd> overview · <kbd>L</kbd> Python ⇄ R<br><kbd>P</kbd> where are we? · <kbd>E</kbd> explain this slide<br><kbd>F</kbd> fullscreen · <kbd>?</kbd> help · <kbd>Esc</kbd> close<br>
+<span class="mini">Click a pill in the top strip to jump to that stage.<br>While a slider is focused, arrows move it; press <kbd>Esc</kbd> to navigate again.</span></div></div>
+<script>
+"use strict";
+/* ================= core helpers ================= */
+const C={blue:'#3563e9',blueBg:'#e3ebfd',teal:'#3f9083',tealD:'#245c53',tealBg:'#d9f4ee',purple:'#7247e3',purpleBg:'#ece7fd',
+ amber:'#d07a1f',amberBg:'#fdf0c8',red:'#d9534f',redBg:'#fbe3e2',green:'#4a9d5b',ink:'#1f2937',muted:'#6b7280',line:'#9aa5b8',grid:'#ececec'};
+const $=id=>document.getElementById(id);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const lerp=(a,b,t)=>a+(b-a)*t;
+const fmt=(v,d=2)=>{if(!isFinite(v))return '∞';let s=(Math.abs(v)<0.5*Math.pow(10,-d)?0:v).toFixed(d);return s.replace('-','−');};
+function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}}
+let rand=Math.random;
+function randn(r){r=r||rand;let u=0,v=0;while(u===0)u=r();while(v===0)v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function hexRgb(h){h=h.replace('#','');return[parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];}
+function rgba(h,a){const[r,g,b]=hexRgb(h);return `rgba(${r},${g},${b},${a})`;}
+
+function canvas(id){const c=$(id);if(c._P)return c._P;const w=+c.getAttribute('width'),h=+c.getAttribute('height');
+ c.style.width=w+'px';c.style.height=h+'px';const S=2;c.width=w*S;c.height=h*S;const ctx=c.getContext('2d');ctx.setTransform(S,0,0,S,0,0);
+ return c._P={c,ctx,w,h,S};}
+function cpos(e,P){const r=P.c.getBoundingClientRect();return[(e.clientX-r.left)*P.w/r.width,(e.clientY-r.top)*P.h/r.height];}
+function frame(P,o){const m=Object.assign({l:52,r:14,t:14,b:40},o.m||{});const pw=P.w-m.l-m.r,ph=P.h-m.t-m.b;
+ const ylog=!!o.ylog;const ty=v=>ylog?Math.log10(Math.max(v,1e-12)):v;
+ const X=x=>m.l+(x-o.xmin)/(o.xmax-o.xmin)*pw;
+ const Y=y=>m.t+(1-(ty(y)-ty(o.ymin))/(ty(o.ymax)-ty(o.ymin)))*ph;
+ const ix=px=>o.xmin+(px-m.l)/pw*(o.xmax-o.xmin);
+ const iy=py=>o.ymin+(1-(py-m.t)/ph)*(o.ymax-o.ymin);
+ function axes(){const g=P.ctx;g.save();g.font='12px system-ui,sans-serif';g.fillStyle=C.muted;g.strokeStyle=C.grid;g.lineWidth=1;
+  (o.xticks||[]).forEach(t=>{const x=X(t);g.beginPath();g.moveTo(x,m.t);g.lineTo(x,m.t+ph);g.stroke();g.textAlign='center';g.fillText(o.xfmt?o.xfmt(t):t,x,m.t+ph+16);});
+  (o.yticks||[]).forEach(t=>{const y=Y(t);g.beginPath();g.moveTo(m.l,y);g.lineTo(m.l+pw,y);g.stroke();g.textAlign='right';g.fillText(o.yfmt?o.yfmt(t):t,m.l-7,y+4);});
+  g.strokeStyle='#c7ccd4';g.beginPath();g.moveTo(m.l,m.t);g.lineTo(m.l,m.t+ph);g.lineTo(m.l+pw,m.t+ph);g.stroke();
+  g.fillStyle='#4b5563';g.font='13px system-ui,sans-serif';
+  if(o.xlabel){g.textAlign='center';g.fillText(o.xlabel,m.l+pw/2,P.h-6);}
+  if(o.ylabel){g.save();g.translate(13,m.t+ph/2);g.rotate(-Math.PI/2);g.textAlign='center';g.fillText(o.ylabel,0,0);g.restore();}
+  g.restore();}
+ function clip(){P.ctx.save();P.ctx.beginPath();P.ctx.rect(m.l,m.t,pw,ph);P.ctx.clip();}
+ return{X,Y,ix,iy,axes,clip,m,pw,ph,o};}
+function cls(P){P.ctx.clearRect(0,0,P.w,P.h);}
+function path(g,pts,color,w,dash){if(pts.length<2)return;g.save();g.strokeStyle=color;g.lineWidth=w||2;g.lineJoin='round';g.lineCap='round';if(dash)g.setLineDash(dash);
+ g.beginPath();g.moveTo(pts[0][0],pts[0][1]);for(let i=1;i<pts.length;i++)g.lineTo(pts[i][0],pts[i][1]);g.stroke();g.restore();}
+function dot(g,x,y,r,fill,stroke,lw){g.beginPath();g.arc(x,y,r,0,2*Math.PI);if(fill){g.fillStyle=fill;g.fill();}if(stroke){g.strokeStyle=stroke;g.lineWidth=lw||1.5;g.stroke();}}
+function text(g,s,x,y,o){o=o||{};g.save();g.font=(o.weight||'')+' '+(o.size||13)+'px system-ui,sans-serif';g.fillStyle=o.color||C.ink;g.textAlign=o.align||'left';g.textBaseline=o.base||'alphabetic';g.fillText(s,x,y);g.restore();}
+function rrect(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath();}
+function linspace(a,b,n){const r=[];for(let i=0;i<n;i++)r.push(a+(b-a)*i/(n-1));return r;}
+
+function range(id,f,cb){const el=$(id),out=$(id+'v');const upd=()=>{if(out)out.textContent=f?f(+el.value):el.value;};
+ el.addEventListener('input',()=>{upd();cb&&cb(+el.value);});upd();return()=>+el.value;}
+function seg(id,cb){const el=$(id);let v=(el.querySelector('.on')||el.querySelector('button')).dataset.v;
+ el.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{el.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on');v=b.dataset.v;cb&&cb(v);}));
+ const get=()=>v;get.set=nv=>{el.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x.dataset.v===nv));v=nv;};return get;}
+/* loop helper: rAF loop that only runs while the slide is active */
+function Loop(fn){let on=false,id=0,last=0;const tick=t=>{if(!on)return;const dt=last?Math.min(60,t-last):16;last=t;fn(dt,t);id=requestAnimationFrame(tick);};
+ return{start(){if(on)return;on=true;last=0;id=requestAnimationFrame(tick);},stop(){on=false;cancelAnimationFrame(id);},get on(){return on;}};}
+
+/* least squares (ridge) */
+function solveLS(A,y,lam){const p=A[0].length,M=[];for(let i=0;i<p;i++){M.push(new Array(p+1).fill(0));}
+ for(let r=0;r<A.length;r++){const a=A[r];for(let i=0;i<p;i++){for(let j=0;j<p;j++)M[i][j]+=a[i]*a[j];M[i][p]+=a[i]*y[r];}}
+ for(let i=0;i<p;i++)M[i][i]+=lam;
+ for(let i=0;i<p;i++){let mx=i;for(let k=i+1;k<p;k++)if(Math.abs(M[k][i])>Math.abs(M[mx][i]))mx=k;[M[i],M[mx]]=[M[mx],M[i]];
+  const d=M[i][i]||1e-12;for(let k=0;k<p;k++){if(k===i)continue;const f=M[k][i]/d;if(f)for(let j=i;j<=p;j++)M[k][j]-=f*M[i][j];}}
+ return M.map((r,i)=>r[p]/(r[i]||1e-12));}
+
+/* ================= tiny neural network ================= */
+const ACT={relu:{f:z=>z>0?z:0,d:a=>a>0?1:0},tanh:{f:Math.tanh,d:a=>1-a*a},sigmoid:{f:z=>1/(1+Math.exp(-z)),d:a=>a*(1-a)},linear:{f:z=>z,d:a=>1}};
+class MLP{
+ constructor(sizes,act,out,seed){this.sizes=sizes;this.act=act;this.out=out;const r=mulberry(seed||((Math.random()*1e9)|0));
+  this.W=[];this.b=[];this.mW=[];this.vW=[];this.mb=[];this.vb=[];this.t=0;
+  for(let l=0;l<sizes.length-1;l++){const ni=sizes[l],no=sizes[l+1];const sc=act==='relu'?Math.sqrt(2/ni):Math.sqrt(1/ni);
+   const W=new Float64Array(ni*no);for(let i=0;i<W.length;i++)W[i]=randn(r)*sc;this.W.push(W);
+   const b=new Float64Array(no);if(act==='relu')b.fill(0.05);this.b.push(b);
+   this.mW.push(new Float64Array(ni*no));this.vW.push(new Float64Array(ni*no));this.mb.push(new Float64Array(no));this.vb.push(new Float64Array(no));}
+  this.L=sizes.length-1;}
+ forward(x,keep){let a=Float64Array.from(x);const as=keep?[a]:null;
+  for(let l=0;l<this.L;l++){const ni=this.sizes[l],no=this.sizes[l+1],W=this.W[l],b=this.b[l];const z=new Float64Array(no);
+   for(let j=0;j<no;j++){let s=b[j];for(let i=0;i<ni;i++)s+=a[i]*W[i*no+j];z[j]=s;}
+   const fn=ACT[l===this.L-1?this.out:this.act].f;for(let j=0;j<no;j++)z[j]=fn(z[j]);a=z;if(keep)as.push(a);}
+  return keep?as:a;}
+ predict(x){return this.forward(x,false)[0];}
+ /* one optimisation step on a batch; returns mean loss */
+ step(X,Y,lr,l2){const L=this.L,gW=this.W.map(w=>new Float64Array(w.length)),gb=this.b.map(b=>new Float64Array(b.length));let loss=0;
+  for(let s=0;s<X.length;s++){const as=this.forward(X[s],true),o=as[L][0],y=Y[s];let delta;
+   if(this.out==='sigmoid'){const p=clamp(o,1e-7,1-1e-7);loss+=-(y*Math.log(p)+(1-y)*Math.log(1-p));delta=new Float64Array([o-y]);}
+   else{loss+=(o-y)*(o-y);delta=new Float64Array([o-y]);}
+   for(let l=L-1;l>=0;l--){const ni=this.sizes[l],no=this.sizes[l+1],a=as[l],W=this.W[l],g=gW[l];
+    for(let i=0;i<ni;i++){const ai=a[i];if(ai!==0)for(let j=0;j<no;j++)g[i*no+j]+=ai*delta[j];}
+    for(let j=0;j<no;j++)gb[l][j]+=delta[j];
+    if(l>0){const nd=new Float64Array(ni),d=ACT[this.act].d;for(let i=0;i<ni;i++){let s=0;for(let j=0;j<no;j++)s+=W[i*no+j]*delta[j];nd[i]=s*d(a[i]);}delta=nd;}}}
+  const n=X.length;this.t++;const b1=0.9,b2=0.999,eps=1e-8,c1=1-Math.pow(b1,this.t),c2=1-Math.pow(b2,this.t);
+  for(let l=0;l<L;l++){const W=this.W[l],m=this.mW[l],v=this.vW[l],g=gW[l];
+   for(let i=0;i<W.length;i++){const gi=g[i]/n+(l2||0)*W[i];m[i]=b1*m[i]+(1-b1)*gi;v[i]=b2*v[i]+(1-b2)*gi*gi;W[i]-=lr*(m[i]/c1)/(Math.sqrt(v[i]/c2)+eps);}
+   const B=this.b[l],mb=this.mb[l],vb=this.vb[l];
+   for(let j=0;j<B.length;j++){const gj=gb[l][j]/n;mb[j]=b1*mb[j]+(1-b1)*gj;vb[j]=b2*vb[j]+(1-b2)*gj*gj;B[j]-=lr*(mb[j]/c1)/(Math.sqrt(vb[j]/c2)+eps);}}
+  return loss/n;}
+ loss(X,Y){let s=0;for(let i=0;i<X.length;i++){const o=this.predict(X[i]);if(this.out==='sigmoid'){const p=clamp(o,1e-7,1-1e-7);s+=-(Y[i]*Math.log(p)+(1-Y[i])*Math.log(1-p));}else s+=(o-Y[i])*(o-Y[i]);}return s/X.length;}
+}
+/* draw a network diagram (nodes + weighted edges) */
+function drawNet(P,sizes,opts){const g=P.ctx;opts=opts||{};const L=sizes.length,padX=opts.padX||40,padY=opts.padY||20;
+ const maxShow=opts.maxShow||16;const pos=[];
+ for(let l=0;l<L;l++){const n=Math.min(sizes[l],maxShow),x=L===1?P.w/2:padX+(P.w-2*padX)*l/(L-1);const col=[];
+  const gap=Math.min(opts.gap||46,(P.h-2*padY)/Math.max(1,n));const y0=P.h/2-gap*(n-1)/2;
+  for(let i=0;i<n;i++)col.push([x,y0+i*gap]);pos.push(col);}
+ return pos;}
+
+/* ================= demo registry ================= */
+const D={};
+</script>
+<script>
+"use strict";
+/* ---------- 4 · black box network ---------- */
+function yieldTrue(r,t,n){const re=1-Math.exp(-(r-200)/300),te=Math.exp(-Math.pow((t-24)/6,2)),ne=n/(n+50);return 1+8.5*Math.max(0,re)*te*(0.4+0.6*ne);}
+D.blackbox={init(){const P=canvas('bb-c');const R=mulberry(7);const sizes=[3,5,4,1];
+  const W=[];for(let l=0;l<3;l++){const a=[];for(let i=0;i<sizes[l];i++){a.push([]);for(let j=0;j<sizes[l+1];j++)a[i].push(randn(R)*0.9);}W.push(a);}
+  const gR=range('bb-r',v=>v+' mm',upd),gT=range('bb-t',v=>v+' °C',upd),gN=range('bb-n',v=>v+' kg N',upd);
+  let acts=[],phase=0,flash=0;
+  function upd(){const x=[(gR()-650)/230,(gT()-24)/6,(gN()-110)/50];acts=[x];let a=x;
+   for(let l=0;l<3;l++){const z=[];for(let j=0;j<sizes[l+1];j++){let s=0.2;for(let i=0;i<a.length;i++)s+=a[i]*W[l][i][j];z.push(l<2?Math.max(0,s):s);}acts.push(z);a=z;}
+   $('bb-out').textContent=fmt(yieldTrue(gR(),gT(),gN()),1)+' t/ha';flash=1;}
+  const labels=[['🌧 rainfall','🌡 temperature','🧪 soil N'],null,null,['🌾 yield']];
+  const pos=drawNet(P,sizes,{padX:130,padY:30,gap:78});
+  this.draw=dt=>{phase+=dt/1000;flash=Math.max(0,flash-dt/900);const g=P.ctx;cls(P);
+   text(g,'input layer',pos[0][0][0],22,{align:'center',color:C.muted,size:12});text(g,'hidden layers',(pos[1][0][0]+pos[2][0][0])/2,22,{align:'center',color:C.muted,size:12});text(g,'output',pos[3][0][0],22,{align:'center',color:C.muted,size:12});
+   for(let l=0;l<3;l++)for(let i=0;i<pos[l].length;i++)for(let j=0;j<pos[l+1].length;j++){const s=acts[l][i]*W[l][i][j];const m=Math.min(1,Math.abs(s)/1.2);
+    const [x1,y1]=pos[l][i],[x2,y2]=pos[l+1][j];g.strokeStyle=rgba(s>=0?C.blue:C.amber,0.12+0.6*m);g.lineWidth=0.6+4*m;g.beginPath();g.moveTo(x1,y1);g.lineTo(x2,y2);g.stroke();
+    if(m>0.08){const f=((phase*0.8+i*0.13+j*0.07)%1);dot(g,lerp(x1,x2,f),lerp(y1,y2,f),2+2*m,rgba(s>=0?C.blue:C.amber,0.8));}}
+   for(let l=0;l<4;l++)pos[l].forEach(([x,y],i)=>{const a=acts[l][i];const m=Math.min(1,Math.abs(a)/1.5);
+    const col=l===0?C.blue:l===3?C.teal:C.purple;dot(g,x,y,l===3?30:22,rgba(col,0.12+0.5*m),col,2);
+    if(l===3){g.save();g.shadowColor=C.teal;g.shadowBlur=20*flash;dot(g,x,y,30,null,C.teal,3);g.restore();text(g,$('bb-out').textContent.replace(' t/ha',''),x,y+5,{align:'center',weight:700,size:15,color:C.tealD});}
+    if(labels[l])text(g,labels[l][i],l===0?x-32:x+40,y+5,{align:l===0?'right':'left',size:15,weight:600});});
+   text(g,'Each line is a weight (a knob). This small network has 3·5+5 + 5·4+4 + 4·1+1 = 49 knobs.',P.w/2,P.h-8,{align:'center',color:C.muted,size:13});};
+  this.loop=Loop(dt=>this.draw(dt));upd();},
+ start(){this.loop.start();},stop(){this.loop.stop();}};
+
+/* ---------- 5 · single neuron ---------- */
+D.neuron={init(){const P=canvas('ne-c');let act='relu';const ids=['x0','x1','x2','w0','w1','w2','b'];const get={};
+  ids.forEach(k=>get[k]=range('ne-'+k,v=>fmt(v,1),draw));seg('ne-act',v=>{act=v;draw();});
+  function draw(){const g=P.ctx;cls(P);const x=[get.x0(),get.x1(),get.x2()],w=[get.w0(),get.w1(),get.w2()],b=get.b();
+   const prod=x.map((v,i)=>v*w[i]);const z=prod.reduce((a,c)=>a+c,0)+b;const a=ACT[act].f(z);
+   const ys=[60,160,260],sx=330,sy=160,names=['rainfall','temperature','soil N'];
+   ys.forEach((y,i)=>{const m=Math.min(1,Math.abs(prod[i])/2);g.strokeStyle=rgba(prod[i]>=0?C.blue:C.amber,0.25+0.7*m);g.lineWidth=1+7*m;g.beginPath();g.moveTo(70,y);g.lineTo(sx-34,sy);g.stroke();
+    dot(g,48,y,24,C.blueBg,C.blue,2);text(g,fmt(x[i],1),48,y+5,{align:'center',weight:700});text(g,names[i],48,y+40,{align:'center',size:11.5,color:C.muted});
+    const mx=lerp(70,sx-34,0.5),my=lerp(y,sy,0.5)-8;g.save();g.fillStyle='rgba(255,255,255,.92)';rrect(g,mx-56,my-15,112,24,7);g.fill();g.restore();
+    text(g,'×'+fmt(w[i],1)+' = '+fmt(prod[i],2),mx,my+2,{align:'center',size:13,weight:600,color:prod[i]>=0?C.blue:C.amber});});
+   text(g,'+ bias '+fmt(b,1),sx,sy+62,{align:'center',size:13,weight:600,color:C.purple});g.strokeStyle=C.purple;g.lineWidth=2;g.beginPath();g.moveTo(sx,sy+48);g.lineTo(sx,sy+34);g.stroke();
+   dot(g,sx,sy,34,'#fff',C.ink,2.5);text(g,'Σ',sx,sy-6,{align:'center',size:20,weight:700});text(g,'z = '+fmt(z,2),sx,sy+16,{align:'center',size:13,weight:600});
+   // activation box
+   const bx=430,by=80,bw=170,bh=160;g.strokeStyle=C.ink;g.lineWidth=2;g.beginPath();g.moveTo(sx+34,sy);g.lineTo(bx,sy);g.stroke();
+   g.fillStyle=C.tealBg;rrect(g,bx,by,bw,bh,14);g.fill();g.strokeStyle=C.teal;g.stroke();
+   const lo=-4,hi=4,ymin=act==='sigmoid'?-0.2:-2,ymax=act==='sigmoid'?1.2:4;const X=v=>bx+12+(v-lo)/(hi-lo)*(bw-24),Y=v=>by+bh-14-(v-ymin)/(ymax-ymin)*(bh-40);
+   g.strokeStyle='#9fcfc6';g.lineWidth=1;g.beginPath();g.moveTo(X(lo),Y(0));g.lineTo(X(hi),Y(0));g.moveTo(X(0),Y(ymin));g.lineTo(X(0),Y(ymax));g.stroke();
+   path(g,linspace(lo,hi,80).map(v=>[X(v),Y(clamp(ACT[act].f(v),ymin,ymax))]),C.teal,3);
+   const zc=clamp(z,lo,hi);dot(g,X(zc),Y(clamp(a,ymin,ymax)),6,C.red,'#fff',2);
+   text(g,{relu:'ReLU',sigmoid:'sigmoid',linear:'no activation'}[act],bx+bw/2,by+20,{align:'center',weight:700,color:C.tealD});
+   g.strokeStyle=C.ink;g.lineWidth=2;g.beginPath();g.moveTo(bx+bw,sy);g.lineTo(670,sy);g.stroke();
+   dot(g,690,sy,30,a>0.001?rgba(C.teal,0.25+0.5*Math.min(1,Math.abs(a)/3)):'#f4f4f5',C.teal,2.5);text(g,fmt(a,2),690,sy+5,{align:'center',weight:700,size:15});text(g,'output',690,sy+50,{align:'center',size:12,color:C.muted});
+   const actTxt={relu:'ReLU('+fmt(z,2)+') = '+fmt(a,2),sigmoid:'sigmoid('+fmt(z,2)+') = '+fmt(a,2),linear:'output = '+fmt(a,2)}[act];
+   $('ne-f').innerHTML='z = '+x.map((v,i)=>'(<span class="b">'+fmt(v,1)+'</span>×<span class="b">'+fmt(w[i],1)+'</span>)').join(' + ')+' + <span class="p">'+fmt(b,1)+'</span> = <b>'+fmt(z,2)+'</b> &nbsp;→&nbsp; <span class="t">'+actTxt+'</span>'+(act==='relu'&&z<=0?' <span class="mini">(negative → silent)</span>':'');}
+  draw();}};
+
+/* ---------- 6 · fit a line by hand ---------- */
+D.fitline={init(){const P=canvas('fl-c');const R=mulberry(11);const pts=[];
+  for(let i=0;i<36;i++){const r=300+R()*700;pts.push([r,0.62*r/100+1.1+randn(R)*0.65]);}
+  const A=pts.map(p=>[p[0]/100,1]),best=solveLS(A,pts.map(p=>p[1]),1e-9);const mse=(w,b)=>pts.reduce((s,p)=>s+Math.pow(w*p[0]/100+b-p[1],2),0)/pts.length;const bestM=mse(best[0],best[1]);
+  const F=frame(P,{xmin:250,xmax:1050,ymin:0,ymax:10,xticks:[300,500,700,900],yticks:[0,2,4,6,8,10],xlabel:'rainfall (mm)',ylabel:'yield (t/ha)'});
+  let showBest=false;const gw=range('fl-w',v=>fmt(v,2),draw),gb=range('fl-b',v=>fmt(v,2),draw);
+  function draw(){const w=gw(),b=gb(),g=P.ctx;cls(P);F.axes();F.clip();
+   pts.forEach(p=>{const yh=w*p[0]/100+b;g.strokeStyle=rgba(C.red,0.6);g.lineWidth=1.5;g.beginPath();g.moveTo(F.X(p[0]),F.Y(p[1]));g.lineTo(F.X(p[0]),F.Y(yh));g.stroke();});
+   if(showBest)path(g,[[F.X(250),F.Y(best[0]*2.5+best[1])],[F.X(1050),F.Y(best[0]*10.5+best[1])]],C.muted,2,[6,5]);
+   path(g,[[F.X(250),F.Y(w*2.5+b)],[F.X(1050),F.Y(w*10.5+b)]],C.teal,3.5);
+   pts.forEach(p=>dot(g,F.X(p[0]),F.Y(p[1]),5,C.blue,'#fff',1.5));g.restore();
+   const m=mse(w,b);$('fl-mse').textContent=fmt(m,2);$('fl-mse').style.color=m<bestM*1.1?C.teal:m<bestM*3?C.amber:C.red;
+   $('fl-bar').style.width=(100*clamp(bestM/m,0,1))+'%';if(showBest)$('fl-best').textContent=fmt(bestM,2);}
+  function animTo(w1,b1){const w0=gw(),b0=gb();let t=0;const st=performance.now();const f=()=>{t=Math.min(1,(performance.now()-st)/1200);const e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+    $('fl-w').value=lerp(w0,w1,e);$('fl-b').value=lerp(b0,b1,e);$('fl-w').dispatchEvent(new Event('input'));$('fl-b').dispatchEvent(new Event('input'));if(t<1)requestAnimationFrame(f);};f();}
+  $('fl-show').onclick=()=>{showBest=true;animTo(best[0],best[1]);};$('fl-reset').onclick=()=>{showBest=false;$('fl-best').textContent='?';animTo(1,1);};draw();}};
+
+/* ---------- 7 · activation functions ---------- */
+D.acts={init(){const P=canvas('ac-c');let cur='relu',hx=null;
+  const info={relu:{n:'ReLU',f:'max(0, z)',r:'0 to ∞',d:'Passes positive values unchanged, silences negatives. Cheap and its slope never fades for positive inputs, so deep networks train fast.',use:'Default choice for hidden layers.',y:[-1,5]},
+   sigmoid:{n:'Sigmoid',f:'1 / (1 + e<sup>−z</sup>)',r:'0 to 1',d:'Squashes anything into 0–1, so it reads as a probability. Flat at both ends: slope ≈ 0 there, which slows learning in hidden layers.',use:'Output layer for yes/no questions.',y:[-0.2,1.2]},
+   tanh:{n:'Tanh',f:'tanh(z)',r:'−1 to 1',d:'Like sigmoid but centred on zero. Was popular before ReLU; still used in some recurrent networks.',use:'Occasional hidden-layer alternative.',y:[-1.3,1.3]},
+   linear:{n:'Linear (no activation)',f:'z',r:'−∞ to ∞',d:'Leaves the sum unchanged. Without any non-linearity a whole network collapses into one straight-line model.',use:'Output layer for regression (any number).',y:[-5,5]}};
+  const sp=seg('ac-seg',v=>{cur=v;draw();});
+  P.c.addEventListener('mousemove',e=>{const F=mk();hx=clamp(F.ix(cpos(e,P)[0]),-5,5);draw();});P.c.addEventListener('mouseleave',()=>{hx=null;draw();});
+  function mk(){const I=info[cur];const yt=cur==='relu'?[0,1,2,3,4,5]:cur==='sigmoid'?[0,0.5,1]:cur==='tanh'?[-1,0,1]:[-4,-2,0,2,4];
+   return frame(P,{xmin:-5,xmax:5,ymin:I.y[0],ymax:I.y[1],xticks:[-4,-2,0,2,4],yticks:yt,xlabel:'z  (weighted sum + bias)',ylabel:'activation output'});}
+  function draw(){const I=info[cur],F=mk(),g=P.ctx;cls(P);F.axes();F.clip();const f=ACT[cur].f;const d=z=>ACT[cur].d(f(z));
+   g.strokeStyle='#c7ccd4';g.lineWidth=1.2;g.beginPath();g.moveTo(F.X(0),F.Y(I.y[0]));g.lineTo(F.X(0),F.Y(I.y[1]));g.moveTo(F.X(-5),F.Y(0));g.lineTo(F.X(5),F.Y(0));g.stroke();
+   const xs=linspace(-5,5,300);path(g,xs.map(z=>[F.X(z),F.Y(d(z))]),C.purple,2,[6,5]);path(g,xs.map(z=>[F.X(z),F.Y(f(z))]),C.teal,4);
+   if(hx!==null){g.strokeStyle='#9ca3af';g.setLineDash([3,4]);g.beginPath();g.moveTo(F.X(hx),F.m.t);g.lineTo(F.X(hx),F.m.t+F.ph);g.stroke();g.setLineDash([]);
+    dot(g,F.X(hx),F.Y(f(hx)),6,C.teal,'#fff',2);const tx=F.X(hx)+(hx>2?-150:12);g.fillStyle='rgba(255,255,255,.95)';rrect(g,tx,F.m.t+8,138,46,8);g.fill();g.strokeStyle='#e5e5e5';g.stroke();
+    text(g,'z = '+fmt(hx,2)+' → '+fmt(f(hx),2),tx+8,F.m.t+27,{weight:600});text(g,'slope = '+fmt(d(hx),2),tx+8,F.m.t+45,{color:C.purple});}
+   g.restore();text(g,'— output',F.m.l+12,F.m.t+18,{color:C.teal,weight:700});text(g,'- - slope (how fast it learns)',F.m.l+90,F.m.t+18,{color:C.purple,weight:600});
+   $('ac-info').innerHTML='<h3>'+I.n+'</h3><div class="formula" style="margin:8px 0">f(z) = '+I.f+'</div><p><b>Output range:</b> '+I.r+'</p><p>'+I.d+'</p><p class="t"><b>'+I.use+'</b></p>';}
+  draw();}};
+
+/* ---------- 8 · building curves out of ReLUs ---------- */
+D.hinges={init(){const P=canvas('hi-c');const R=mulberry(5);const tf=t=>1+7*Math.exp(-Math.pow((t-25)/(t<25?7:4.5),2));
+  const pts=[];for(let i=0;i<46;i++){const t=10+30*R();pts.push([t,tf(t)+randn(R)*0.35]);}
+  const F=frame(P,{xmin:10,xmax:40,ymin:-1,ymax:10,xticks:[10,15,20,25,30,35,40],yticks:[0,2,4,6,8,10],xlabel:'mean growing-season temperature (°C)',ylabel:'yield (t/ha)'});
+  let act='relu';const gn=range('hi-n',null,draw);seg('hi-act',v=>{act=v;draw();});$('hi-parts').onchange=draw;
+  function draw(){const n=gn(),g=P.ctx;const knots=n===1?[22]:linspace(14,34,n);const feat=t=>knots.map(c=>act==='relu'?Math.max(0,t-c):t-c).concat([1]);
+   const v=solveLS(pts.map(p=>feat(p[0])),pts.map(p=>p[1]),1e-6);const pred=t=>feat(t).reduce((s,f,i)=>s+f*v[i],0);
+   const mse=pts.reduce((s,p)=>s+Math.pow(pred(p[0])-p[1],2),0)/pts.length;
+   cls(P);F.axes();F.clip();const xs=linspace(10,40,300);
+   if($('hi-parts').checked){const b=v[n];knots.forEach((c,k)=>{path(g,xs.map(t=>[F.X(t),F.Y(b+v[k]*(act==='relu'?Math.max(0,t-c):t-c))]),rgba(C.purple,0.45),1.5);if(act==='relu')dot(g,F.X(c),F.Y(b),3.5,C.purple);});}
+   path(g,xs.map(t=>[F.X(t),F.Y(tf(t))]),'#9ca3af',2,[6,6]);pts.forEach(p=>dot(g,F.X(p[0]),F.Y(p[1]),4,rgba(C.blue,0.75)));
+   path(g,xs.map(t=>[F.X(t),F.Y(pred(t))]),C.teal,4);g.restore();
+   text(g,'— network output',F.m.l+14,F.m.t+16,{color:C.teal,weight:700});text(g,'- - true relationship',F.m.l+150,F.m.t+16,{color:'#6b7280',weight:600});if($('hi-parts').checked)text(g,'— individual neurons',F.m.l+300,F.m.t+16,{color:C.purple,weight:600});
+   $('hi-err').textContent=fmt(mse,2);
+   $('hi-msg').innerHTML=act==='linear'?'<b>No activation:</b> '+n+' neurons, still a straight line. Stacking linear pieces only gives another line.':
+    n<=2?'<b>'+n+' bend'+(n>1?'s':'')+'</b>: too stiff to follow the hump. Add more neurons.':n<6?'<b>'+n+' bends</b>: the hump is taking shape.':'<b>'+n+' bends</b>: close to the true curve. More neurons = more flexibility (and more risk of overfitting later).';}
+  draw();}};
+
+/* ---------- 11 · losses ---------- */
+D.loss={init(){const P1=canvas('lo-c1'),P2=canvas('lo-c2');const gp=range('lo-p',v=>fmt(v,2),draw),gq=range('lo-q',v=>(v*100).toFixed(0)+'%',draw);
+  const F1=frame(P1,{xmin:2,xmax:10,ymin:0,ymax:16,xticks:[2,4,6,8,10],yticks:[0,4,8,12,16],xlabel:'predicted yield (t/ha)',ylabel:'loss',m:{l:40,b:36,t:10}});
+  const F2=frame(P2,{xmin:0,xmax:1,ymin:0,ymax:5,xticks:[0,0.25,0.5,0.75,1],yticks:[0,1,2,3,4,5],xfmt:t=>(t*100)+'%',xlabel:'probability given to the true class',ylabel:'loss',m:{l:40,b:36,t:10}});
+  function draw(){const p=gp(),q=gq(),g=P1.ctx;cls(P1);F1.axes();F1.clip();const xs=linspace(2,10,200);
+   path(g,xs.map(x=>[F1.X(x),F1.Y((x-6)*(x-6))]),C.blue,3);path(g,xs.map(x=>[F1.X(x),F1.Y(Math.abs(x-6))]),C.amber,3);
+   g.strokeStyle=C.green;g.lineWidth=2;g.setLineDash([4,4]);g.beginPath();g.moveTo(F1.X(6),F1.m.t);g.lineTo(F1.X(6),F1.m.t+F1.ph);g.stroke();g.setLineDash([]);
+   dot(g,F1.X(p),F1.Y((p-6)*(p-6)),7,C.blue,'#fff',2);dot(g,F1.X(p),F1.Y(Math.abs(p-6)),7,C.amber,'#fff',2);g.restore();text(g,'true 6.0',F1.X(6)+5,F1.m.t+12,{color:C.green,size:12,weight:600});
+   const e=p-6;$('lo-e').textContent=fmt(e,2);$('lo-mse').textContent=fmt(e*e,2);$('lo-mae').textContent=fmt(Math.abs(e),2);
+   const h=P2.ctx;cls(P2);F2.axes();F2.clip();path(h,linspace(0.005,1,200).map(x=>[F2.X(x),F2.Y(-Math.log(x))]),C.purple,3);dot(h,F2.X(q),F2.Y(-Math.log(q)),7,C.purple,'#fff',2);h.restore();
+   $('lo-ce').textContent=fmt(-Math.log(q),2);$('lo-verd').innerHTML=q>0.8?'confident &amp; right 😀':q>0.5?'right, a bit unsure 🙂':q>0.2?'leaning wrong 😕':'confidently wrong 😱';}
+  draw();}};
+</script>
+<script>
+"use strict";
+/* ---------- 12 · gradient descent 1D ---------- */
+D.gd={init(){const P=canvas('gd-c');const L=w=>0.05*w**4-0.5*w*w+0.3*w+2.5,dL=w=>0.2*w**3-w+0.3;
+  const F=frame(P,{xmin:-4.5,xmax:4.5,ymin:0,ymax:9,xticks:[-4,-2,0,2,4],yticks:[0,2,4,6,8],xlabel:'a weight w',ylabel:'loss'});
+  const lrOf=v=>0.005*Math.pow(300,v/100);const glr=range('gd-lr',v=>fmt(lrOf(v),3));
+  let w0=-3.6,w=w0,trail=[w],n=0,run=false,acc=0,status='';
+  const reset=()=>{w=w0;trail=[w];n=0;run=false;status='';$('gd-run').textContent='▶ Run';draw();};
+  function step(){if(status)return;const lr=lrOf(glr()),g=dL(w);w=w-lr*g;n++;trail.push(w);
+   if(!isFinite(w)||Math.abs(w)>7){status='div';}else if(Math.abs(lr*dL(w))<1e-3&&Math.abs(dL(w))<0.02){status=w<0?'global':'local';}else if(n>=80)status='slow';
+   if(status){run=false;$('gd-run').textContent='▶ Run';}draw();}
+  function draw(){const g=P.ctx;cls(P);F.axes();F.clip();const xs=linspace(-4.5,4.5,300);
+   g.fillStyle=rgba(C.teal,0.08);g.beginPath();g.moveTo(F.X(-4.5),F.Y(0));xs.forEach(x=>g.lineTo(F.X(x),F.Y(L(x))));g.lineTo(F.X(4.5),F.Y(0));g.fill();
+   path(g,xs.map(x=>[F.X(x),F.Y(L(x))]),C.teal,3.5);
+   const tp=trail.filter(isFinite).map(v=>clamp(v,-6,6));path(g,tp.map(v=>[F.X(v),F.Y(L(v))]),rgba(C.amber,0.6),1.5);tp.forEach((v,i)=>dot(g,F.X(v),F.Y(L(v)),i===tp.length-1?0:3.5,rgba(C.amber,0.7)));
+   if(isFinite(w)&&Math.abs(w)<6){const s=dL(w),y=L(w);const dx=0.9;path(g,[[F.X(w-dx),F.Y(y-s*dx)],[F.X(w+dx),F.Y(y+s*dx)]],C.red,2.5);
+    g.save();g.shadowColor='rgba(0,0,0,.25)';g.shadowBlur=8;dot(g,F.X(w),F.Y(y)-9,9,C.amber,'#fff',2.5);g.restore();
+    text(g,'slope '+fmt(s,2),F.X(w)+14,F.Y(y)-18,{color:C.red,weight:600});}
+   g.restore();text(g,'global minimum',F.X(-2.38),F.Y(0.55)+22,{align:'center',size:12,color:C.muted});text(g,'local minimum',F.X(2.08),F.Y(1.9)+22,{align:'center',size:12,color:C.muted});
+   $('gd-n').textContent=n;$('gd-l').textContent=isFinite(w)&&Math.abs(w)<7?fmt(L(w),2):'💥';
+   const lr=lrOf(glr());$('gd-msg').innerHTML=status==='div'?'<b>Diverged!</b> Steps too big: it overshoots further each time. Lower the learning rate.':
+    status==='global'?'<b>Converged</b> to the lowest valley in '+n+' steps.':status==='local'?'<b>Stuck in a local minimum</b> after '+n+' steps. Where you start matters. Try starting on the left.':
+    status==='slow'?'<b>Still crawling</b> after 80 steps: learning rate too small.':lr<0.03?'Small learning rate: safe but slow.':lr>0.9?'Large learning rate: watch for bouncing.':'Press Run or One step.';}
+  P.c.addEventListener('click',e=>{const x=clamp(F.ix(cpos(e,P)[0]),-4.3,4.3);w0=x;reset();});
+  $('gd-step').onclick=step;$('gd-reset').onclick=()=>{w0=-3.6;reset();};$('gd-run').onclick=()=>{if(status)reset();run=!run;$('gd-run').textContent=run?'⏸ Pause':'▶ Run';};
+  $('gd-lr').addEventListener('input',()=>{if(!run)reset();else draw();});
+  this.loop=Loop(dt=>{if(!run)return;acc+=dt;if(acc>220){acc=0;step();}});draw();},
+ start(){this.loop.start();},stop(){this.loop.stop();}};
+
+/* contour background helper */
+function contourImg(P,F,f,vmax,hue){const S=P.S,cw=Math.round(F.pw*S),ch=Math.round(F.ph*S);const oc=document.createElement('canvas');oc.width=cw;oc.height=ch;const g=oc.getContext('2d');const im=g.createImageData(cw,ch);
+ const [hr,hg,hb]=hexRgb(hue||C.teal);
+ for(let j=0;j<ch;j++)for(let i=0;i<cw;i++){const x=F.o.xmin+(i/cw)*(F.o.xmax-F.o.xmin),y=F.o.ymax-(j/ch)*(F.o.ymax-F.o.ymin);const v=Math.sqrt(Math.min(f(x,y),vmax)/vmax);
+  const band=Math.abs((v*12)%1-0.5)<0.04;const t=1-v;const k=(j*cw+i)*4;const a=0.12+0.45*t;
+  im.data[k]=Math.round(255*(1-a)+hr*a);im.data[k+1]=Math.round(255*(1-a)+hg*a);im.data[k+2]=Math.round(255*(1-a)+hb*a);if(band){im.data[k]*=0.85;im.data[k+1]*=0.85;im.data[k+2]*=0.85;}im.data[k+3]=255;}
+ g.putImageData(im,0,0);return oc;}
+
+/* ---------- 13 · optimizers race ---------- */
+D.opt={init(){const P=canvas('op-c');const f=(x,y)=>0.04*x*x+2*y*y,grad=(x,y)=>[0.08*x,4*y];
+  const F=frame(P,{xmin:-6,xmax:6,ymin:-3,ymax:3,xticks:[-6,-4,-2,0,2,4,6],yticks:[-3,-2,-1,0,1,2,3],xlabel:'weight 1',ylabel:'weight 2'});
+  const bg=contourImg(P,F,f,20);const glr=range('op-lr',v=>fmt(v,2));let start=[-5.5,2.4],O=[],run=false,acc=0,k=0;
+  const defs=[{n:'Gradient descent (SGD)',c:C.blue},{n:'Momentum',c:C.amber},{n:'Adam',c:C.purple}];
+  function reset(){O=defs.map(d=>({...d,p:start.slice(),v:[0,0],m:[0,0],s:[0,0],t:0,trail:[start.slice()],done:0}));k=0;run=false;$('op-run').textContent='▶ Race';draw();}
+  function step(){const lr=glr(),noisy=$('op-noise').checked;k++;
+   O.forEach((o,i)=>{if(o.done)return;let g=grad(o.p[0],o.p[1]);if(noisy)g=g.map(v=>v+randn()*(0.4*Math.abs(v)+0.25));
+    if(i===0){o.p[0]-=lr*g[0];o.p[1]-=lr*g[1];}
+    else if(i===1){o.v[0]=0.85*o.v[0]+g[0];o.v[1]=0.85*o.v[1]+g[1];o.p[0]-=lr*0.5*o.v[0];o.p[1]-=lr*0.5*o.v[1];}
+    else{o.t++;const a=lr*0.6;for(let d=0;d<2;d++){o.m[d]=0.9*o.m[d]+0.1*g[d];o.s[d]=0.999*o.s[d]+0.001*g[d]*g[d];const mh=o.m[d]/(1-Math.pow(0.9,o.t)),sh=o.s[d]/(1-Math.pow(0.999,o.t));o.p[d]-=a*mh/(Math.sqrt(sh)+1e-8);}}
+    o.trail.push(o.p.slice());if(f(o.p[0],o.p[1])<0.01&&!noisy)o.done=k;});
+   if(k>=160||O.every(o=>o.done)){run=false;$('op-run').textContent='▶ Race';}draw();}
+  function draw(){const g=P.ctx;cls(P);g.drawImage(bg,F.m.l,F.m.t,F.pw,F.ph);F.axes();F.clip();
+   text(g,'★',F.X(0),F.Y(0)+8,{align:'center',size:24,color:C.red});
+   O.forEach(o=>{path(g,o.trail.map(p=>[F.X(p[0]),F.Y(p[1])]),o.c,2.5);const p=o.p;dot(g,F.X(p[0]),F.Y(p[1]),6.5,o.c,'#fff',2);});
+   dot(g,F.X(start[0]),F.Y(start[1]),5,'#111');g.restore();
+   $('op-leg').innerHTML=O.map(o=>'<div style="display:flex;justify-content:space-between;gap:8px;font-size:15px;margin:3px 0"><span style="color:'+o.c+';font-weight:700">● '+o.n+'</span><span class="num">'+(o.done?'✓ '+o.done+' steps':'loss '+fmt(f(o.p[0],o.p[1]),3))+'</span></div>').join('')+'<div class="mini">step '+k+'</div>';}
+  P.c.addEventListener('click',e=>{const[px,py]=cpos(e,P);start=[clamp(F.ix(px),-5.9,5.9),clamp(F.iy(py),-2.9,2.9)];reset();});
+  $('op-run').onclick=()=>{if(k>=160||O.every(o=>o.done))reset();run=!run;$('op-run').textContent=run?'⏸ Pause':'▶ Race';};$('op-reset').onclick=()=>{start=[-5.5,2.4];reset();};
+  $('op-lr').addEventListener('input',reset);$('op-noise').onchange=reset;
+  this.loop=Loop(dt=>{if(!run)return;acc+=dt;if(acc>60){acc=0;step();}});reset();},
+ start(){this.loop.start();},stop(){this.loop.stop();}};
+
+/* ---------- 14 · epochs & batches ---------- */
+D.batch={init(){const P=canvas('ba-c');const gn=range('ba-n',null,reset),ge=range('ba-e',null,reset);const gb=seg('ba-b',reset);
+  const pal=[C.blue,C.teal,C.purple,C.amber,C.green,C.red];let perm=[],ep=1,bi=0,acc=0;
+  function shuffle(n){perm=[...Array(n).keys()];for(let i=n-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[perm[i],perm[j]]=[perm[j],perm[i]];}}
+  function reset(){const n=gn(),B=+gb(),E=ge();const spe=Math.ceil(n/B);$('ba-spe').textContent=spe;$('ba-tot').textContent=(spe*E).toLocaleString();$('ba-py').innerHTML='model.fit(X_train, y_train,\n          batch_size=<span class="s">'+B+'</span>, epochs=<span class="s">'+E+'</span>)';$('ba-r').innerHTML='model |&gt; fit(x_train, y_train,\n  batch_size = <span class="s">'+B+'</span>,\n  epochs = <span class="s">'+E+'</span>)';shuffle(n);ep=1;bi=0;draw();}
+  function draw(){const n=gn(),B=+gb(),E=ge(),spe=Math.ceil(n/B),g=P.ctx;cls(P);const cols=Math.ceil(Math.sqrt(n*P.w/(P.h-30))),rows=Math.ceil(n/cols);const sz=Math.min((P.w-10)/cols,(P.h-40)/rows);
+   const where=new Array(n);perm.forEach((r,pos)=>where[r]=Math.floor(pos/B));
+   for(let r=0;r<n;r++){const cx=5+(r%cols)*sz,cy=5+Math.floor(r/cols)*sz,b=where[r];const cur=b===bi,doneB=b<bi;
+    g.fillStyle=cur?pal[b%6]:doneB?rgba(pal[b%6],0.22):rgba(pal[b%6],0.5);rrect(g,cx+1.5,cy+1.5,sz-3,sz-3,Math.min(5,sz/5));g.fill();if(cur){g.strokeStyle='#111';g.lineWidth=2;g.stroke();}}
+   const left=n-bi*B;$('ba-cap').innerHTML='Epoch <b>'+ep+'</b> / '+E+' · step <b>'+(bi+1)+'</b> of '+spe+' · this step uses <b>'+Math.min(B,left)+'</b> rows'+(Math.min(B,left)<B?' (the last batch is smaller)':'')+'. Faded = already used this epoch. The data is reshuffled every epoch.';}
+  this.loop=Loop(dt=>{acc+=dt;if(acc<450)return;acc=0;const n=gn(),B=+gb(),spe=Math.ceil(n/B);bi++;if(bi>=spe){bi=0;ep++;if(ep>ge())ep=1;shuffle(n);}draw();});reset();},
+ start(){this.loop.start();},stop(){this.loop.stop();}};
+
+/* ---------- 15 · training loop ---------- */
+D.loop={init(){const P=canvas('lp-c');const K=x=>'<span class="k">'+x+'</span>',Cm=x=>'<span class="c">'+x+'</span>';
+  const lpy=[K('for')+' epoch '+K('in')+' range(epochs):','  '+K('for')+' x, y '+K('in')+' batches:','    y_pred = model(x)                  '+Cm('# 1'),'    loss = loss_fn(y, y_pred)          '+Cm('# 2'),'    grads = gradients(loss, weights)   '+Cm('# 3'),'    optimizer.update(weights, grads)   '+Cm('# 4')];
+  const lr=[K('for')+' (epoch '+K('in')+' 1:epochs) {','  '+K('for')+' (b '+K('in')+' batches) {','    y_pred &lt;- model(b$x)               '+Cm('# 1'),'    loss &lt;- loss_fn(b$y, y_pred)       '+Cm('# 2'),'    grads &lt;- gradients(loss, weights)  '+Cm('# 3'),'    optimizer$update(weights, grads)   '+Cm('# 4'),'  }','}'];
+  const txt=['<h3 class="b">1 · Forward</h3><p>32 fields in → 32 predicted yields out.</p>','<h3 class="r">2 · Loss</h3><p>Compare with the 32 measured yields → one number.</p>','<h3 class="p">3 · Backprop</h3><p>For every weight: does nudging it up make the loss go up or down?</p>','<h3 class="t">4 · Update</h3><p>Move every weight a small step downhill. Next batch!</p>'];
+  const cols=[C.blue,C.red,C.purple,C.teal];let cur=0,acc=0,ep=1,play=true;
+  const ctr=[[295,47],[525,217],[295,387],[85,217]];
+  function draw(){document.querySelectorAll('#lp-wrap .loopnode').forEach((n,i)=>{n.classList.toggle('on',i===cur);n.style.borderColor=i===cur?cols[i]:'#e5e5e5';n.style.background=i===cur?rgba(cols[i],0.08):'#fff';});
+   const hl=(L)=>L.map((l,i)=>i===cur+2?'<span class="hl">'+l+'</span>':l).join('\n');$('lp-py').innerHTML=hl(lpy);$('lp-r').innerHTML=hl(lr);$('lp-txt').innerHTML=txt[cur];$('lp-ep').textContent=ep;$('lp-loss').textContent=fmt(0.3+4*Math.exp(-(ep-1)/5),2);
+   const g=P.ctx;cls(P);const cx=305,cy=217,rx=215,ry=172;
+   for(let i=0;i<4;i++){const a0=-Math.PI/2+i*Math.PI/2+0.42,a1=a0+Math.PI/2-0.84;g.strokeStyle=i===cur?cols[i]:'#cbd2dc';g.lineWidth=i===cur?4:2.5;g.beginPath();g.ellipse(cx,cy,rx,ry,0,a0,a1);g.stroke();
+    const ax=cx+rx*Math.cos(a1),ay=cy+ry*Math.sin(a1),tx=-rx*Math.sin(a1),ty=ry*Math.cos(a1),tl=Math.hypot(tx,ty),ux=tx/tl,uy=ty/tl;
+    g.fillStyle=g.strokeStyle;g.beginPath();g.moveTo(ax+ux*8,ay+uy*8);g.lineTo(ax-ux*6-uy*7,ay-uy*6+ux*7);g.lineTo(ax-ux*6+uy*7,ay-uy*6-ux*7);g.fill();}}
+  const next=()=>{cur=(cur+1)%4;if(cur===0)ep++;if(ep>30)ep=1;draw();};
+  $('lp-next').onclick=()=>{play=false;$('lp-play').textContent='▶ Play';next();};$('lp-play').onclick=()=>{play=!play;$('lp-play').textContent=play?'⏸ Pause':'▶ Play';};
+  this.loop=Loop(dt=>{if(!play)return;acc+=dt;if(acc>1700){acc=0;next();}});draw();},
+ start(){this.loop.start();},stop(){this.loop.stop();}};
+
+/* ---------- 16 · playground ---------- */
+D.play={init(){const P=canvas('pg-c'),PN=canvas('pg-net'),PL=canvas('pg-loss');
+  const gdata=seg('pg-data',()=>{genData();resetNet();}),gl=seg('pg-l',resetNet);const gh=range('pg-h',null,resetNet),gnoise=range('pg-noise',v=>fmt(v,2),()=>{genData();resetNet();});
+  $('pg-act').onchange=resetNet;let net,data=[],tr=[],te=[],ep=0,run=false,hist=[],frameN=0;
+  function genData(){const R=mulberry(42),kind=gdata(),nz=gnoise(),N=240;data=[];
+   for(let i=0;i<N;i++){let x,y,l;
+    if(kind==='clusters'){l=i%2;const c=l?0.45:-0.45;x=c+randn(R)*0.22;y=c+randn(R)*0.22;}
+    else if(kind==='circle'){const r=Math.sqrt(R())*0.95,a=R()*2*Math.PI;x=r*Math.cos(a);y=r*Math.sin(a);l=r<0.5?1:0;}
+    else if(kind==='xor'){x=R()*1.9-0.95;y=R()*1.9-0.95;if(Math.abs(x)<0.06)x+=Math.sign(x||1)*0.06;if(Math.abs(y)<0.06)y+=Math.sign(y||1)*0.06;l=x*y>0?1:0;}
+    else{l=i%2;const k=Math.floor(i/2),n=N/2,r=k/n*0.85+0.08,t=1.6*k/n*2*Math.PI+l*Math.PI;x=r*Math.sin(t);y=r*Math.cos(t);}
+    x+=randn(R)*nz*0.5;y+=randn(R)*nz*0.5;data.push({x:clamp(x,-1,1),y:clamp(y,-1,1),l,tr:R()<0.6});}
+   tr=data.filter(d=>d.tr);te=data.filter(d=>!d.tr);}
+  function sizes(){const s=[2];for(let i=0;i<+gl();i++)s.push(gh());s.push(1);return s;}
+  function resetNet(){net=new MLP(sizes(),$('pg-act').value,'sigmoid');ep=0;hist=[];run=false;$('pg-run').textContent='▶ Train';render();}
+  const XT=()=>tr.map(d=>[d.x,d.y]),YT=()=>tr.map(d=>d.l);
+  function epoch(){const lr=+$('pg-lr').value;const idx=tr.map((_,i)=>i).sort(()=>Math.random()-0.5);const B=10;
+   for(let s=0;s<idx.length;s+=B){const b=idx.slice(s,s+B);net.step(b.map(i=>[tr[i].x,tr[i].y]),b.map(i=>tr[i].l),lr,0);}
+   ep++;hist.push([net.loss(XT(),YT()),net.loss(te.map(d=>[d.x,d.y]),te.map(d=>d.l))]);}
+  const GN=64,img=document.createElement('canvas');img.width=GN;img.height=GN;const ig=img.getContext('2d'),id=ig.createImageData(GN,GN);
+  const c0=hexRgb(C.teal),c1=hexRgb(C.amber);
+  function render(){const g=P.ctx;
+   for(let j=0;j<GN;j++)for(let i=0;i<GN;i++){const x=-1+2*(i+0.5)/GN,y=1-2*(j+0.5)/GN;let p=net.predict([x,y]);if(!isFinite(p))p=0.5;const c=p>0.5?c1:c0,t=Math.min(1,Math.abs(p-0.5)*2)*0.6;const k=(j*GN+i)*4;
+    id.data[k]=255*(1-t)+c[0]*t;id.data[k+1]=255*(1-t)+c[1]*t;id.data[k+2]=255*(1-t)+c[2]*t;id.data[k+3]=255;}
+   ig.putImageData(id,0,0);g.imageSmoothingEnabled=true;g.drawImage(img,0,0,P.w,P.h);
+   const X=x=>(x+1)/2*P.w,Y=y=>(1-y)/2*P.h;
+   data.forEach(d=>{const col=d.l?C.amber:C.teal;if(d.tr)dot(g,X(d.x),Y(d.y),4.2,col,'#fff',1.2);else dot(g,X(d.x),Y(d.y),4.2,'rgba(255,255,255,.7)',col,2);});
+   text(g,'soil moisture →',P.w-8,P.h-8,{align:'right',size:12,color:'#4b5563'});g.save();g.translate(14,P.h-8);g.rotate(-Math.PI/2);text(g,'leaf temperature →',0,0,{size:12,color:'#4b5563'});g.restore();
+   let acc=0;te.forEach(d=>{if((net.predict([d.x,d.y])>0.5?1:0)===d.l)acc++;});$('pg-ep').textContent=ep;$('pg-acc').textContent=ep?(100*acc/te.length).toFixed(0)+'%':'–';
+   // net diagram
+   const h=PN.ctx;cls(PN);const s=sizes(),pos=drawNet(PN,s,{padX:34,padY:22,gap:28,maxShow:8});
+   for(let l=0;l<s.length-1;l++){const no=s[l+1];pos[l].forEach((a,i)=>pos[l+1].forEach((b,j)=>{const w=net.W[l][i*no+j],m=Math.min(1,Math.abs(w)/2.5);h.strokeStyle=rgba(w>=0?C.blue:C.amber,0.15+0.75*m);h.lineWidth=0.5+4*m;h.beginPath();h.moveTo(a[0],a[1]);h.lineTo(b[0],b[1]);h.stroke();}));}
+   pos.forEach((col,l)=>col.forEach(([x,y])=>dot(h,x,y,l===0||l===s.length-1?10:8,'#fff',l===0?C.blue:l===s.length-1?C.ink:C.purple,2)));
+   text(h,'x₁',pos[0][0][0]-14,pos[0][0][1]+4,{align:'right',size:12});text(h,'x₂',pos[0][1][0]-14,pos[0][1][1]+4,{align:'right',size:12});
+   const np=s.slice(0,-1).reduce((t,v,i)=>t+v*s[i+1]+s[i+1],0);text(h,np+' weights + biases',PN.w/2,PN.h-4,{align:'center',size:12,color:C.muted});
+   // loss chart
+   const q=PL.ctx;cls(PL);const mx=Math.max(0.8,...hist.map(v=>Math.min(3,Math.max(v[0],v[1]))));
+   const F=frame(PL,{xmin:0,xmax:Math.max(50,ep),ymin:0,ymax:mx,xticks:[0,Math.max(50,ep)],yticks:[0,+(mx/2).toFixed(2),+mx.toFixed(2)],xlabel:'epoch',ylabel:'loss',m:{l:42,b:34,t:22,r:12}});F.axes();
+   path(q,hist.map((v,i)=>[F.X(i+1),F.Y(Math.min(v[0],mx))]),C.blue,2);path(q,hist.map((v,i)=>[F.X(i+1),F.Y(Math.min(v[1],mx))]),C.amber,2);
+   text(q,'— train',F.m.l+6,14,{color:C.blue,weight:700,size:12});text(q,'— test',F.m.l+66,14,{color:C.amber,weight:700,size:12});
+   if(hist.length)text(q,'train '+fmt(hist[hist.length-1][0],3)+' · test '+fmt(hist[hist.length-1][1],3),PL.w-8,14,{align:'right',size:12,color:C.muted});}
+  $('pg-run').onclick=()=>{run=!run;$('pg-run').textContent=run?'⏸ Pause':'▶ Train';};$('pg-step').onclick=()=>{epoch();render();};$('pg-reset').onclick=resetNet;
+  this.loop=Loop(()=>{if(!run)return;epoch();if(ep>=3000){run=false;$('pg-run').textContent='▶ Train';}frameN++;render();});genData();resetNet();},
+ start(){this.loop.start();},stop(){this.loop.stop();}};
+
+/* ---------- 20 · why scaling ---------- */
+D.scale={init(){const PA=canvas('sc-a'),PB=canvas('sc-b');const fa=(x,y)=>0.5*(20*x*x+0.5*y*y),ga=(x,y)=>[20*x,0.5*y],fb=(x,y)=>0.5*(8*x*x+8*y*y),gb=(x,y)=>[8*x,8*y];
+  const o={xmin:-3,xmax:3,ymin:-3,ymax:3,xticks:[-3,0,3],yticks:[-3,0,3],m:{l:36,b:34,t:10,r:10}};
+  const FA=frame(PA,{...o,xlabel:'weight for rainfall (mm)',ylabel:'weight for temperature'}),FB=frame(PB,{...o,xlabel:'weight for rainfall (scaled)',ylabel:'weight for temperature (scaled)'});
+  const bgA=contourImg(PA,FA,fa,40,C.blue),bgB=contourImg(PB,FB,fb,40,C.teal);const glr=range('sc-lr',v=>fmt(v,3),reset);
+  let A,B,run=false,acc=0;const st=[-0.9,2.6];
+  function mk(){return{p:st.slice(),trail:[st.slice()],res:null,k:0};}
+  function reset(){A=mk();B=mk();run=false;$('sc-run').textContent='▶ Run both';draw();}
+  function adv(s,f,g){if(s.res)return;const lr=glr(),gr=g(s.p[0],s.p[1]);s.p=[s.p[0]-lr*gr[0],s.p[1]-lr*gr[1]];s.k++;s.trail.push(s.p.slice());const v=f(s.p[0],s.p[1]);
+   if(!isFinite(v)||Math.abs(s.p[0])>50)s.res='💥 diverged at step '+s.k;else if(v<0.005)s.res='✓ reached the minimum in '+s.k+' steps';else if(s.k>=120)s.res='🐌 still not there after 120 steps';}
+  function drawOne(P,F,bg,s,f){const g=P.ctx;cls(P);g.drawImage(bg,F.m.l,F.m.t,F.pw,F.ph);F.axes();F.clip();text(g,'★',F.X(0),F.Y(0)+8,{align:'center',size:22,color:C.red});
+   path(g,s.trail.map(p=>[F.X(clamp(p[0],-9,9)),F.Y(clamp(p[1],-9,9))]),C.ink,2);const p=s.trail[s.trail.length-1];dot(g,F.X(clamp(p[0],-9,9)),F.Y(clamp(p[1],-9,9)),6,C.amber,'#fff',2);g.restore();}
+  function draw(){drawOne(PA,FA,bgA,A,fa);drawOne(PB,FB,bgB,B,fb);$('sc-ra').textContent=A.res||(A.k?'step '+A.k+', loss '+fmt(fa(...A.p),3):'press Run');$('sc-rb').textContent=B.res||(B.k?'step '+B.k+', loss '+fmt(fb(...B.p),3):'press Run');}
+  $('sc-run').onclick=()=>{if(A.res&&B.res)reset();run=!run;$('sc-run').textContent=run?'⏸ Pause':'▶ Run both';};
+  this.loop=Loop(dt=>{if(!run)return;acc+=dt;if(acc<90)return;acc=0;adv(A,fa,ga);adv(B,fb,gb);if(A.res&&B.res){run=false;$('sc-run').textContent='▶ Run both';}draw();});reset();},
+ start(){this.loop.start();},stop(){this.loop.stop();}};
+
+</script>
+<script>
+"use strict";
+/* ================= pipeline definition ================= */
+const STAGES=[
+ {id:'data',n:'Data',e:'📋',c:C.blue,t:'Rows of examples (fields) with measurements, plus the answer we want to predict.'},
+ {id:'split',n:'Split',e:'✂️',c:C.blue,t:'Lock some rows away: <b>train</b> to learn, <b>validation</b> to tune, <b>test</b> for the final exam.'},
+ {id:'prep',n:'Preprocess',e:'🧽',c:C.blue,t:'Turn everything into clean numbers on similar scales.'},
+ {id:'input',n:'Input',e:'➡️',c:C.purple,t:'One input per feature column. It just holds the numbers.'},
+ {id:'hidden',n:'Hidden layers',e:'🧠',c:C.purple,t:'Neurons: multiply by <b>weights</b>, add a <b>bias</b>, apply an <b>activation</b>.'},
+ {id:'output',n:'Output',e:'🎯',c:C.purple,t:'The prediction: a number (yield) or probabilities (species).'},
+ {id:'loss',n:'Loss',e:'📏',c:C.red,t:'Compare prediction with the truth: one number for "how wrong".'},
+ {id:'opt',n:'Optimizer',e:'⚙️',c:C.teal,t:'Nudge every weight a little to make the loss smaller. Then repeat (the <b>training loop</b>).'},
+ {id:'eval',n:'Evaluate',e:'✅',c:C.amber,t:'After training: test on data the model has never seen. Did it learn or memorise?'},
+ {id:'predict',n:'Predict',e:'🔮',c:C.green,t:'Use the trained model on new fields, with the same preprocessing.'}];
+const SG={};STAGES.forEach(s=>SG[s.id]=s);
+
+/* ---------- big picture ---------- */
+D.pipe={init(){const P=canvas('pi-c');const BW=132,BH=56;
+  const pos={data:[75,60],split:[225,60],prep:[375,60],input:[540,60],hidden:[700,60],output:[860,60],loss:[1020,60],opt:[860,195],eval:[700,305],predict:[1020,305]};
+  let sel='data',lit=null,tok=null,seq=[],si=0,sf=0,play=false,epoch=0;
+  const seg2=(a,b)=>{if(a==='loss'&&b==='opt')return[pos.loss,[1020,195],pos.opt];if(a==='opt'&&b==='hidden')return[pos.opt,[700,195],pos.hidden];if(a==='opt'&&b==='eval')return[pos.opt,[700,195],pos.eval];return[pos[a],pos[b]];};
+  function arrow(g,pts,col,w,dash,label,lx,ly){g.save();g.strokeStyle=col;g.fillStyle=col;g.lineWidth=w||2;if(dash)g.setLineDash(dash);g.beginPath();g.moveTo(pts[0][0],pts[0][1]);pts.slice(1).forEach(p=>g.lineTo(p[0],p[1]));g.stroke();g.setLineDash([]);
+   const [x1,y1]=pts[pts.length-2],[x2,y2]=pts[pts.length-1],a=Math.atan2(y2-y1,x2-x1);g.beginPath();g.moveTo(x2,y2);g.lineTo(x2-10*Math.cos(a-0.45),y2-10*Math.sin(a-0.45));g.lineTo(x2-10*Math.cos(a+0.45),y2-10*Math.sin(a+0.45));g.fill();g.restore();
+   if(label)text(g,label,lx,ly,{align:'center',size:13,color:col,weight:600});}
+  const edge=(a,b)=>{const [ax,ay]=pos[a],[bx,by]=pos[b];if(ay===by)return[[ax+BW/2,ay],[bx-BW/2-2,by]];return null;};
+  function draw(){const g=P.ctx;cls(P);
+   g.save();g.setLineDash([6,5]);g.strokeStyle=rgba(C.teal,0.6);g.lineWidth=1.5;rrect(g,462,14,642,236,16);g.stroke();g.restore();
+   text(g,'↺ training loop: repeat for many epochs'+(epoch?'   ·   epoch '+epoch:''),783,242,{align:'center',size:13,color:C.tealD,weight:700});
+   [['data','split'],['split','prep'],['prep','input'],['input','hidden'],['hidden','output'],['output','loss']].forEach(([a,b])=>arrow(g,edge(a,b),'#9aa5b8',2));
+   arrow(g,[[1020,88],[1020,195],[860+BW/2+2,195]],C.red,2);
+   arrow(g,[[860-BW/2,195],[700,195],[700,88+2]],C.teal,2.5,null,'update weights',640,150);
+   arrow(g,[[700,250],[700,305-BH/2-2]],'#9aa5b8',2);text(g,'after training',710,268,{size:13,color:'#9aa5b8',weight:600});
+   arrow(g,[[700+BW/2,305],[1020-BW/2-2,305]],'#9aa5b8',2,null,'new fields',860,298);
+   arrow(g,[[225,88],[225,305],[700-BW/2-2,305]],C.purple,2,[5,5],'🔒 test set (kept aside)',420,298);
+   STAGES.forEach(s=>{const [x,y]=pos[s.id];const on=s.id===lit||s.id===sel;g.save();if(s.id===lit){g.shadowColor=s.c;g.shadowBlur=22;}
+    g.fillStyle=on?rgba(s.c,0.16):'#fff';rrect(g,x-BW/2,y-BH/2,BW,BH,12);g.fill();g.strokeStyle=on?s.c:'#d4d4d8';g.lineWidth=on?3:1.5;g.stroke();g.restore();
+    text(g,s.e+' '+s.n,x,y+6,{align:'center',size:16,weight:700,color:on?s.c:C.ink});});
+   if(tok)dot(P.ctx,tok[0],tok[1],9,C.amber,'#fff',2.5);
+   const s=SG[lit||sel];$('pi-info').innerHTML='<b style="color:'+s.c+'">'+s.e+' '+s.n+'</b> &nbsp; '+s.t;}
+  P.c.addEventListener('click',e=>{const[px,py]=cpos(e,P);for(const s of STAGES){const[x,y]=pos[s.id];if(Math.abs(px-x)<BW/2&&Math.abs(py-y)<BH/2){sel=s.id;draw();}}});
+  P.c.style.cursor='pointer';
+  function build(){seq=['data','split','prep','input','hidden','output','loss','opt'];for(let k=0;k<2;k++)seq.push('hidden','output','loss','opt');seq.push('eval','predict');}
+  $('pi-play').onclick=()=>{build();si=0;sf=0;epoch=1;play=true;lit='data';};
+  $('pi-go').onclick=()=>window.DECK&&DECK.goStage(sel);
+  this.loop=Loop(dt=>{if(!play)return;sf+=dt/(si<7?650:si>=seq.length-3?800:420);
+   if(sf>=1){sf=0;si++;if(seq[si]==='hidden'&&seq[si-1]==='opt')epoch++;if(si>=seq.length-1){play=false;tok=null;lit=seq[seq.length-1];sel=lit;draw();return;}}
+   lit=seq[si];const pts=seg2(seq[si],seq[si+1]);const L=[];let tot=0;for(let i=1;i<pts.length;i++){const d=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);L.push(d);tot+=d;}
+   let r=sf*tot,i=0;while(i<L.length-1&&r>L[i]){r-=L[i];i++;}const f=L[i]?r/L[i]:0;tok=[lerp(pts[i][0],pts[i+1][0],f),lerp(pts[i][1],pts[i+1][1],f)];draw();});
+  draw();},start(){this.loop.start();},stop(){this.loop.stop();}};
+
+/* ---------- data: choose target ---------- */
+D.target={init(){const cols=['rainfall (mm)','temp (°C)','soil N','soil_type','health','yield (t/ha)'],num=[1,1,1,0,0,1];
+  const rows=[[620,24.1,95,'loam','healthy',6.1],[380,31.2,60,'sandy','stressed',3.2],[870,22.4,140,'clay','healthy',7.8],[540,27.0,'NaN','loam','healthy',5.0],[710,25.3,110,'sandy','healthy',6.4],[300,33.5,70,'sandy','stressed',2.6]];
+  let tgt=5;function draw(){let h='<table class="ptable" style="width:100%;font-size:17px"><tr>'+cols.map((c,j)=>'<th data-j="'+j+'" style="cursor:pointer;text-align:center;'+(j===tgt?'background:'+C.amberBg+';color:#8a4f12':'')+'">'+(j===tgt?'🎯 ':'')+c+'</th>').join('')+'</tr>';
+   rows.forEach(r=>{h+='<tr>'+r.map((v,j)=>'<td data-j="'+j+'" style="cursor:pointer;text-align:center;background:'+(j===tgt?C.amberBg:rgba(C.blue,0.06))+';'+(j===tgt?'font-weight:700':'')+'">'+v+'</td>').join('')+'</tr>';});
+   h+='<tr><td colspan="6" class="mini" style="text-align:center">… 600 fields</td></tr></table>';$('tg-tab').innerHTML=h;
+   $('tg-tab').querySelectorAll('[data-j]').forEach(e=>e.onclick=()=>{tgt=+e.dataset.j;draw();});
+   const name=cols[tgt].split(' (')[0];
+   $('tg-type').innerHTML=num[tgt]?'<h3 class="t">📈 Regression</h3><p style="font-size:18px">Predict a <b>number</b>: '+name+'.</p>':'<h3 class="p">🏷️ Classification</h3><p style="font-size:18px">Predict a <b>category</b>: '+name+' ('+[...new Set(rows.map(r=>r[tgt]))].join(' / ')+').</p>';
+   $('tg-feat').innerHTML='<h3 class="b">Features (inputs)</h3><p>'+cols.filter((_,j)=>j!==tgt).map(c=>'<span class="pill" style="background:var(--blueBg);color:var(--blue);margin:2px">'+c.split(' (')[0]+'</span>').join(' ')+'</p>';}
+  draw();}};
+
+/* ---------- split ---------- */
+D.split={init(){const P=canvas('sp-c');const gv=range('sp-v',v=>v+'%',draw),gt=range('sp-t',v=>v+'%',draw);let perm=[...Array(100).keys()];
+  const shuffle=()=>{for(let i=99;i>0;i--){const j=Math.floor(Math.random()*(i+1));[perm[i],perm[j]]=[perm[j],perm[i]];}};
+  $('sp-sh').onclick=()=>{shuffle();draw();};
+  function draw(){const v=gv(),t=gt(),tr=100-v-t,g=P.ctx;cls(P);const sz=40;
+   perm.forEach((cell,k)=>{const x=10+(cell%10)*sz*1.55,y=8+Math.floor(cell/10)*sz;const kind=k<tr?0:k<tr+v?1:2;const col=[C.blue,C.amber,C.purple][kind];
+    g.fillStyle=rgba(col,kind===0?0.55:0.85);rrect(g,x,y,sz*1.55-6,sz-6,7);g.fill();if(kind===2)text(g,'🔒',x+(sz*1.55-6)/2,y+22,{align:'center',size:13});});
+   $('sp-n0').innerHTML='<b>'+tr+'%</b> ·';$('sp-n1').innerHTML='<b>'+v+'%</b> ·';$('sp-n2').innerHTML='<b>'+t+'%</b> ·';}
+  shuffle();draw();}};
+
+/* ---------- input layer ---------- */
+D.inputs={init(){const P=canvas('in-c');const F=[['🌧 rainfall',1,true],['🌡 temperature',1,true],['🧪 soil N',1,true],['🪨 soil type',3,false],['⛰ elevation',1,false],['📅 sowing day',1,false]];
+  $('in-box').innerHTML=F.map((f,i)=>'<label style="display:flex;gap:8px;align-items:center;cursor:pointer"><input type="checkbox" data-i="'+i+'" '+(f[2]?'checked':'')+'> '+f[0]+(f[1]>1?' <span class="mini">(→ '+f[1]+' after one-hot)</span>':'')+'</label>').join('');
+  $('in-box').querySelectorAll('input').forEach(c=>c.onchange=()=>{F[+c.dataset.i][2]=c.checked;draw();});
+  function draw(){const g=P.ctx;cls(P);const nodes=[];F.forEach(f=>{if(f[2]){if(f[1]===1)nodes.push(f[0]);else['clay','loam','sandy'].forEach(s=>nodes.push('🪨 '+s));}});
+   const n=nodes.length;$('in-n').textContent=n;$('in-py').innerHTML='layers.Input(shape=(<span class="s">'+n+'</span>,))';$('in-r').innerHTML='keras_model_sequential(\n  input_shape = <span class="s">'+n+'</span>)';
+   const gap=Math.min(62,(P.h-40)/Math.max(n,1)),y0=P.h/2-gap*(n-1)/2,hx=640;
+   const hid=[0,1,2,3,4].map(k=>P.h/2+(k-2)*70);
+   nodes.forEach((s,i)=>{const y=y0+i*gap;hid.forEach(hy=>{g.strokeStyle='rgba(154,165,184,.3)';g.lineWidth=1;g.beginPath();g.moveTo(420,y);g.lineTo(hx,hy);g.stroke();});});
+   nodes.forEach((s,i)=>{const y=y0+i*gap;g.fillStyle=C.blueBg;rrect(g,40,y-17,200,34,10);g.fill();text(g,s,140,y+5,{align:'center',size:15,weight:600,color:C.blue});
+    g.strokeStyle=C.blue;g.lineWidth=2;g.beginPath();g.moveTo(244,y);g.lineTo(380,y);g.stroke();dot(g,400,y,18,'#fff',C.blue,2.5);});
+   hid.forEach(hy=>dot(g,hx,hy,14,'#f4f4f5','#c4b5fd',2));
+   text(g,'columns',140,16,{align:'center',size:13,color:C.muted});text(g,'input layer',400,16,{align:'center',size:13,color:C.blue,weight:700});text(g,'hidden layer →',hx,16,{align:'center',size:13,color:C.muted});}
+  draw();}};
+
+/* ---------- preprocessing (Python + R) ---------- */
+D.prep={init(){const raw=[[620,24.1,95,'loam',6.1],[380,31.2,60,'sandy',3.2],[870,22.4,140,'clay',7.8],[540,27.0,null,'loam',5.0],[710,25.3,110,'sandy',6.4],[450,29.8,70,'clay',4.1],[800,23.0,125,'loam',7.2],[300,33.5,null,'sandy',2.6]];
+  const isTest=i=>i>=6,trainIdx=[0,1,2,3,4,5];const med=a=>{const s=a.slice().sort((x,y)=>x-y),m=s.length>>1;return s.length%2?s[m]:(s[m-1]+s[m])/2;};
+  const nMed=med(trainIdx.map(i=>raw[i][2]).filter(v=>v!==null));
+  const stats=[0,1,2].map(c=>{const v=trainIdx.map(i=>raw[i][c]===null?nMed:raw[i][c]);const mu=v.reduce((a,b)=>a+b,0)/v.length,sd=Math.sqrt(v.reduce((a,b)=>a+(b-mu)**2,0)/v.length);return[mu,sd];});
+  const S=s=>'<span class="s">'+s+'</span>';
+  const T=[['Text column, missing values (NaN), big and small numbers.','df = pd.read_csv('+S('"fields.csv"')+')','df &lt;- read.csv('+S('"fields.csv"')+')'],
+   ['soil_type → three 0/1 columns.','df = pd.get_dummies(df, columns=['+S('"soil_type"')+'])','df &lt;- cbind(df, model.matrix(~ soil_type - '+S('1')+', df))'],
+   ['Decide train / test <b>now</b>, before computing anything.','train, test = train_test_split(df, test_size='+S('0.25')+')','idx   &lt;- sample(nrow(df), '+S('6')+')\ntrain &lt;- df[idx, ];  test &lt;- df[-idx, ]'],
+   ['Fill gaps with the median of <b>train</b> rows (= '+nMed+').','med = train['+S('"soil_N"')+'].median()\ntrain['+S('"soil_N"')+'] = train['+S('"soil_N"')+'].fillna(med)\ntest['+S('"soil_N"')+']  = test['+S('"soil_N"')+'].fillna(med)','med &lt;- median(train$soil_N, na.rm = '+S('TRUE')+')\ntrain$soil_N[is.na(train$soil_N)] &lt;- med\ntest$soil_N[is.na(test$soil_N)]   &lt;- med'],
+   ['(value − mean) ÷ sd, using <b>train</b> mean and sd.','scaler  = StandardScaler().fit(X_train)\nX_train = scaler.transform(X_train)\nX_test  = scaler.transform(X_test)','x_train &lt;- scale(x_train)\nx_test  &lt;- scale(x_test,\n                  center = attr(x_train, '+S('"scaled:center"')+'),\n                  scale  = attr(x_train, '+S('"scaled:scale"')+'))']];
+  seg('pp-seg',v=>draw(+v));
+  function draw(st){let head=['rainfall','temp','soil N'];head=head.concat(st>=1?['clay','loam','sandy']:['soil_type']);head.push('yield');if(st>=2)head.push('set');
+   let h='<table class="ptable" style="width:100%;font-size:16px"><tr>'+head.map(x=>'<th>'+x+'</th>').join('')+'</tr>';
+   raw.forEach((r,i)=>{h+='<tr>';for(let c=0;c<3;c++){let v=r[c],cl='';if(v===null){if(st>=3){v=nMed;cl='new';}else{v='NaN';cl='hl';}}else if(c===1)v=v.toFixed(1);
+     if(st>=4){v=fmt((+v-stats[c][0])/stats[c][1],2);cl=cl||'new';}h+='<td class="'+cl+'">'+v+'</td>';}
+    if(st>=1)['clay','loam','sandy'].forEach(t=>h+='<td class="'+(st===1?'new':'')+'">'+(r[3]===t?1:0)+'</td>');else h+='<td class="hl">'+r[3]+'</td>';
+    h+='<td><b>'+r[4]+'</b></td>';if(st>=2)h+='<td class="'+(isTest(i)?'test':'train')+'">'+(isTest(i)?'test':'train')+'</td>';h+='</tr>';});
+   $('pp-tab').innerHTML=h+'</table>';$('pp-txt').innerHTML=T[st][0];$('pp-py').innerHTML=T[st][1];$('pp-r').innerHTML=T[st][2];}
+  draw(0);}};
+
+/* ---------- architecture builder (Python + R) ---------- */
+D.arch={init(){const P=canvas('ar-c');const gi=range('ar-i',null,upd),gl=range('ar-l',null,upd),gh=range('ar-h',null,upd),go=range('ar-o',null,upd);let anim=-1;
+  function sizes(){const s=[gi()];for(let l=0;l<gl();l++)s.push(gh());s.push(go());return s;}
+  function upd(){const s=sizes();let tot=0,parts=[];for(let l=0;l<s.length-1;l++){const p=s[l]*s[l+1]+s[l+1];tot+=p;parts.push((l===s.length-2?'output':'hidden '+(l+1))+': '+s[l]+'×'+s[l+1]+' + '+s[l+1]+' = <b>'+p+'</b>');}
+   $('ar-p').textContent=tot.toLocaleString();$('ar-break').innerHTML=parts.join('<br>');
+   const o=go(),S=x=>'<span class="s">'+x+'</span>';
+   let py='model = keras.Sequential([\n    layers.Input(shape=('+S(gi())+',)),\n';for(let l=0;l<gl();l++)py+='    layers.Dense('+S(gh())+', activation='+S('"relu"')+'),\n';
+   py+='    layers.Dense('+S(o)+(o>1?', activation='+S('"softmax"'):'')+')\n])';
+   let r='model &lt;- keras_model_sequential(input_shape = '+S(gi())+') |&gt;\n';for(let l=0;l<gl();l++)r+='  layer_dense('+S(gh())+', activation = '+S('"relu"')+') |&gt;\n';
+   r+='  layer_dense('+S(o)+(o>1?', activation = '+S('"softmax"'):'')+')';
+   $('ar-py').innerHTML=py;$('ar-r').innerHTML=r;draw();}
+  function draw(){const g=P.ctx,s=sizes();cls(P);const pos=drawNet(P,s,{padX:70,padY:22,gap:26,maxShow:16});const L=s.length;
+   for(let l=0;l<L-1;l++)pos[l].forEach(a=>pos[l+1].forEach(b=>{const lit=anim>=0&&anim>l&&anim<l+1.6;g.strokeStyle=lit?rgba(C.teal,0.55):'rgba(154,165,184,0.35)';g.lineWidth=lit?1.6:1;g.beginPath();g.moveTo(a[0],a[1]);g.lineTo(b[0],b[1]);g.stroke();
+    if(anim>l&&anim<l+1){const f=anim-l;dot(g,lerp(a[0],b[0],f),lerp(a[1],b[1],f),2.2,C.teal);}}));
+   pos.forEach((col,l)=>{const c=l===0?C.blue:l===L-1?(go()>1?C.amber:C.teal):C.purple;const lit=anim>=l&&anim<l+1.2;
+    col.forEach(([x,y])=>dot(g,x,y,9,lit?c:rgba(c,0.18),c,2));
+    text(g,l===0?'input':l===L-1?'output':'hidden '+l,col[0][0],P.h-4,{align:'center',size:12,color:C.muted});});}
+  this.loop=Loop(dt=>{if(anim<0)return;anim+=dt/550;if(anim>sizes().length+0.3)anim=-1;draw();});
+  $('ar-go').onclick=()=>{anim=0;};upd();},
+ start(){this.loop.start();},stop(){this.loop.stop();}};
+
+/* ---------- output: task chooser (Python + R) ---------- */
+D.task={init(){const S=x=>'<span class="s">'+x+'</span>';const T=[
+  {n:'🌾 Crop yield (t/ha)',k:'Regression',out:'1 neuron<br><span class="mini">no activation</span>',loss:'MSE',met:'MAE',
+   py:'layers.Dense('+S(1)+')\nmodel.compile(optimizer='+S('"adam"')+', loss='+S('"mse"')+', metrics=['+S('"mae"')+'])',r:'layer_dense('+S(1)+')\nmodel |&gt; compile(optimizer = '+S('"adam"')+', loss = '+S('"mse"')+', metrics = '+S('"mae"')+')'},
+  {n:'🍂 Healthy or stressed?',k:'Yes / no',out:'1 neuron<br><span class="mini">sigmoid</span>',loss:'binary cross-entropy',met:'accuracy',
+   py:'layers.Dense('+S(1)+', activation='+S('"sigmoid"')+')\nmodel.compile(optimizer='+S('"adam"')+', loss='+S('"binary_crossentropy"')+', metrics=['+S('"accuracy"')+'])',r:'layer_dense('+S(1)+', activation = '+S('"sigmoid"')+')\nmodel |&gt; compile(optimizer = '+S('"adam"')+', loss = '+S('"binary_crossentropy"')+', metrics = '+S('"accuracy"')+')'},
+  {n:'🐧 Penguin species (3)',k:'One of many',out:'3 neurons<br><span class="mini">softmax</span>',loss:'categorical cross-entropy',met:'accuracy',
+   py:'layers.Dense('+S(3)+', activation='+S('"softmax"')+')\nmodel.compile(optimizer='+S('"adam"')+', loss='+S('"sparse_categorical_crossentropy"')+',\n              metrics=['+S('"accuracy"')+'])',r:'layer_dense('+S(3)+', activation = '+S('"softmax"')+')\nmodel |&gt; compile(optimizer = '+S('"adam"')+', loss = '+S('"sparse_categorical_crossentropy"')+',\n                  metrics = '+S('"accuracy"')+')'}];
+  const list=$('tk-list');T.forEach((t,i)=>{const b=document.createElement('button');b.className='btn';b.style.cssText='text-align:left;padding:16px 18px;font-size:19px;border-radius:12px';b.innerHTML=t.n+'<br><span class="mini">'+t.k+'</span>';b.onclick=()=>show(i);list.appendChild(b);});
+  function show(i){const t=T[i];[...list.children].forEach((b,j)=>{b.style.borderColor=j===i?C.teal:'#d4d4d8';b.style.background=j===i?C.tealBg:'#fff';});
+   $('tk-cards').innerHTML=[['Output layer',t.out,C.purple],['Loss',t.loss,C.red],['Metric',t.met,C.amber]].map(c=>'<div class="card" style="border-top:5px solid '+c[2]+';text-align:center"><div class="mini" style="font-weight:600">'+c[0].toUpperCase()+'</div><div style="font-size:21px;font-weight:700;margin-top:8px">'+c[1]+'</div></div>').join('');
+   $('tk-py').innerHTML=t.py;$('tk-r').innerHTML=t.r;}
+  show(0);}};
+
+/* ---------- recipe: code ↔ stage ---------- */
+D.recipe={init(){const S=x=>'<span class="s">'+x+'</span>',K=x=>'<span class="k">'+x+'</span>',Cm=x=>'<span class="c">'+x+'</span>';
+  const PY=[['data',K('import')+' pandas '+K('as')+' pd;  '+K('from')+' tensorflow '+K('import')+' keras;  '+K('from')+' keras '+K('import')+' layers'],
+   ['data','df = pd.read_csv('+S('"crop_yield.csv"')+')'],['data','X, y = df[['+S('"rain"')+', '+S('"temp"')+', '+S('"soil_n"')+']], df['+S('"yield"')+']'],
+   ['split','X_train, X_test, y_train, y_test = train_test_split(X, y, test_size='+S('0.2')+')'],
+   ['prep','scaler = StandardScaler().fit(X_train)                     '+Cm('# train stats only')],
+   ['prep','X_train, X_test = scaler.transform(X_train), scaler.transform(X_test)'],
+   ['input','model = keras.Sequential([layers.Input(shape=('+S(3)+',)),'],
+   ['hidden','    layers.Dense('+S(32)+', activation='+S('"relu"')+'),'],['hidden','    layers.Dense('+S(16)+', activation='+S('"relu"')+'),'],
+   ['output','    layers.Dense('+S(1)+')])'],
+   ['loss,opt','model.compile(optimizer='+S('"adam"')+', loss='+S('"mse"')+', metrics=['+S('"mae"')+'])'],
+   ['input,hidden,output,loss,opt','model.fit(X_train, y_train, validation_split='+S('0.2')+', epochs='+S(200)+', batch_size='+S(32)+')'],
+   ['eval','model.evaluate(X_test, y_test)'],['predict','model.predict(scaler.transform(new_fields))']];
+  const R=[['data',K('library')+'(keras3)'],['data','df &lt;- read.csv('+S('"crop_yield.csv"')+')'],
+   ['split','idx &lt;- sample(nrow(df), '+S('0.8')+' * nrow(df));  train &lt;- df[idx, ];  test &lt;- df[-idx, ]'],
+   ['prep','x_train &lt;- scale(as.matrix(train[, c('+S('"rain"')+', '+S('"temp"')+', '+S('"soil_n"')+')]))'],
+   ['prep','mu &lt;- attr(x_train, '+S('"scaled:center"')+');  sdv &lt;- attr(x_train, '+S('"scaled:scale"')+')  '+Cm('# train stats only')],
+   ['prep','x_test &lt;- scale(as.matrix(test[, c('+S('"rain"')+', '+S('"temp"')+', '+S('"soil_n"')+')]), center = mu, scale = sdv)'],
+   ['input','model &lt;- keras_model_sequential(input_shape = '+S(3)+') |&gt;'],
+   ['hidden','  layer_dense('+S(32)+', activation = '+S('"relu"')+') |&gt;'],['hidden','  layer_dense('+S(16)+', activation = '+S('"relu"')+') |&gt;'],
+   ['output','  layer_dense('+S(1)+')'],
+   ['loss,opt','model |&gt; compile(optimizer = '+S('"adam"')+', loss = '+S('"mse"')+', metrics = '+S('"mae"')+')'],
+   ['input,hidden,output,loss,opt','model |&gt; fit(x_train, train$yield, validation_split = '+S('0.2')+', epochs = '+S(200)+', batch_size = '+S(32)+')'],
+   ['eval','model |&gt; evaluate(x_test, test$yield)'],['predict','predict(model, scale(new_x, center = mu, scale = sdv))']];
+  const sl=$('rc-py').closest('.slide');
+  [['rc-py',PY],['rc-r',R]].forEach(([id,L])=>{const el=$(id);el.innerHTML=L.map(([st,l])=>'<span class="rl" data-st="'+st+'" style="display:block;border-radius:5px;padding:0 6px;cursor:default">'+l+'</span>').join('');
+   el.querySelectorAll('.rl').forEach(s=>{s.onmouseenter=()=>{s.style.background='rgba(63,144,131,.45)';sl.dataset.hl=s.dataset.st;window.DECK&&DECK.paintBar(sl);};s.onmouseleave=()=>{s.style.background='';delete sl.dataset.hl;window.DECK&&DECK.paintBar(sl);};});});}};
+
+/* static pipeline diagram for the "where are we" pop-up */
+const PIPEPOS={data:[75,60],split:[225,60],prep:[375,60],input:[540,60],hidden:[700,60],output:[860,60],loss:[1020,60],opt:[860,195],eval:[700,305],predict:[1020,305]};
+function pipeDiagram(P,now,done){const g=P.ctx,BW=132,BH=56,pos=PIPEPOS,ox=(P.w-1100)/2;cls(P);g.save();g.translate(ox,0);
+ const arrow=(pts,col,w,dash)=>{g.save();g.strokeStyle=col;g.fillStyle=col;g.lineWidth=w;if(dash)g.setLineDash(dash);g.beginPath();g.moveTo(pts[0][0],pts[0][1]);pts.slice(1).forEach(p=>g.lineTo(p[0],p[1]));g.stroke();g.setLineDash([]);
+  const [x1,y1]=pts[pts.length-2],[x2,y2]=pts[pts.length-1],a=Math.atan2(y2-y1,x2-x1);g.beginPath();g.moveTo(x2,y2);g.lineTo(x2-10*Math.cos(a-0.45),y2-10*Math.sin(a-0.45));g.lineTo(x2-10*Math.cos(a+0.45),y2-10*Math.sin(a+0.45));g.fill();g.restore();};
+ g.save();g.setLineDash([6,5]);g.strokeStyle=rgba(C.teal,0.6);g.lineWidth=1.5;rrect(g,462,14,642,236,16);g.stroke();g.restore();
+ text(g,'↺ training loop: repeat for many epochs',783,242,{align:'center',size:13,color:C.tealD,weight:700});
+ [['data','split'],['split','prep'],['prep','input'],['input','hidden'],['hidden','output'],['output','loss']].forEach(([a,b])=>arrow([[pos[a][0]+BW/2,60],[pos[b][0]-BW/2-2,60]],'#9aa5b8',2));
+ arrow([[1020,88],[1020,195],[860+BW/2+2,195]],C.red,2);arrow([[860-BW/2,195],[700,195],[700,90]],C.teal,2.5);text(g,'update weights',640,150,{align:'center',size:13,color:C.teal,weight:600});
+ arrow([[700,250],[700,305-BH/2-2]],'#9aa5b8',2);arrow([[700+BW/2,305],[1020-BW/2-2,305]],'#9aa5b8',2);arrow([[225,88],[225,305],[700-BW/2-2,305]],C.purple,2,[5,5]);
+ text(g,'🔒 test set',420,298,{align:'center',size:13,color:C.purple,weight:600});
+ STAGES.forEach(s=>{const [x,y]=pos[s.id],isNow=now.includes(s.id),isDone=done.includes(s.id);g.save();if(isNow){g.shadowColor=s.c;g.shadowBlur=26;}
+  g.fillStyle=isNow?s.c:isDone?rgba(s.c,0.12):'#fff';rrect(g,x-BW/2,y-BH/2,BW,BH,12);g.fill();g.strokeStyle=isNow||isDone?s.c:'#d4d4d8';g.lineWidth=isNow?3:1.5;g.stroke();g.restore();
+  text(g,s.e+' '+s.n,x,y+6,{align:'center',size:16,weight:700,color:isNow?'#fff':isDone?s.c:'#9ca3af'});
+  if(isDone)text(g,'✓',x+BW/2-12,y-BH/2+16,{align:'center',size:14,weight:800,color:s.c});
+  if(isNow){text(g,'▼ we are here',x,y-BH/2-6,{align:'center',size:12,weight:800,color:s.c});}});
+ g.restore();}
+</script>
+<script>
+"use strict";
+/* ---------- softmax with curve ---------- */
+D.softmax={init(){const P=canvas('sm-c'),G=canvas('sm-g');const names=['Adelie','Chinstrap','Gentoo'],cols=[C.blue,C.amber,C.purple];const gs=[0,1,2].map(i=>range('sm-'+i,v=>fmt(v,1),draw));
+  const soft=s=>{const mx=Math.max(...s),e=s.map(v=>Math.exp(v-mx)),Z=e.reduce((a,b)=>a+b,0);return e.map(v=>v/Z);};
+  function draw(){const s=gs.map(f=>f()),p=soft(s);const g=P.ctx;cls(P);
+   text(g,'raw scores',20,26,{weight:700,color:C.muted,size:13});text(g,'softmax probabilities',20,196,{weight:700,color:C.muted,size:13});
+   const x0=130,W=520,z0=x0+W*0.4;g.strokeStyle='#c7ccd4';g.beginPath();g.moveTo(z0,36);g.lineTo(z0,160);g.stroke();
+   s.forEach((v,i)=>{const y=46+i*38,w=v/10*W;g.fillStyle=rgba(cols[i],0.35);g.fillRect(Math.min(z0,z0+w),y,Math.abs(w),26);text(g,names[i],x0-12,y+18,{align:'right',weight:600,color:cols[i]});text(g,fmt(v,1),v>=0?z0+w+6:z0+w-6,y+18,{align:v>=0?'left':'right',size:12.5});});
+   text(g,'↓  e^score ÷ total  ↓',P.w/2,184,{align:'center',size:13,color:C.muted});const best=p.indexOf(Math.max(...p));
+   p.forEach((v,i)=>{const y=212+i*62;g.fillStyle='#f4f4f5';rrect(g,x0,y,W,44,10);g.fill();g.fillStyle=cols[i];rrect(g,x0,y,Math.max(10,W*v),44,10);g.fill();
+    text(g,names[i],x0-12,y+28,{align:'right',weight:700,color:cols[i],size:15});text(g,(100*v).toFixed(1)+'%',x0+Math.max(10,W*v)+8,y+29,{weight:700,size:17});
+    if(i===best)text(g,'← prediction',P.w-6,y+29,{align:'right',size:13,weight:600});});
+   // curve: probability of each class as its own score changes (others fixed)
+   const h=G.ctx;cls(G);const F=frame(G,{xmin:-4,xmax:6,ymin:0,ymax:1,xticks:[-4,-2,0,2,4,6],yticks:[0,0.5,1],yfmt:t=>(t*100)+'%',xlabel:'a class\'s own score (others fixed)',ylabel:'probability',m:{l:44,b:34,t:24,r:10}});F.axes();F.clip();
+   const xs=linspace(-4,6,120);
+   [0,1,2].forEach(k=>{path(h,xs.map(x=>{const t=s.slice();t[k]=x;return[F.X(x),F.Y(soft(t)[k])];}),cols[k],2.5);dot(h,F.X(s[k]),F.Y(p[k]),6,cols[k],'#fff',2);});
+   h.restore();text(h,'S-shaped: bigger score → closer to 100%, never past it',G.w/2,15,{align:'center',size:12,color:C.muted,weight:600});}
+  draw();}};
+
+/* ---------- overfitting lab with scoreboard ---------- */
+D.over={init(){const PF=canvas('ov-fit'),PL=canvas('ov-loss');const truth=t=>1.5+6*Math.exp(-Math.pow((t-26)/(t<26?8:5),2));const NOISE=0.5,EMAX=3000;
+  const toT=u=>25+15*u,ys=y=>(y-4.5)/2.5,yu=s=>s*2.5+4.5;const gsize=seg('ov-size',resetNet),gl2=seg('ov-l2',resetNet);const gn=range('ov-n',null,newData);
+  const SZ={s:[1,1,1],m:[1,3,1],l:[1,60,60,1]},SN={s:'Tiny',m:'Medium',l:'Huge'},LN={'0':'off','0.003':'weak','0.02':'strong'};
+  let tr=[],va=[],net,ep=0,run=false,hist=[],best={v:1e9,ep:0,curve:null},seed=0,board=[];const xs=linspace(-1,1,160);
+  function newData(){const R=mulberry([3,4][seed++%2]);tr=[];va=[];const n=gn();for(let i=0;i<n;i++){const u=R()*2-1;tr.push([u,truth(toT(u))+randn(R)*NOISE]);}
+   for(let i=0;i<80;i++){const u=R()*2-1;va.push([u,truth(toT(u))+randn(R)*NOISE]);}resetNet();}
+  function resetNet(){net=new MLP(SZ[gsize()],'tanh','linear',[3,4][(seed+1)%2]*31+7);ep=0;hist=[];best={v:1e9,ep:0,curve:null};run=false;$('ov-run').textContent='▶ Train';draw();}
+  const mse=set=>set.reduce((s,p)=>s+Math.pow(yu(net.predict([p[0]]))-p[1],2),0)/set.length;
+  function train(k){const X=tr.map(p=>[p[0]]),Y=tr.map(p=>ys(p[1])),l2=+gl2();for(let i=0;i<k&&ep<EMAX;i++){net.step(X,Y,0.01,l2);ep++;if(ep%10===0){const a=mse(tr),b=mse(va);hist.push([ep,a,b]);if(b<best.v){best={v:b,ep,curve:xs.map(u=>yu(net.predict([u])))};}}}}
+  function verdict(a,b){const n2=NOISE*NOISE;if(a>3*n2)return['😴 underfit',C.blue];if(b>=2*n2)return['🤓 overfit',C.amber];return['✅ good fit',C.teal];}
+  function finish(){const last=hist[hist.length-1];if(!last)return;const v=verdict(last[1],last[2]);
+   board.unshift({sz:SN[gsize()],n:tr.length,l2:LN[gl2()],a:last[1],b:last[2],v});board=board.slice(0,5);
+   $('ov-board').innerHTML='<table class="ptable" style="width:100%;font-size:13px"><tr><th style="text-align:left">size</th><th>fields</th><th>reg.</th><th>train err</th><th>val err</th><th style="text-align:left">verdict</th></tr>'+
+    board.map(r=>'<tr><td style="text-align:left">'+r.sz+'</td><td>'+r.n+'</td><td>'+r.l2+'</td><td>'+fmt(r.a,2)+'</td><td>'+fmt(r.b,2)+'</td><td style="text-align:left;color:'+r.v[1]+';font-weight:700">'+r.v[0]+'</td></tr>').join('')+'</table>';}
+  function draw(){const g=PF.ctx;cls(PF);const F=frame(PF,{xmin:10,xmax:40,ymin:0,ymax:9,xticks:[10,20,30,40],yticks:[0,3,6,9],xlabel:'temperature (°C)',ylabel:'yield (t/ha)',m:{l:44,b:36,t:24}});F.axes();F.clip();
+   path(g,xs.map(u=>[F.X(toT(u)),F.Y(truth(toT(u)))]),'#b8bcc4',2,[3,4]);
+   va.forEach(p=>dot(g,F.X(toT(p[0])),F.Y(p[1]),3.2,null,rgba(C.amber,0.7),1.4));
+   if(best.curve&&ep-best.ep>100)path(g,xs.map((u,i)=>[F.X(toT(u)),F.Y(best.curve[i])]),C.green,2.5,[7,5]);
+   path(g,xs.map(u=>[F.X(toT(u)),F.Y(yu(net.predict([u])))]),C.teal,3.5);tr.forEach(p=>dot(g,F.X(toT(p[0])),F.Y(p[1]),5.5,C.blue,'#fff',1.8));g.restore();
+   text(g,'● training',F.m.l+4,14,{color:C.blue,weight:700,size:12});text(g,'○ validation',F.m.l+78,14,{color:C.amber,weight:700,size:12});text(g,'— model',F.m.l+166,14,{color:C.teal,weight:700,size:12});text(g,'- - truth',F.m.l+228,14,{color:'#9ca3af',weight:700,size:12});
+   if(best.curve&&ep-best.ep>100)text(g,'- - early stop',F.m.l+290,14,{color:C.green,weight:700,size:12});
+   const h=PL.ctx;cls(PL);const lo=0.05,hi=20;
+   const G=frame(PL,{xmin:0,xmax:EMAX,ymin:lo,ymax:hi,ylog:true,xticks:[0,1000,2000,3000],yticks:[0.1,0.3,1,3,10],xlabel:'epoch',ylabel:'error (log)',m:{l:46,b:34,t:22,r:14}});G.axes();G.clip();
+   h.fillStyle=rgba(C.green,0.08);h.fillRect(G.m.l,G.Y(NOISE*NOISE*1.3),G.pw,G.Y(NOISE*NOISE*0.7)-G.Y(NOISE*NOISE*1.3));
+   if(best.ep&&ep-best.ep>100){h.strokeStyle=C.green;h.setLineDash([5,4]);h.lineWidth=2;h.beginPath();h.moveTo(G.X(best.ep),G.m.t);h.lineTo(G.X(best.ep),G.m.t+G.ph);h.stroke();h.setLineDash([]);}
+   path(h,hist.map(v=>[G.X(v[0]),G.Y(v[1])]),C.blue,2.5);path(h,hist.map(v=>[G.X(v[0]),G.Y(v[2])]),C.amber,2.5);h.restore();
+   text(h,'— training',G.m.l+4,14,{color:C.blue,weight:700,size:12.5});text(h,'— validation',G.m.l+84,14,{color:C.amber,weight:700,size:12.5});text(h,'▒ best possible (noise level)',G.m.l+184,14,{color:C.green,weight:700,size:12});
+   $('ov-ep').textContent='epoch '+ep+' / '+EMAX;const last=hist[hist.length-1];
+   if(!last){$('ov-msg').innerHTML={s:'<b>Tiny</b>: 1 neuron can only draw an S-shaped step. Can it make a hump?',m:'<b>Medium</b>: 3 neurons, enough for a smooth hump, not enough to chase every dot.',l:'<b>Huge</b>: 3,841 knobs for '+tr.length+' fields. What do you think will happen?'}[gsize()];return;}
+   const v=verdict(last[1],last[2]);
+   $('ov-msg').innerHTML=v[0]==='😴 underfit'?'<b>Underfitting.</b> Both errors stay high: the model is too simple to bend into a hump.':
+    v[0]==='🤓 overfit'?'<b>Overfitting!</b> Training error '+fmt(last[1],2)+' but validation '+fmt(last[2],2)+' (best was '+fmt(best.v,2)+' at epoch '+best.ep+'). It is memorising the noise.':
+    '<b>Good fit.</b> Training and validation errors are close and near the noise level. It learned the pattern.';}
+  $('ov-run').onclick=()=>{if(ep>=EMAX)resetNet();run=!run;$('ov-run').textContent=run?'⏸ Pause':'▶ Train';};$('ov-reset').onclick=newData;
+  this.loop=Loop(()=>{if(!run)return;train(gsize()==='l'?5:20);if(ep>=EMAX){run=false;$('ov-run').textContent='▶ Train again';finish();}draw();});newData();},
+ start(){this.loop.start();},stop(){this.loop.stop();}};
+
+/* ---------- confusion matrix with formulas ---------- */
+D.cm={init(){const names=['Adelie','Chinstrap','Gentoo'],M=[[29,2,0],[3,11,0],[0,0,25]];const N=M.flat().reduce((a,b)=>a+b,0),cor=M[0][0]+M[1][1]+M[2][2];
+  const rs=M.map(r=>r.reduce((a,b)=>a+b,0)),cs=[0,1,2].map(j=>M[0][j]+M[1][j]+M[2][j]);let sel=[1,0];
+  $('cm-pc').innerHTML='<table class="tb" style="font-size:14.5px"><tr><th>species</th><th>precision</th><th>recall</th><th>F1</th></tr>'+names.map((n,i)=>{const p=M[i][i]/cs[i],r=M[i][i]/rs[i];return '<tr><td>'+n+'</td><td>'+(100*p).toFixed(0)+'%</td><td>'+(100*r).toFixed(0)+'%</td><td>'+(100*2*p*r/(p+r)).toFixed(0)+'%</td></tr>';}).join('')+'</table>';
+  function draw(){const [ci,cj]=sel,k=ci;
+   let h='<tr><th></th><th colspan="3" style="text-align:center">predicted →</th></tr><tr><th></th>'+names.map(n=>'<th>'+n+'</th>').join('')+'</tr>';
+   M.forEach((r,i)=>{h+='<tr><th style="text-align:right;padding-right:10px">'+(i===0?'<span class="mini">true ↓</span><br>':'')+names[i]+'</th>'+r.map((v,j)=>{const diag=i===j,a=diag?0.15+0.6*v/rs[i]:Math.min(0.6,0.12+v/6);
+     const role=i===k&&j===k?'TP':i===k?'FN':j===k?'FP':'';const out=role==='TP'?'3px solid '+C.tealD:role==='FN'?'3px dashed '+C.purple:role==='FP'?'3px dashed '+C.red:'3px solid transparent';
+     return '<td data-i="'+i+'" data-j="'+j+'" style="outline:'+out+';outline-offset:-4px;background:'+(v===0&&!diag?'#f8f8f9':rgba(diag?C.teal:C.red,a))+'">'+v+(role?'<div style="font-size:10px;font-weight:700">'+role+'</div>':'')+'</td>';}).join('')+'</tr>';});
+   $('cm-t').innerHTML=h;$('cm-t').querySelectorAll('td').forEach(td=>td.onclick=()=>{sel=[+td.dataset.i,+td.dataset.j];draw();});
+   $('cm-leg').innerHTML='For <b>'+names[k]+'</b>: <b style="color:'+C.tealD+'">TP</b> = correctly found · <b class="p">FN</b> = missed · <b class="r">FP</b> = false alarm';
+   const v=M[ci][cj];$('cm-info').innerHTML=ci===cj?'✓ <b>'+v+'</b> '+names[ci]+' correctly identified.':'✗ <b>'+v+'</b> '+names[ci]+(v===1?' was':'s were')+' called <b>'+names[cj]+'</b>.'+(v?'':' (none: easy to tell apart)');
+   const TP=M[k][k],FN=rs[k]-TP,FP=cs[k]-TP,P=TP/(TP+FP),R=TP/(TP+FN),F1=2*P*R/(P+R);
+   const row=(lab,form,num,res,col)=>'<div style="display:grid;grid-template-columns:110px 1fr auto;gap:8px;align-items:baseline;padding:6px 0;border-bottom:1px solid #f0f0f0"><b style="color:'+col+'">'+lab+'</b><span class="formula" style="border:none;padding:0;font-size:17px">'+form+' = '+num+'</span><b style="font-size:20px">'+res+'</b></div>';
+   $('cm-f').innerHTML='<h3 style="margin-bottom:4px">📐 The formulas <span class="mini">(class: '+names[k]+')</span></h3>'+
+    row('Accuracy','correct ÷ all','('+M[0][0]+'+'+M[1][1]+'+'+M[2][2]+') ÷ '+N,(100*cor/N).toFixed(1)+'%',C.ink)+
+    row('Precision','TP ÷ (TP + FP)',TP+' ÷ ('+TP+' + '+FP+')',(100*P).toFixed(0)+'%',C.red)+
+    row('Recall','TP ÷ (TP + FN)',TP+' ÷ ('+TP+' + '+FN+')',(100*R).toFixed(0)+'%',C.purple)+
+    row('F1','2·P·R ÷ (P + R)','2·'+P.toFixed(2)+'·'+R.toFixed(2)+' ÷ ('+P.toFixed(2)+' + '+R.toFixed(2)+')',(100*F1).toFixed(0)+'%',C.teal)+
+    '<div class="mini" style="margin-top:6px">Precision: "when it says '+names[k]+', is it right?" · Recall: "did it find all the '+names[k]+'s?"</div>';}
+  draw();}};
+
+/* ---------- predict: test fields with real yields ---------- */
+D.predict={init(){const P=canvas('pr-c');const mu=[650,25,110],sd=[230,5.5,45];
+  const model=(r,t,n)=>yieldTrue(r,t,n)*0.95+0.3+0.18*Math.sin(r/85)-0.12*Math.cos(n/30);  /* the trained network: close to, not equal to, the truth */
+  const junk=(z)=>6+1.1*z[0]-0.8*z[1]+0.5*z[2];
+  const TF=[['A',720,23,120,0.35],['B',410,30,70,-0.4],['C',880,21.5,150,0.2],['D',560,27,95,-0.3],['E',330,33,60,0.3],['F',950,25,180,-0.25]].map(f=>({id:f[0],r:f[1],t:f[2],n:f[3],y:+(yieldTrue(f[1],f[2],f[3])+f[4]).toFixed(1)}));
+  let selF=0;const gr=range('pr-r',v=>v+' mm',onSlide),gt=range('pr-t',v=>v+' °C',onSlide),gn=range('pr-n',v=>v+' kg',onSlide);$('pr-skip').onchange=draw;
+  function onSlide(){const f=TF[selF];if(f&&(gr()!==f.r||gt()!==f.t||gn()!==f.n))selF=-1;draw();}
+  function pred(r,t,n){return $('pr-skip').checked?junk([r,t,n]):model(r,t,n);}
+  function load(i){selF=i;const f=TF[i];$('pr-r').value=f.r;$('pr-t').value=f.t;$('pr-n').value=f.n;['pr-r','pr-t','pr-n'].forEach(id=>{$(id+'v').textContent={'pr-r':f.r+' mm','pr-t':f.t+' °C','pr-n':f.n+' kg'}[id];});draw();}
+  function draw(){const g=P.ctx;cls(P);const raw=[gr(),gt(),gn()],skip=$('pr-skip').checked;const z=skip?raw:raw.map((v,i)=>(v-mu[i])/sd[i]);const y=pred(...raw);
+   const names=['rain','temp','N'];
+   text(g,'raw',40,18,{align:'center',size:12,color:C.muted,weight:700});text(g,skip?'NOT scaled ✗':'scaled with TRAIN mean/sd',200,18,{align:'center',size:12,color:skip?C.red:C.tealD,weight:700});
+   raw.forEach((v,i)=>{const yy=50+i*64;g.fillStyle='#f4f4f5';rrect(g,4,yy-22,76,44,9);g.fill();text(g,names[i],42,yy-5,{align:'center',size:11,color:C.muted});text(g,String(v),42,yy+14,{align:'center',size:17,weight:700});
+    g.strokeStyle=skip?C.red:C.teal;g.lineWidth=2.5;g.beginPath();g.moveTo(84,yy);g.lineTo(150,yy);g.stroke();
+    g.fillStyle=skip?C.redBg:C.tealBg;rrect(g,152,yy-22,96,44,9);g.fill();text(g,fmt(z[i],2),200,yy+6,{align:'center',size:17,weight:700,color:skip?C.red:C.tealD});
+    g.strokeStyle='#9aa5b8';g.lineWidth=1.5;g.beginPath();g.moveTo(250,yy);g.lineTo(290,114);g.stroke();});
+   dot(g,316,114,26,C.purpleBg,C.purple,3);text(g,'🧠',316,122,{align:'center',size:22});g.strokeStyle='#9aa5b8';g.lineWidth=2;g.beginPath();g.moveTo(344,114);g.lineTo(372,114);g.stroke();
+   // comparison number line
+   const f=selF>=0?TF[selF]:null,L=390,Rr=750,X=v=>L+(clamp(v,0,10)/10)*(Rr-L);
+   g.strokeStyle='#d4d4d8';g.lineWidth=2;g.beginPath();g.moveTo(L,150);g.lineTo(Rr,150);g.stroke();for(let k=0;k<=10;k+=2){g.beginPath();g.moveTo(X(k),145);g.lineTo(X(k),155);g.stroke();text(g,String(k),X(k),172,{align:'center',size:11,color:C.muted});}
+   text(g,'yield (t/ha)',Rr,190,{align:'right',size:11,color:C.muted});
+   const ok=y>=0&&y<=12;g.fillStyle=ok?C.teal:C.red;g.beginPath();g.moveTo(X(y),142);g.lineTo(X(y)-8,128);g.lineTo(X(y)+8,128);g.fill();
+   text(g,'predicted '+fmt(y,1)+(y>10?' →':''),X(y),120,{align:'center',size:15,weight:800,color:ok?C.teal:C.red});
+   if(f){g.fillStyle=C.blue;g.beginPath();g.moveTo(X(f.y),158);g.lineTo(X(f.y)-8,172);g.lineTo(X(f.y)+8,172);g.fill();text(g,'real '+f.y.toFixed(1),X(f.y),190,{align:'center',size:15,weight:800,color:C.blue});
+    if(ok){g.strokeStyle=C.red;g.lineWidth=3;g.beginPath();g.moveTo(X(y),150);g.lineTo(X(f.y),150);g.stroke();}
+    const e=y-f.y;text(g,'Field '+f.id+' · error = '+(e>=0?'+':'−')+Math.abs(e).toFixed(2)+' t/ha'+(ok?(Math.abs(e)<0.5?' 👍 close':' 🤔'):' 🤯'),570,64,{align:'center',size:18,weight:800,color:ok&&Math.abs(e)<0.5?C.tealD:C.red});}
+   else text(g,'New field: no real yield known yet. Pick a test field to compare.',570,64,{align:'center',size:14,weight:600,color:C.muted});
+   text(g,ok?'':'nonsense, and no error message!',570,224,{align:'center',size:13,weight:700,color:C.red});
+   // table
+   let mae=0;let h='<table class="ptable" style="width:100%;font-size:14.5px"><tr><th style="text-align:left">test field</th><th>rain</th><th>temp</th><th>soil N</th><th style="color:'+C.blue+'">real yield</th><th style="color:'+C.teal+'">predicted</th><th>error</th></tr>';
+   TF.forEach((f,i)=>{const p=pred(f.r,f.t,f.n),e=p-f.y;mae+=Math.abs(e);h+='<tr data-i="'+i+'" style="cursor:pointer;'+(i===selF?'background:'+C.amberBg:'')+'"><td style="text-align:left"><b>'+f.id+'</b></td><td>'+f.r+'</td><td>'+f.t+'</td><td>'+f.n+'</td><td style="color:'+C.blue+';font-weight:700">'+f.y.toFixed(1)+'</td><td style="color:'+(skip?C.red:C.teal)+';font-weight:700">'+fmt(p,1)+'</td><td>'+(e>=0?'+':'−')+Math.abs(e).toFixed(2)+'</td></tr>';});
+   mae/=TF.length;h+='<tr><td colspan="6" style="text-align:right"><b>average error (MAE)</b></td><td><b style="color:'+(skip?C.red:C.teal)+'">'+mae.toFixed(2)+' t/ha</b></td></tr></table>';
+   $('pr-tab').innerHTML=h;$('pr-tab').querySelectorAll('tr[data-i]').forEach(tr=>tr.onclick=()=>load(+tr.dataset.i));}
+  load(0);}};
+
+/* ---------- quiz game ---------- */
+D.quiz={init(){const Q=[
+  ['📸','A farmer\'s phone app must spot 6 leaf diseases. You have 20,000 labelled photos.','nn','Photos + tons of examples = classic deep-learning job (a CNN, or a pre-trained one).'],
+  ['🌧️','80 field trials, 3 weather columns. Predict yield.','simple','Only 80 rows! A linear or mixed model will be more stable, and you can explain it.'],
+  ['🐦','Name the bird from 10,000 hours of dawn-chorus recordings.','nn','Sound becomes a spectrogram "picture": perfect for neural nets.'],
+  ['🏛️','The minister asks: "how many extra tonnes per 100 mm of rain?"','simple','They want ONE interpretable number with a confidence interval: that\'s regression\'s job.'],
+  ['🛰️','Map crop types across the whole country from 2 million satellite pixels.','nn','Huge data, complex spectral and spatial patterns: NN territory.'],
+  ['🐝','Count bees on just 50 hive photos, no pre-trained model allowed.','simple','Trick question! Photos, but only 50: a NN would memorise them. Collect more data or start from a pre-trained network.'],
+  ['🌈','Predict leaf nitrogen from hyperspectral scans: 2,000 wavelengths × 5,000 leaves.','nn','Many correlated inputs and plenty of samples: NNs do well (compare against PLS regression).'],
+  ['📊','A spreadsheet with 1 million rows and 8 tidy columns of soil data.','simple','Another twist: lots of rows, but tabular. Gradient boosting often matches or beats a NN here. Try it first!']];
+  let done=0,score=0,streak=0;const box=$('qz');
+  function build(){box.innerHTML='';done=0;score=0;streak=0;$('qz-s').textContent='0 / 0';$('qz-streak').textContent='';
+   Q.forEach(q=>{const d=document.createElement('div');d.className='quiz';d.style.cssText='display:flex;flex-direction:column;gap:8px;margin:0';
+    d.innerHTML='<div class="q"><span style="font-size:26px;margin-right:6px">'+q[0]+'</span>'+q[1]+'</div><div class="btns" style="margin:0"><button class="btn" data-a="nn">🧠 Neural net</button><button class="btn" data-a="simple">📏 Simpler model</button></div><div class="fb"></div>';
+    d.querySelectorAll('button').forEach(b=>b.onclick=()=>{if(d.classList.contains('done'))return;d.classList.add('done');done++;const ok=b.dataset.a===q[2];if(ok){score++;streak++;}else streak=0;b.classList.add(ok?'sel-ok':'sel-no');
+     if(!ok)d.querySelector('[data-a="'+q[2]+'"]').classList.add('sel-ok');d.querySelector('.fb').innerHTML=(ok?'<b class="t">✓ Yes!</b> ':'<b class="r">✗ Gotcha.</b> ')+q[3];
+     $('qz-s').textContent=score+' / '+done;$('qz-streak').textContent=done===Q.length?(score>=7?'🏆 NN whisperer!':score>=5?'🌱 Nicely done!':'🤔 Tricky, right?'):streak>=2?'🔥 streak: '+streak:'';
+     d.scrollIntoView({block:'nearest',behavior:'smooth'});});box.appendChild(d);});}
+  $('qz-reset').onclick=build;build();}};
+/* reveal cards */
+document.querySelectorAll('.reveal-card').forEach(c=>c.addEventListener('click',()=>c.classList.toggle('open')));
+</script>
+<script>
+"use strict";
+/* ================= per-slide explanations: [technical (simple), plain words, take-away] ================= */
+const EXPLAIN={
+'Title':[
+ 'A neural network (NN) is a type of machine-learning model. Under the hood it is a long chain of very simple calculations (multiply, add, apply a simple function) with thousands of adjustable numbers called <b>weights</b>. During <b>training</b> the computer shows the network many examples where the answer is known (e.g. field conditions → measured yield) and slowly adjusts the weights so that its outputs get closer to the true answers. Once trained, the same network can produce answers for new inputs it has never seen.<br><br>Today we follow that whole journey step by step, from a raw spreadsheet to a trained model making predictions, and at every step you can play with the idea yourself.',
+ 'Imagine teaching a new farm assistant to estimate harvests. You don\'t hand them a rulebook. You show them hundreds of past fields: "this one had lots of rain and got 7 tonnes, this hot dry one got 3 tonnes". Over time they get a feel for it. A neural network learns in exactly that way, just with numbers and a lot of patience.',
+ 'Neural networks learn patterns from examples instead of following rules we write by hand. The rest of the course shows how.'],
+'What is a neural network?':[
+ 'The diagram is a small, already-trained network with 3 inputs (rainfall, temperature, soil N), two hidden layers and 1 output (yield). Every circle does a small calculation and every line carries a number multiplied by a <b>weight</b>. When you move a slider, the new values flow left to right through all the lines and circles, and a new yield comes out. The thickness of a line shows how much that connection is contributing for the current inputs.<br><br>Two important properties: (1) it is a <b>deterministic function</b>: the same inputs always give the same output; (2) the shape of the relationship (yield peaks near 24 °C, rises with rain and N, then levels off) was never typed in by anyone. It is stored in the 49 weights, which were learned from data.',
+ 'Think of a huge mixing desk in a recording studio. The field\'s conditions go in, and the predicted harvest comes out. Each line in the picture is a knob on that desk. Someone (the training process) has already turned every knob to the right position by listening to many past harvests. Now you can feed in any field and get an estimate.',
+ 'A neural network is just a function: numbers in, prediction out. What it "knows" lives entirely in its weights, and those weights are learned from data.'],
+'The big picture':[
+ 'Almost every supervised machine-learning project follows the same pipeline:<br>• <b>Data</b>: rows of examples with a known answer (the target).<br>• <b>Split</b>: hold some rows back so we can test honestly later.<br>• <b>Preprocess</b>: convert everything into clean, comparable numbers.<br>• <b>Input → Hidden layers → Output</b>: the network turns inputs into a prediction (the <i>forward pass</i>).<br>• <b>Loss</b>: measures how wrong the prediction is.<br>• <b>Optimizer</b>: adjusts the weights to reduce the loss.<br>The middle part (input → optimizer) is the <b>training loop</b> and repeats thousands of times. Only when training is finished do we <b>evaluate</b> on the locked-away test data and then <b>predict</b> new cases.',
+ 'It\'s like learning to bake a new cake. Gather ingredients (data), keep one cake aside for a judge (split), prepare the ingredients (preprocess), bake (network), taste it (loss), adjust the recipe (optimizer), and repeat until it tastes right. Finally an outside judge tastes the one you kept aside (evaluate), and then you bake it for real guests (predict).',
+ 'Every NN project is this same loop. Whenever you get lost later, press <b>P</b> to see where we are on this map.'],
+'Data & the question':[
+ 'A dataset is a table: each <b>row</b> is one example (here: one field) and each <b>column</b> is a measurement. Before anything else you choose the <b>target</b>: the column you want the model to predict. All other useful columns become <b>features</b> (the inputs).<br><br>The type of target decides the type of problem. A <b>numeric target</b> (yield in t/ha) means <b>regression</b>: the model outputs a number. A <b>categorical target</b> (healthy/stressed, soil type, species) means <b>classification</b>: the model outputs a class, usually as probabilities. This one decision later fixes the output layer, the loss function and the evaluation metric.',
+ 'Before building anything, ask "what question am I answering?". "How much will this field produce?" needs a number as the answer. "Is this plant healthy or stressed?" needs a category. Everything else in the table is a clue the computer can use to answer that question.',
+ 'Pick the target first. Number → regression. Category → classification. Everything downstream depends on this choice.'],
+'Train / validation / test split':[
+ 'We randomly divide the rows into three groups before training:<br>• <b>Training set</b> (≈ 60–80%): the only data the weights are fitted on.<br>• <b>Validation set</b> (≈ 10–20%): checked during training to choose settings (network size, epochs, learning rate) and to detect overfitting. In Keras this is often <code>validation_split=0.2</code>.<br>• <b>Test set</b> (≈ 20%): kept completely untouched until the very end, and used <b>once</b> to estimate how the model will perform on genuinely new data.<br><br>If the test data influences any decision during development, the final score becomes optimistic and no longer tells you how the model behaves in the real world. Shuffling before splitting avoids accidental patterns (e.g. all hot sites ending up in the test set).',
+ 'Think of a student preparing for an exam. The textbook exercises are for learning (training). Practice quizzes help decide how to study (validation). The final exam uses questions the student has never seen (test). If the student had seen the exam questions in advance, a perfect score would mean nothing.',
+ 'Always keep data the model has never seen. It is the only honest way to know whether the model really works.'],
+'Preprocessing':[
+ 'Neural networks can only do arithmetic, so every input must be a clean number on a sensible scale:<br>1. <b>One-hot encoding</b>: a text column like soil_type becomes one 0/1 column per category. Coding clay=1, loam=2, sandy=3 would wrongly suggest an order and distances between soil types.<br>2. <b>Split first</b>, so that later steps only learn from the training rows.<br>3. <b>Imputation</b>: fill missing values, e.g. with the training median.<br>4. <b>Standardisation</b>: (value − mean) ÷ standard deviation, so each feature has mean 0 and sd 1.<br><br>The key rule: means, medians and standard deviations are computed on the <b>training set only</b> and then re-used for validation, test and new data. Computing them on all data leaks information from the test set into training (<b>data leakage</b>).',
+ 'Before cooking, you wash, peel and chop the ingredients into similar-sized pieces. Here we turn words into numbers, fill in missing entries sensibly, and put every measurement on the same scale, so rainfall (hundreds of mm) doesn\'t drown out temperature (tens of degrees) just because of its units.',
+ 'Clean, numeric, similarly-scaled inputs, with all the statistics learned from training data only. Most "my network doesn\'t learn" problems start here.'],
+'Why scaling matters':[
+ 'The coloured maps show the loss for different combinations of two weights; the star is the best combination. When inputs are on very different scales (rainfall ≈ 600, temperature ≈ 25), a tiny change in the rainfall weight changes the prediction a lot, while the temperature weight barely matters. The loss surface becomes a <b>long, narrow canyon</b>.<br><br>Gradient descent always steps in the steepest direction, which in a canyon points mostly across it, so it zig-zags and must use a very small learning rate to avoid exploding. After standardising, both weights have similar influence, the surface becomes a <b>round bowl</b>, and the same learning rate goes almost straight to the minimum in a few steps.',
+ 'Picture walking blindfolded to the lowest point of a valley. In a steep narrow canyon you keep bumping into the walls and progress is slow. In a smooth round bowl you just walk straight downhill. Scaling the inputs reshapes the canyon into a bowl.',
+ 'Scaling doesn\'t change what the model can learn; it makes learning much faster and more stable. Unscaled inputs are a top cause of stuck or exploding training.'],
+'Input layer':[
+ 'The input layer is simply the entry point of the network: it has <b>one node per feature column</b> after preprocessing. It does no computation; it just holds one row of numbers and passes them to every neuron in the first hidden layer.<br><br>Its size must match your data exactly. One-hot encoding increases it: soil type with 3 categories adds 3 inputs, not 1. In code this is <code>layers.Input(shape=(n,))</code> in Python or <code>keras_model_sequential(input_shape = n)</code> in R. A mismatch between this number and your data\'s columns is a common first error.',
+ 'These are the network\'s "ears", one for each piece of information about the field. Give it more information and it needs more ears. They only listen; the thinking happens in the next layers.',
+ 'Input size = number of feature columns after preprocessing. Nothing more, nothing less.'],
+'The neuron':[
+ 'Each neuron does three things:<br>1. Multiply every input by its own <b>weight</b> (w₁x₁, w₂x₂, …). A large positive weight means "this input pushes the output up"; negative means "pushes it down"; near zero means "ignore it".<br>2. Add them up together with a <b>bias</b> b: z = w₁x₁ + w₂x₂ + w₃x₃ + b. The bias shifts the neuron\'s baseline, so it can be active even when inputs are zero.<br>3. Apply an <b>activation function</b>, e.g. ReLU = max(0, z), which keeps positive values and silences negative ones.<br><br>With no activation, one neuron is exactly a linear regression. The weights and biases are the numbers that training adjusts; everything else is fixed arithmetic.',
+ 'A neuron is a tiny voter. It listens to each clue, decides how much it trusts each one and whether that clue argues for or against (weights), adds its own personal leaning (bias), and then decides how loudly to speak up (activation). A whole network is thousands of these little voters passing opinions along.',
+ 'A neuron = weighted sum + bias, then a simple activation. Learning means finding good weights and biases.'],
+'Weights & bias: you are the optimizer':[
+ 'With a single input and no activation, a neuron draws a straight line: prediction = w × rainfall + b. The weight w is the <b>slope</b> (how much yield changes per 100 mm of rain); the bias b is the <b>offset</b> (where the line sits).<br><br>Each red line is the error for one field. The <b>mean squared error</b> (MSE) averages the squared lengths of all those red lines into one number. When you move the sliders and watch that number fall, you are doing what an optimizer does: change a weight a little, check whether the error went down, keep the change if it did. "Show the best line" reveals the weights that give the lowest possible error (least squares).',
+ 'You\'re trying to lay a ruler through a cloud of dots so that it is as close as possible to all of them at once. You tilt it (weight) and slide it up or down (bias) until the gaps look smallest. Training a network is this same game, played automatically by the computer, with thousands of rulers at once.',
+ 'Training = adjusting weights and bias to make the overall error as small as possible. The error number is called the <b>loss</b>.'],
+'Activation functions':[
+ 'After a neuron adds up its inputs, it passes the total z through an activation function:<br>• <b>ReLU</b> (max(0, z)): the default for hidden layers. Simple and fast, and its slope is 1 for positive inputs, so learning signals pass through easily.<br>• <b>Sigmoid</b>: squashes any number into 0–1, so it reads as a probability. Used on the output for yes/no problems.<br>• <b>Tanh</b>: like sigmoid but from −1 to 1.<br>• <b>None (linear)</b>: used on the output when predicting a number.<br><br>The dashed line is the <b>slope</b>. Training relies on slopes. Where the slope is almost zero (the flat ends of sigmoid and tanh), learning slows to a crawl: the "vanishing gradient" problem, which is why ReLU became the standard choice.',
+ 'Each neuron has a "mood rule" for how to react to what it hears. ReLU says "if the total is negative, stay quiet; otherwise pass it on". Sigmoid says "turn whatever I hear into a percentage". Different parts of the network need different moods.',
+ 'Use ReLU in hidden layers. Pick the output activation to match the question: none for numbers, sigmoid for yes/no, softmax for "which one of several".'],
+'Why activations matter':[
+ 'If neurons had no activation, each would compute a straight line, and adding or stacking straight lines always gives another straight line. A 100-layer network without activations is mathematically the same as a single linear regression.<br><br>A ReLU neuron outputs 0 up to a point and then rises, so it adds one <b>bend (kink)</b> to the curve. A layer of many ReLU neurons with different bend positions can be combined into almost any shape, like the hump of yield vs temperature. With enough neurons a network can approximate essentially any smooth relationship (the <b>universal approximation</b> idea). That\'s also why more neurons means more flexibility, and later, more risk of overfitting.',
+ 'With only straight sticks you can\'t draw a hill. But if each stick is allowed to bend once, enough of them joined together can trace any shape. The activation function is what lets each stick bend.',
+ 'Non-linear activations are what make neural networks more powerful than a straight-line model. More neurons = more bends = more flexible curves.'],
+'Hidden layers & architecture':[
+ 'Neurons are organised into <b>layers</b>. In a <b>Dense</b> (fully connected) layer, every neuron receives every output of the previous layer. Each connection is one weight, and each neuron has one bias, so a layer has (inputs × neurons + neurons) parameters. Stacking more hidden layers lets the network build features on top of features; that\'s what "deep" learning refers to.<br><br>The number of layers and neurons is the <b>architecture</b>, and you choose it. Too small and the model can\'t capture the pattern; too large and it may memorise the training data. For tabular data like ours, 1–3 hidden layers with 16–128 neurons each is a sensible starting point. The code on the right updates live so you can see how the picture maps onto Keras/keras3.',
+ 'One voter can only make simple judgements. A committee where each member listens to the previous committee can spot much more complicated patterns. More committees (layers) and more members (neurons) give more brainpower, but also more knobs that need data to be set properly.',
+ 'Architecture = how many layers and neurons. Start small and grow only if the model underfits; the parameter count grows quickly.'],
+'Output layer: pick the ending':[
+ 'The hidden layers can be the same for very different tasks. What changes is the <b>ending</b>, and the output layer, loss and metric must match each other:<br>• <b>Regression</b> (e.g. yield): 1 neuron, no activation, loss = MSE (or MAE), metric = MAE.<br>• <b>Binary classification</b> (healthy/stressed): 1 neuron with <b>sigmoid</b> → probability of the positive class, loss = binary cross-entropy, metric = accuracy.<br>• <b>Multi-class</b> (3 penguin species): one neuron per class with <b>softmax</b> → probabilities summing to 1, loss = (sparse) categorical cross-entropy.<br><br>A mismatch (e.g. softmax with 1 neuron, or MSE for classes) is one of the most common beginner bugs. The network still runs, but learns badly or not at all.',
+ 'The last step decides what kind of answer you get back: a number on a scale, a yes-or-no, or "which one of these". It\'s like choosing between a measuring tape, a light switch and a multiple-choice sheet: pick the one that matches your question.',
+ 'Match the output layer and loss to your target type. Use the table on this slide as a lookup.'],
+'Softmax':[
+ 'In a multi-class network, the last layer outputs one raw score (<b>logit</b>) per class. Softmax turns them into probabilities: take e<sup>score</sup> for each class and divide by the total. Properties:<br>• All outputs are between 0 and 1 and add up to exactly 100%.<br>• Larger scores get disproportionately more probability (because of the exponential).<br>• Only the <b>differences</b> between scores matter; adding the same number to all scores changes nothing.<br><br>The small chart shows the shape: if you raise one class\'s score while the others stay fixed, its probability follows an <b>S-curve</b>. It rises quickly in the middle and flattens near 100%, never exceeding it. The predicted class is the one with the highest probability, and the probability itself tells you how confident the model is.',
+ 'Each species gets a score for "how much does this look like me?". Softmax turns those scores into "percent sure" figures that always add up to 100%. If the scores are equal, it says 33% / 33% / 33%: the network is just guessing.',
+ 'Softmax converts raw scores into probabilities. Use the probability as a confidence: uncertain cases can be flagged for a human to check.'],
+'Loss':[
+ 'Training needs a single number to minimise: the <b>loss</b>, averaged over all examples in a batch.<br>• <b>MSE</b> (mean squared error): squares each error. An error of 2 costs 4, an error of 4 costs 16, so big mistakes are punished heavily, and outliers have a strong influence.<br>• <b>MAE</b> (mean absolute error): just the size of the error. Easy to interpret ("off by 0.4 t/ha on average") and less sensitive to outliers.<br>• <b>Cross-entropy</b> for classification: −log(probability given to the true class). Giving the true class 90% costs 0.1; giving it 1% costs 4.6. Being <b>confidently wrong</b> is punished very hard, which pushes the model towards calibrated probabilities.<br><br>You don\'t implement these yourself; you choose one with <code>loss=</code> in <code>compile()</code>.',
+ 'The loss is a scoring system for mistakes, like penalty points. Being a little off costs a few points; being way off, or confidently wrong, costs a lot. Training is simply the search for the settings with the fewest penalty points.',
+ 'The loss defines what "good" means for the network. Pick MSE/MAE for numbers and cross-entropy for classes.'],
+'Gradient descent':[
+ 'The loss depends on the weights, forming a landscape with hills and valleys. The <b>gradient</b> is the slope of that landscape at the current weights (the red tangent line). Gradient descent repeats one rule:<br><b>new weight = old weight − learning rate × slope</b><br>so it always moves downhill.<br><br>The <b>learning rate</b> sets the step size and is the single most important training setting:<br>• too small → many tiny steps, very slow;<br>• about right → smooth, fast convergence;<br>• too large → overshoots the valley, bounces around or <b>diverges</b> (loss explodes to NaN).<br>The landscape can also have several valleys; depending on where you start you may settle in a <b>local minimum</b>. In large networks this matters less than it looks here, but the starting point and learning rate still affect the result.',
+ 'You\'re on a foggy hillside and want to reach the lowest point. You can\'t see far, but you can feel which way the ground slopes under your feet, so you step downhill and repeat. Tiny steps take forever; giant leaps make you jump right over the valley.',
+ 'Training is repeated small steps downhill on the loss. The learning rate is the knob to check first when training is too slow or blows up.'],
+'Optimizers race':[
+ 'Optimizers are improved versions of gradient descent. The map shows a long narrow valley, a very common shape in real networks.<br>• <b>SGD</b> (plain gradient descent) follows the local slope, which mostly points across the valley, so it zig-zags and crawls along the bottom.<br>• <b>Momentum</b> keeps a running average of previous steps, like a rolling ball. The zig-zags cancel out and it speeds up along the valley.<br>• <b>Adam</b> combines momentum with a separate, automatically adapted step size for every weight, so steep and flat directions are both handled well.<br><br>With "mini-batch noise" ticked, each step uses a noisy slope, as happens in real training with batches. Adam is the usual default and works well out of the box; its standard learning rate in Keras is 0.001.',
+ 'Three hikers race downhill. One carefully follows the slope at every step and keeps zig-zagging. One builds up speed like a rolling ball. The third also adjusts their stride to the terrain: short steps on steep bits, long strides on flat bits. The third usually wins.',
+ 'Use <code>optimizer = "adam"</code> unless you have a reason not to. It is faster and more forgiving than plain gradient descent.'],
+'Batches & epochs':[
+ 'Computing the slope on the full dataset for every step is slow, so training uses <b>mini-batches</b>: small random groups of rows (e.g. 32). One step = compute the loss and slope on one batch and update the weights. One <b>epoch</b> = one full pass through all training rows, i.e. rows ÷ batch size steps. The data is reshuffled every epoch so batches differ each time.<br><br>Trade-offs: smaller batches give more, noisier updates (the noise can even help escape poor solutions); larger batches give fewer, smoother updates and use more memory. Total updates = steps per epoch × epochs. A batch size of 32 and enough epochs for the validation loss to level off (often with early stopping) is a good default.',
+ 'Instead of reading the whole textbook before updating your notes, you read a few pages, update your notes, read the next few pages, update again. Finishing the whole book once is one "epoch". Then you shuffle the pages and read it again.',
+ 'Batch size = rows per update; epochs = passes over the data. Defaults: 32 rows, and let early stopping decide when to stop.'],
+'The training loop':[
+ 'Everything inside <code>fit()</code> is one simple loop, repeated for every batch in every epoch:<br>1. <b>Forward pass</b>: push the batch through the network to get predictions.<br>2. <b>Loss</b>: compare the predictions with the true values to get one error number.<br>3. <b>Backpropagation</b>: using the chain rule from calculus, work backwards through the network to compute how much each weight contributed to the error (its gradient).<br>4. <b>Update</b>: the optimizer nudges every weight a small step in the direction that reduces the loss.<br><br>Each step changes the weights only slightly; it\'s the accumulation of thousands of these small corrections that produces a good model. Keras/keras3 does all four steps for you; the code on the slide is a simplified view of what happens inside.',
+ 'Guess, check how wrong you were, figure out who was responsible for the mistake, adjust a little. Repeat thousands of times. That really is all "learning" means here: lots of small corrections.',
+ 'Forward → loss → backprop → update, repeated. Understanding this loop explains every training setting you\'ll meet.'],
+'Live playground':[
+ 'This is a real neural network being trained in your browser with Adam, on a toy problem: classify points as healthy (green) or stressed (orange) from two features. The background colour shows the network\'s prediction everywhere, so the boundary between colours is the <b>decision boundary</b> it has learned.<br><br>What to notice: with 0 hidden layers the network is a logistic regression and can only draw a straight line, which works for "Easy" but not "Circle". Adding a hidden layer with a few neurons lets it bend the boundary. Without activations it fails again (all linear). Harder shapes like the spiral need more neurons and more epochs. A huge learning rate makes training chaotic. With lots of noise and a big network, the training loss keeps falling while the <b>test loss rises</b>: the first sign of overfitting.',
+ 'The computer is learning to colour in a map: green where plants are healthy, orange where they are stressed, using only the dots it has been shown. Watch it figure out the shape of the regions, and see how a bigger "brain" can learn trickier shapes.',
+ 'Model complexity must match the problem: too simple can\'t draw the shape, too complex starts memorising noise. Always watch test (validation) loss, not just training loss.'],
+'Overfitting':[
+ 'We fit networks of different sizes to a small, noisy dataset (blue dots) and check them on separate validation data (orange rings). The grey dashed line is the true relationship; the green band on the error chart is the best error achievable, because the data contains random noise.<br>• <b>Tiny</b> (1 neuron) can only draw an S-shaped step, so it can never make the hump. Both errors stay high: <b>underfitting</b>.<br>• <b>Medium</b> (3 neurons) has just enough flexibility for a smooth hump: training and validation errors end up close and near the noise level.<br>• <b>Huge</b> (3,841 parameters for 12 points) bends through every training dot. Training error goes to almost zero, validation error rises: <b>overfitting</b>, i.e. it has learned the noise.<br>Then fix the huge model without shrinking it: <b>more data</b> (80 fields) or <b>regularisation</b> (a penalty on large weights) both pull it back to a good fit. The green dashed line marks where <b>early stopping</b> would have stopped.',
+ 'A student who memorises every practice answer word for word, typos included, scores perfectly on the practice sheet but fails the real exam. A student who understands the topic does well on both. A student who didn\'t study enough does badly on both. We want the middle one.',
+ 'Judge a model by its validation error, not its training error. Overfitting is fixed by more data, regularisation, early stopping, or a smaller model.'],
+'Fixing under/overfitting':[
+ 'The gap between training and validation error tells you which problem you have:<br>• <b>Underfitting</b>: both errors high and close together. The model is too simple (too few neurons/layers), trained too briefly, or regularised too strongly. Fix: increase capacity, train longer, reduce regularisation, engineer better features.<br>• <b>Good fit</b>: both errors low and close. The model\'s capacity matches the amount and complexity of the data.<br>• <b>Overfitting</b>: training error keeps falling while validation error rises. The model has too much capacity relative to the data (many parameters, few or noisy examples) or was trained too long. Fix: more data, early stopping, dropout (randomly switching off neurons during training), L2 regularisation, or a smaller network.<br><br>The top drawings show the same three situations as fitted curves.',
+ 'Underfit is a student who didn\'t study enough: wrong on practice and on the exam. Overfit is a student who crammed the answer key: perfect on practice, lost on the exam. Just right is a student who understood the topic.',
+ 'Read the two curves together. Both bad → make the model stronger. Train good but validation bad → make it more modest or give it more data.'],
+'Confusion matrix':[
+ 'For classification, a single accuracy number hides where the mistakes are. The <b>confusion matrix</b> counts every combination of true class (rows) and predicted class (columns); the diagonal holds the correct predictions. For one chosen class:<br>• <b>TP</b> (true positives): correctly found.<br>• <b>FN</b> (false negatives): really this class but predicted as something else (missed).<br>• <b>FP</b> (false positives): predicted as this class but actually something else (false alarms).<br>From these, <b>accuracy</b> = correct ÷ all; <b>precision</b> = TP ÷ (TP + FP), "when the model says Chinstrap, how often is it right?"; <b>recall</b> = TP ÷ (TP + FN), "of all real Chinstraps, how many did it find?"; <b>F1</b> combines the two. Here Chinstrap has the lowest recall because it is confused with Adelie.',
+ 'A table of who got mistaken for whom. It shows that the model is great at spotting Gentoo penguins but sometimes mixes up Adelie and Chinstrap, something a single "93% correct" would never tell you.',
+ 'Always look at per-class precision and recall, especially for rare classes: a model can have high accuracy and still miss the class you care about.'],
+'Predict new data':[
+ 'Once trained, the model is used on new inputs, but they must go through <b>exactly the same preprocessing</b> as the training data, using the <b>training</b> means and standard deviations (or the saved scaler). Here six test fields have known real yields, so we can compare each prediction with reality: the individual errors and their average (<b>MAE</b>) tell us how much to trust the model. Predictions are close but never perfect, because the data is noisy and the model is an approximation.<br><br>If you "forget to scale", raw values like 720 mm enter a network that only ever saw values around −2…+2. It still produces an answer, but a meaningless one, and <b>no error message appears</b>. That is why the scaler (or mean and sd) must be saved together with the model.',
+ 'If you trained someone to judge fields using measurements in centimetres and then suddenly hand them millimetres, they will happily give you a ridiculous answer without complaining. The model is the same: it needs new data in exactly the same "units" it learned with.',
+ 'Compare predictions with real values to know how far off you are (MAE), and always reuse the training preprocessing for new data.'],
+'Should you use a NN?':[
+ 'Neural networks shine when there is <b>a lot of data</b> and the inputs are <b>complex or raw</b>: images, audio, spectra, satellite pixels, text, sequences. There they learn useful features automatically, which simpler models can\'t. They are less attractive for <b>small tabular datasets</b> (hundreds of rows, a handful of columns): linear or mixed models, random forests and gradient boosting are often as accurate, need less tuning, and are easier to interpret. Even with many rows, for tidy tabular data gradient boosting is a strong competitor.<br><br>Good practice is to always fit a <b>simple baseline</b> first and only keep the neural network if it clearly beats it on validation/test data.',
+ 'A neural network is a powerful power tool, but you don\'t need a chainsaw to slice bread. For photos and sounds it\'s the best tool there is. For a small spreadsheet, a simple model is usually just as good and much easier to explain to others.',
+ 'Use a NN for big, complex data (images, sound, spectra). For small tables, start simple, and make the NN beat that baseline.'],
+'The whole recipe in code':[
+ 'This is the complete pipeline from the big-picture map, written as code in Python (Keras) and R (keras3). Hover over a line to see which stage it belongs to:<br>load the data → split into train/test → fit the scaler on training data and apply it to both → define the input, hidden and output layers → <code>compile</code> chooses the optimizer and loss → <code>fit</code> runs the training loop with a validation split → <code>evaluate</code> on the untouched test set → <code>predict</code> new fields using the same scaler.<br><br>For a classification task only the last layer and the loss change (see the Output slide). Everything else stays the same, which is why this template is worth learning by heart.',
+ 'This is the written recipe for everything we just played with. Each line is one box on the big-picture map, and the computer does all the heavy lifting inside <code>fit</code>.',
+ 'About 15 lines cover the whole pipeline. Change the data and the output layer, and the same template fits most beginner projects.'],
+'When training goes wrong':[
+ 'Most training problems fall into a few patterns:<br>• <b>Loss becomes NaN or explodes</b>: learning rate too high, unscaled inputs, or missing values left in the data.<br>• <b>Loss barely moves</b>: learning rate too low, unscaled inputs, network too small, or a wrong output activation/loss pair.<br>• <b>Training good, validation bad</b>: overfitting → more data, early stopping, dropout, regularisation.<br>• <b>Both bad</b>: underfitting → bigger model, longer training, better features.<br>• <b>Test score suspiciously perfect</b>: data leakage (e.g. scaling before splitting, duplicated rows across splits, a feature that secretly contains the answer).<br>• <b>Different results every run</b>: normal, due to random initial weights and shuffling. Set a seed and report the average of several runs.',
+ 'Like the warning lights on a car dashboard: each symptom points to the two or three usual suspects to check first, before you start taking the engine apart.',
+ 'Check the learning rate, scaling and data splits first: they explain most problems beginners run into.'],
+'Wrap-up':[
+ 'A neural network is layers of neurons, each computing a weighted sum plus a bias followed by an activation. It is trained by repeating forward pass → loss → backpropagation → weight update over many batches and epochs, using an optimizer such as Adam. Good results depend as much on the pipeline as on the network: split before preprocessing, scale with training statistics, choose the output layer and loss to match the task, watch the validation loss (early stopping), and compare against a simple baseline.<br><br>In the hands-on notebook you will apply exactly this pipeline to the crop-yield regression and penguin classification datasets, in Python or R.',
+ 'A network learns the way people learn a skill: guess, see how wrong you were, adjust a little, and repeat many times. Give it clean data, test it fairly on examples it has never seen, and it can find patterns that would be very hard to write down by hand.',
+ 'Data → split → preprocess → network → loss → optimizer, repeat; then evaluate and predict. That map is the whole story.']};
+</script>
+<script>
+"use strict";
+/* ================= navigation ================= */
+(function(){
+ const slides=[...document.querySelectorAll('.slide')],N=slides.length,stage=$('stage');let cur=-1,notesOn=false,t0=null;
+ const mins=slides.map(s=>+(s.dataset.min||1));const cum=mins.map((m,i)=>mins.slice(0,i+1).reduce((a,b)=>a+b,0));
+ slides.forEach((s,i)=>{const f=document.createElement('div');f.className='foot';f.innerHTML='<span></span><span>'+(i+1)+' / '+N+'</span>';s.appendChild(f);});
+ function fit(){const s=Math.min(innerWidth/1280,innerHeight/720)*0.97;stage.style.transform='scale('+s+')';}
+ addEventListener('resize',fit);fit();
+ const inited=new Set();
+ /* pipeline strip */
+ const LOOP=['input','hidden','output','loss','opt'];
+ slides.forEach(s=>{if(!s.dataset.stage)return;s.classList.add('has-bar');const bar=document.createElement('div');bar.className='pipebar';let grp=null;
+  STAGES.forEach((st,i)=>{if(i>0&&!(LOOP.includes(st.id)&&grp&&st.id!=='input')){const a=document.createElement('span');a.className='ar';a.textContent='→';bar.appendChild(a);}
+   if(st.id==='input'){grp=document.createElement('span');grp.className='loopgrp';bar.appendChild(grp);}
+   const p=document.createElement('span');p.className='pp';p.dataset.st=st.id;p.textContent=st.e+' '+st.n;p.onclick=()=>goStage(st.id);
+   if(grp&&LOOP.includes(st.id)){if(st.id!=='input'){const a=document.createElement('span');a.className='ar';a.textContent='→';grp.appendChild(a);}grp.appendChild(p);if(st.id==='opt'){const l=document.createElement('span');l.className='lab';l.textContent='↺';l.title='training loop';grp.appendChild(l);grp=null;}}
+   else bar.appendChild(p);});
+  s.insertBefore(bar,s.firstChild);paintBar(s);});
+ function paintBar(s){const on=(s.dataset.hl||s.dataset.stage||'').split(',');s.querySelectorAll('.pipebar .pp').forEach(p=>{const st=SG[p.dataset.st],a=on.includes(p.dataset.st);p.classList.toggle('on',a);p.style.background=a?st.c:'';});}
+ function goStage(id){const i=slides.findIndex(s=>(s.dataset.stage||'').split(',').includes(id));if(i>=0)go(i);}
+ /* python / R tabs */
+ let lang='py';try{lang=localStorage.getItem('nn-lang')||'py';}catch(e){}
+ function setLang(l){lang=l;document.body.classList.toggle('lang-py',l==='py');document.body.classList.toggle('lang-r',l==='r');document.querySelectorAll('.codetabs .tabbar button').forEach(b=>b.classList.toggle('on',b.dataset.l===l));try{localStorage.setItem('nn-lang',l);}catch(e){}}
+ document.querySelectorAll('.codetabs').forEach(ct=>{const tb=document.createElement('div');tb.className='tabbar';tb.innerHTML='<button data-l="py">Python</button><button data-l="r">R</button>';tb.querySelectorAll('button').forEach(b=>b.onclick=()=>setLang(b.dataset.l));ct.insertBefore(tb,ct.firstChild);});
+ setLang(lang);$('hb-lang').onclick=()=>setLang(lang==='py'?'r':'py');
+ window.DECK={go:i=>go(i),goStage,paintBar};
+ /* pop-ups: where are we + explain */
+ const modal=$('modal'),mbody=$('mbody'),mpipe=$('mpipe');let mP=null,mode=null;
+ const stagesOf=s=>(s.dataset.stage||'').split(',').filter(Boolean);
+ const firstIdx={};STAGES.forEach(st=>{firstIdx[st.id]=slides.findIndex(s=>stagesOf(s).includes(st.id));});
+ function closeModal(){modal.style.display='none';mode=null;}
+ function openPipe(){mode='pipe';const s=slides[cur];let now=stagesOf(s);if(now.length===STAGES.length)now=[];
+  const done=STAGES.map(st=>st.id).filter(id=>!now.includes(id)&&firstIdx[id]>=0&&(firstIdx[id]<cur||(now.length===0&&cur>=N-4)));
+  const k=now.length?STAGES.findIndex(st=>st.id===now[now.length-1])+1:done.length;
+  mbody.innerHTML='<h3>🗺 Where are we?</h3><div class="note">Slide '+(cur+1)+' of '+N+': <b>'+s.dataset.title+'</b>'+(now.length?' &nbsp;·&nbsp; stage: <b>'+now.map(id=>SG[id].e+' '+SG[id].n).join(', ')+'</b>':'')+'</div>'+
+   '<div class="mprog">'+STAGES.map(st=>'<span style="background:'+(now.includes(st.id)?st.c:done.includes(st.id)?rgba(st.c,0.45):'#e5e7eb')+'" title="'+st.n+'"></span>').join('')+'</div>'+
+   '<div class="mini" style="margin-bottom:6px">'+done.length+' of '+STAGES.length+' stages covered · '+Math.round(100*(cur+1)/N)+'% through the course · ✓ covered · glowing = now · grey = coming up · click a box to jump there</div>';
+  mpipe.style.display='block';modal.style.display='flex';if(!mP){mP=canvas('mp-c');mP.c.style.width='100%';mP.c.style.height='auto';mP.c.style.cursor='pointer';
+   mP.c.addEventListener('click',e=>{const[px,py]=cpos(e,mP);const ox=(mP.w-1100)/2;for(const st of STAGES){const[x,y]=PIPEPOS[st.id];if(Math.abs(px-ox-x)<66&&Math.abs(py-y)<28){closeModal();goStage(st.id);}}});}
+  pipeDiagram(mP,now,done);}
+ function openExplain(){mode='ex';const s=slides[cur],e=EXPLAIN[s.dataset.title]||['','',''];mpipe.style.display='none';
+  mbody.innerHTML='<h3>💡 '+s.dataset.title+'</h3><div class="good" style="margin:10px 0 14px;font-size:17.5px"><b>🎯 Take-away:</b> '+e[2]+'</div><div style="display:grid;grid-template-columns:1.45fr 1fr;gap:18px">'+
+   '<div class="card" style="border-top:5px solid var(--purple)"><h3 style="font-size:19px" class="p">🔬 Technical (kept simple)</h3><div class="ex">'+e[0]+'</div></div>'+
+   '<div class="card" style="border-top:5px solid var(--teal)"><h3 style="font-size:19px" class="t">🌱 In plain words</h3><div class="ex">'+e[1]+'</div></div></div>';
+  modal.style.display='flex';}
+ modal.addEventListener('click',e=>{if(e.target===modal||e.target.closest('.mclose'))closeModal();});
+ slides.forEach(s=>{const b=document.createElement('div');b.className='slidebtns';b.innerHTML='<button class="b-pipe" title="Where are we in the pipeline? (P)">🗺 Where are we?</button><button class="b-ex" title="Explain this slide (E)">💡 Explain</button>';
+  b.querySelector('.b-pipe').onclick=openPipe;b.querySelector('.b-ex').onclick=openExplain;s.appendChild(b);});
+ function go(i){i=clamp(i,0,N-1);if(i===cur)return;if(typeof closeModal==='function'&&mode)closeModal();if(t0===null&&cur>=0)t0=Date.now();
+  if(cur>=0){slides[cur].classList.remove('active');const d=D[slides[cur].dataset.demo];if(d&&d.stop)d.stop();}
+  cur=i;const s=slides[i];s.classList.add('active');const name=s.dataset.demo,d=D[name];
+  if(d){try{if(!inited.has(name)){inited.add(name);d.init();}if(d.start)d.start();}catch(e){console.error(name,e);}}
+  $('progress').style.width=(100*(i+1)/N)+'%';$('counter').textContent=(i+1)+' / '+N;history.replaceState(null,'','#'+(i+1));renderNotes();}
+ function renderNotes(){const p=$('notesPanel');p.style.display=notesOn?'block':'none';if(!notesOn)return;const s=slides[cur],n=s.querySelector('.notes');
+  const el=t0?Math.floor((Date.now()-t0)/1000):0;
+  p.innerHTML='<b>Slide '+(cur+1)+' · '+s.dataset.title+'</b> &nbsp;·&nbsp; ~'+mins[cur]+' min &nbsp;·&nbsp; planned time at end of slide: '+cum[cur]+' min &nbsp;·&nbsp; elapsed: <span id="np-el">'+Math.floor(el/60)+':'+String(el%60).padStart(2,'0')+'</span><br>'+(n?n.innerHTML:'');}
+ setInterval(()=>{const e=$('np-el');if(e&&t0){const el=Math.floor((Date.now()-t0)/1000);e.textContent=Math.floor(el/60)+':'+String(el%60).padStart(2,'0');}},1000);
+ const ov=$('overview'),og=$('ovgrid');
+ slides.forEach((s,i)=>{const d=document.createElement('div');d.className='it';d.innerHTML='<span class="n">'+(i+1)+'</span>'+s.dataset.title+'<div class="m">~'+mins[i]+' min'+(s.dataset.demo?' · 🎛️ interactive':'')+'</div>';d.onclick=()=>{ov.style.display='none';go(i);};og.appendChild(d);});
+ const toggleOv=()=>{ov.style.display=ov.style.display==='block'?'none':'block';};
+ const fs=()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();else document.exitFullscreen();};
+ addEventListener('keydown',e=>{const t=e.target,tag=t.tagName;
+  if(e.key==='Escape'&&mode){closeModal();return;}
+  if(mode&&(e.key==='p'||e.key==='P'||e.key==='e'||e.key==='E')){const m=mode;closeModal();if((m==='pipe')===(e.key.toLowerCase()==='p'))return;}
+  if(e.key==='Escape'){if(ov.style.display==='block')ov.style.display='none';$('help').style.display='none';if(t.blur)t.blur();return;}
+  if(tag==='INPUT'&&(t.type==='range'||t.type==='text'||t.type==='number'))return;if(tag==='SELECT'||tag==='TEXTAREA')return;
+  if(e.metaKey||e.ctrlKey||e.altKey)return;
+  const k=e.key;
+  if(k==='ArrowRight'||k==='PageDown'||(k===' '&&tag!=='BUTTON')){e.preventDefault();go(cur+1);}
+  else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();go(cur-1);}
+  else if(k==='Home'){go(0);}else if(k==='End'){go(N-1);}
+  else if(k==='n'||k==='N'){notesOn=!notesOn;renderNotes();}
+  else if(k==='o'||k==='O'){toggleOv();}
+  else if(k==='p'||k==='P'){openPipe();}
+  else if(k==='e'||k==='E'){openExplain();}
+  else if(k==='l'||k==='L'){setLang(lang==='py'?'r':'py');}
+  else if(k==='f'||k==='F'){fs();}
+  else if(k==='?'){const h=$('help');h.style.display=h.style.display==='flex'?'none':'flex';}});
+ $('help').onclick=()=>$('help').style.display='none';
+ $('hb-prev').onclick=()=>go(cur-1);$('hb-next').onclick=()=>go(cur+1);$('hb-notes').onclick=()=>{notesOn=!notesOn;renderNotes();};$('hb-ov').onclick=toggleOv;$('hb-fs').onclick=fs;
+ stage.addEventListener('click',e=>{if(!e.target.closest('input,select,button,label,canvas,td,.reveal-card')&&document.activeElement&&document.activeElement.blur)document.activeElement.blur();});
+ let tx=null,ty=null;stage.addEventListener('touchstart',e=>{if(e.target.closest('input,canvas,select'))return;tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:true});
+ stage.addEventListener('touchend',e=>{if(tx===null)return;const dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty;if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy))go(cur+(dx<0?1:-1));tx=null;});
+ const h=parseInt(location.hash.slice(1));go(isFinite(h)?h-1:0);
+})();
+</script>
+</body>
+</html>
