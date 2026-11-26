@@ -100,14 +100,14 @@ Total  ≈ $827 B/yr</div><p>City-level checks in the same paper: roughly RMB 9 
 </section>
 
 <!-- ============ 4 WHY HARD ============ -->
-<section class="slide" data-title="Why is it hard?" data-section="1">
+<section class="slide" data-title="Why is it hard?" data-section="1" data-demo="hard">
   <div class="kicker">1 · Why · the challenge</div>
   <h2>Hair is the worst workpiece imaginable</h2>
   <p class="lead">Industrial automation works because the part is predictable. A haircut breaks every one of those assumptions.</p>
-  <div class="rtable auto" id="hardTbl">
+  <div class="rtable" id="hardTbl">
     <div class="h"></div><div class="h">Machined part</div><div class="h acc">Human head + hair</div>
   </div>
-  <div class="concl">⇒ Precision alone is not enough. We also need <b>perception</b>, <b>hair models</b>, <b>motion compensation</b> and <b>safety</b>.</div>
+  <div class="concl" id="hardConcl">⇒ Precision alone is not enough. We also need <b>perception</b>, <b>hair models</b>, <b>motion compensation</b> and <b>safety</b>.</div>
   <div class="more" hidden>
     <div data-tab="plain"><p>Factory robots work so well because everything is predictable: the part is clamped, it doesn't move, it's made of one material, and you can measure exactly whether it came out right.</p><p>A haircut breaks every one of those rules. The head moves, hair bends and springs back, every person's hair is different, mistakes can hurt someone, and "a good haircut" is partly a matter of taste.</p></div>
     <div data-tab="tech"><ul><li><b>Non-stationary frame:</b> the workpiece frame <span class="mono">T_head(t)</span> must be estimated online. Breathing, talking and posture shifts are millimetre-to-centimetre disturbances.</li><li><b>Deformable, high-DOF state:</b> about 10⁵ strands with bending/twisting elasticity, friction, cohesion and humidity dependence. The state is only partially observable.</li><li><b>Irreversible operations:</b> material removal can't be undone, so you plan conservatively with multi-pass roughing and finishing.</li><li><b>Safety-critical contact:</b> human–robot contact near ears and eyes calls for force and speed limits and protective stops.</li><li><b>Ill-posed objective:</b> the target is an aesthetic, so you need learned or preference-based quality metrics.</li></ul></div>
@@ -507,7 +507,7 @@ Dₖ₊₁ = Dₖ ∪ Iₖ (+ preference labels on outcomes)
   <button class="iconbtn" id="thBtn" title="Light/dark (T)"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 1.5a6.5 6.5 0 0 1 0 13z" fill="currentColor"/></svg></button>
   <button class="iconbtn" id="fsBtn" title="Fullscreen (F)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1.5 5.5v-4h4M10.5 1.5h4v4M14.5 10.5v4h-4M5.5 14.5h-4v-4"/></svg></button>
   <button class="navbtn" id="prevBtn" aria-label="Previous">‹</button>
-  <span class="num" id="num">1 / 21</span>
+  <span class="stepdots" id="stepDots"></span><span class="num" id="num">1 / 21</span>
   <button class="navbtn" id="nextBtn" aria-label="Next">›</button>
 </footer>
 </div></div>
@@ -521,7 +521,7 @@ Dₖ₊₁ = Dₖ ∪ Iₖ (+ preference labels on outcomes)
 </aside>
 
 <div id="overview"><h4>All slides <span class="kbd">O</span> to close</h4><div class="grid" id="ovGrid"></div></div>
-<div id="help">← → navigate · <b>D</b> deep dive · <b>O</b> overview · <b>F</b> fullscreen · <b>T</b> theme</div>
+<div id="help">Click / → next step · ← back · <b>D</b> deep dive · <b>O</b> overview · <b>F</b> fullscreen · <b>T</b> theme</div>
 
 <script src="app.js"></script>
 <script src="demos.js"></script>

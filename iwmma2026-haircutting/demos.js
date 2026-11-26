@@ -3,12 +3,10 @@ const TAU = Math.PI * 2;
 const rnd = (a, b) => a + Math.random() * (b - a);
 const hyp = Math.hypot;
 
-function cycle(ms, n, fn) {
-  let id = null, i = 0;
-  return { start() { i = 0; fn(0); clearInterval(id); id = setInterval(() => { i = (i + 1) % n; fn(i); }, ms); },
-           stop() { clearInterval(id); id = null; } };
-}
-function both(...xs) { return { start() { xs.forEach(x => x && x.start && x.start()); }, stop() { xs.forEach(x => x && x.stop && x.stop()); } }; }
+/* presenter-driven steps: each click advances one step (no timers) */
+function stepper(n, fn) { return { steps: n, step: fn, start() {}, stop() {} }; }
+function both(...xs) { const s = xs.find(x => x && x.steps);
+  return { steps: s ? s.steps : 0, step: i => s && s.step(i), start() { xs.forEach(x => x && x.start && x.start()); }, stop() { xs.forEach(x => x && x.stop && x.stop()); } }; }
 function setPhase(el, text, cls = '') { if (!el) return; if (el.textContent !== text) el.textContent = text; const c = 'phase ' + cls; if (el.className !== c) el.className = c; }
 
 function drawHead(ctx, x, y, r, opts = {}) {
@@ -152,12 +150,10 @@ DEMOS.market = () => {
   const tiers = [['High income', 576], ['Middle income', 216], ['Low income', 34.8]];
   $('#mkBars').innerHTML = tiers.map(([n, v]) =>
     `<div class="bar"><span>${n}</span><div class="tr" style="height:14px"><div class="fl" style="width:0" data-w="${v / 576 * 100}"></div></div><b>$${Math.round(v)}B</b></div>`).join('');
-  const lp = loop((dt, t) => {
-    const p = Math.round(1 + 19 * (0.5 - 0.5 * Math.cos(t * 0.5)));
-    $('#mkPct').textContent = p + '%'; $('#mkVal').textContent = '$' + Math.round(826.8 * p / 100) + ' B / yr';
-  });
-  return both(lp, { start() { setTimeout(() => $$('#mkBars .fl').forEach((f, i) => setTimeout(() => f.style.width = f.dataset.w + '%', i * 300)), 300); },
-                    stop() { $$('#mkBars .fl').forEach(f => f.style.width = 0); } });
+  const P = [1, 5, 10, 20];
+  return { steps: P.length, step(i) { const p = P[i]; $('#mkPct').textContent = p + '%'; $('#mkVal').textContent = '$' + Math.round(826.8 * p / 100) + ' B / yr'; },
+    start() { setTimeout(() => $$('#mkBars .fl').forEach((f, i) => setTimeout(() => f.style.width = f.dataset.w + '%', i * 300)), 300); },
+    stop() { $$('#mkBars .fl').forEach(f => f.style.width = 0); } };
 };
 
 /* =============== 4. HARD TABLE (auto reveal via CSS) =============== */
@@ -172,8 +168,13 @@ DEMOS.market = () => {
   ];
   const t = $('#hardTbl');
   rows.forEach(([k, a, b], i) => t.insertAdjacentHTML('beforeend',
-    `<div class="c k">${k}</div><div class="c">${a}</div><div class="c hv"><span>${b}</span><div class="q" style="animation-delay:${0.8 + i * 0.85}s">?</div></div>`));
+    `<div class="c k">${k}</div><div class="c">${a}</div><div class="c hv"><span>${b}</span><div class="q">?</div></div>`));
 })();
+
+DEMOS.hard = () => stepper(7, i => {
+  $$('#hardTbl .hv').forEach((e, k) => e.classList.toggle('open', k < i));
+  $('#hardConcl').classList.toggle('show', i === 6);
+});
 
 /* =============== 5. TIMELINE =============== */
 DEMOS.timeline = () => {
@@ -188,7 +189,7 @@ DEMOS.timeline = () => {
   ];
   const tl = $('#tl');
   if (!$('.ev', tl)) ev.forEach((e, i) => tl.insertAdjacentHTML('beforeend', `<div class="ev ${e.ours ? 'ours' : ''}" style="left:${e.x}%" data-i="${i}"><div class="y">${e.y}</div><div class="p"></div><div class="lab">${e.l}</div></div>`));
-  return cycle(4200, ev.length, i => {
+  return stepper(ev.length, i => {
     $$('.ev', tl).forEach((x, k) => x.classList.toggle('on', k === i));
     $('#tlCard').innerHTML = `<div style="display:flex;gap:10px;align-items:center;margin-bottom:6px;animation:fadein .4s"><span class="tag ${ev[i].ours ? '' : 'blue'}">${ev[i].y}</span><h3 style="margin:0">${ev[i].l}</h3></div><p style="animation:fadein .4s">${ev[i].d}</p>`;
   });
@@ -197,7 +198,7 @@ DEMOS.timeline = () => {
 /* =============== 6. LENSES =============== */
 DEMOS.lenses = () => {
   $$('#lenses .lens').forEach(l => l.onclick = () => goSlide(+l.dataset.go - 1));
-  return cycle(4000, 3, i => $$('#lenses .lens').forEach((l, k) => l.classList.toggle('on', k === i)));
+  return stepper(3, i => $$('#lenses .lens').forEach((l, k) => l.classList.toggle('on', k === i)));
 };
 
 /* =============== 7. CNC MAP =============== */
@@ -217,7 +218,7 @@ DEMOS.cnc = () => {
   if (!$('.m', m)) rows.forEach((r, i) => m.insertAdjacentHTML('beforeend',
     `<div class="m" data-i="${i}">${r[0]}<small>${r[1]}</small></div><div class="arrow" data-i="${i}"></div><div class="m" data-i="${i}">${r[2]}<small>${r[3]}</small></div>`));
   const lab = { holds: ['green', 'Analogy holds'], partial: ['accent', 'Holds partially'], breaks: ['red', 'Analogy breaks: research gap'] };
-  return cycle(3200, rows.length, i => {
+  return stepper(rows.length, i => {
     $$('[data-i]', m).forEach(e => { const on = +e.dataset.i === i;
       if (e.classList.contains('arrow')) e.classList.toggle('row-on', on);
       else { e.style.borderColor = on ? 'var(--accent)' : ''; e.style.background = on ? 'var(--accentBg)' : ''; } });
@@ -279,7 +280,7 @@ DEMOS.sense = () => {
     if (on.includes('tactile')) s += `<g><rect x="250" y="70" width="80" height="12" rx="3" fill="var(--violet)" transform="rotate(20 290 76)"/>${[0, 1, 2, 3, 4, 5, 6].map(i => `<line x1="${258 + i * 11}" y1="${80 + i * 4}" x2="${252 + i * 11}" y2="${104 + i * 4}" stroke="var(--violet)" stroke-width="3"/>`).join('')}</g>`;
     svg.innerHTML = s;
   };
-  return cycle(3000, steps.length, i => {
+  return stepper(steps.length, i => {
     const on = steps[i]; draw(on);
     setPhase($('#sensePhase'), names[i], i === 4 ? 'green' : '');
     const key = i === 4 ? 'all' : on[on.length - 1];
@@ -311,9 +312,8 @@ DEMOS.hair = () => {
   const cutLine = (a, b) => strands.forEach(s => { for (let j = 1; j < s.n - 1; j++) if (segX(s.p[j], s.p[j + 1], a, b)) {
     falling.push({ pts: s.p.slice(j + 1).map(q => ({ x: q.x, y: q.y })), vx: rnd(-20, 20), vy: rnd(-30, 10), life: 2.5 }); removed += s.n - j - 1; s.n = j + 1; s.cut = 1; break; } });
   const lowest = () => { let m = 0; strands.forEach(s => { let lo = -1e9; for (let i = 0; i < s.n; i++) lo = Math.max(lo, s.p[i].y); m += lo; }); return m / strands.length - C.y; };
-  return loop(dt => {
-    pt += dt;
-    if (pt > PER) { pt = 0; pi = (pi + 1) % 3; [, stiff, curl] = PRE[pi]; build(); }
+  const lpH = loop(dt => {
+    pt += dt; if (pi < 0) return;
     const name = PRE[pi][0];
     comb = null; scis = null;
     if (pt > 2.2 && pt < 4.8) { const u = (pt - 2.2) / 2.6, a = -Math.PI * (1.06 - u * 1.12); comb = { x: C.x + (R + 55) * Math.cos(a), y: C.y + (R + 55) * Math.sin(a) }; }
@@ -358,6 +358,7 @@ DEMOS.hair = () => {
       label(ctx, p[0], 54 + i * 86, 28, i === pi ? '#fff' : COL.muted, 12, 'center'); });
     label(ctx, `${NS} strands × ${K} particles · stiffness ${stiff} · curl ${curl}`, 14, h - 12, COL.muted, 11);
   });
+  return { steps: 3, step(i) { pi = i; [, stiff, curl] = PRE[i]; build(); pt = 0; }, start() { lpH.start(); }, stop() { lpH.stop(); } };
 };
 
 /* =============== 11. TOOLPATH (single vs multi, side by side) =============== */
@@ -411,11 +412,11 @@ DEMOS.path = () => {
   const show = (S, el) => { const s = S.stats(); el.innerHTML = `<span>Covered <b>${Math.round(s.cov * 100)}%</b></span><span>Mean error <b>${s.err.toFixed(1)} mm</b></span><span>Too short <b style="color:${s.over > .01 ? 'var(--red)' : 'var(--green)'}">${(s.over * 100).toFixed(0)}%</b></span>`; };
   const lp = loop(dt => {
     const da = A.step(dt, 40), db = B.step(dt, 80);
-    if (da && db) { hold += dt; if (hold > .3) setPhase($('#pathPhase'), 'Result: roughing + finishing avoids cutting too short', 'green'); if (hold > 5) { pi = (pi + 1) % 3; go(); } }
+    if (da && db) { hold += dt; if (hold > .3) setPhase($('#pathPhase'), 'Result: roughing + finishing avoids cutting too short', 'green'); }
     A.draw(); B.draw();
     ui += dt; if (ui > .15) { ui = 0; show(A, $('#pathAS')); show(B, $('#pathBS')); }
   });
-  return { start() { pi = 0; go(); lp.start(); }, stop() { lp.stop(); } };
+  return { steps: 3, step(i) { pi = i; go(); }, start() { lp.start(); }, stop() { lp.stop(); } };
 };
 
 /* =============== 12. HEAD TRACKING =============== */
@@ -430,7 +431,7 @@ DEMOS.track = () => {
     for (let i = hist.length - 1; i > 0; i--) if (hist[i - 1].t <= tt) { const a = hist[i - 1], b = hist[i], u = (tt - a.t) / ((b.t - a.t) || 1); return { x: lerp(a.x, b.x, u), y: lerp(a.y, b.y, u) }; }
     return hist[hist.length - 1]; };
   const lp = loop(dt => {
-    t += dt; lt += dt; if (lt > 8) { lt = 0; li = (li + 1) % 3; errs.forEach(e => e.length = 0); }
+    t += dt;
     tau = LAT[li][0]; setPhase($('#trkPhase'), LAT[li][1], li === 0 ? 'green' : li === 1 ? '' : 'red');
     if (t > nextF) { const a = rnd(0, TAU), m = rnd(180, 300); fl.vx += m * Math.cos(a); fl.vy += m * Math.sin(a); nextF = t + rnd(3, 5); }
     fl.vx += (-70 * fl.x - 11 * fl.vx) * dt; fl.vy += (-70 * fl.y - 11 * fl.vy) * dt; fl.x += fl.vx * dt; fl.y += fl.vy * dt;
@@ -456,7 +457,7 @@ DEMOS.track = () => {
     [0, 20, 40].forEach(vv => { const yy = y0 + ch - vv / 40 * ch; label(ctx, vv, 14, yy + 4, COL.muted, 10); ctx.strokeStyle = COL.line; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x0, yy); ctx.lineTo(x0 + cw, yy); ctx.stroke(); });
     errs.forEach((E, i) => { ctx.strokeStyle = C3[i]; ctx.lineWidth = 2; ctx.beginPath(); E.forEach((p, k) => { const xx = x0 + (p.t - (t - 6)) / 6 * cw, yy = y0 + ch - Math.min(p.e, 40) / 40 * ch; k ? ctx.lineTo(xx, yy) : ctx.moveTo(xx, yy); }); ctx.stroke(); });
   });
-  return { start() { li = 0; lt = 0; errs.forEach(e => e.length = 0); lp.start(); }, stop() { lp.stop(); } };
+  return { steps: 3, step(i) { li = i; errs.forEach(e => e.length = 0); }, start() { lp.start(); }, stop() { lp.stop(); } };
 };
 
 /* =============== 13. SAFETY (scripted hand + flinch) =============== */
@@ -464,16 +465,16 @@ DEMOS.safe = () => {
   const cv = $('#safeCv'); const { ctx, w, h } = setupCanvas(cv);
   const H0 = { x: 260, y: 200 }, R = 120, P = { x: 282, y: 193, rx: 80, ry: 98 };
   const dslow = 70, dstop = 14;
-  let s = 0, v = 0, stopped = false, stopT = 0, t = 0, hand = null, flinched = false;
+  let s = 0, v = 0, stopped = false, stopT = 0, t = 0, hand = null, flinched = false, sp = 0;
   const hd = { x: 0, y: 0, vx: 0, vy: 0 };
   const tool = () => ({ x: P.x + P.rx * Math.cos(s), y: P.y + P.ry * Math.sin(s) });
   const zones = () => { const z = [{ x: H0.x + 20 + hd.x, y: H0.y + 8 + hd.y, r: 20, n: 'ear' }, { x: H0.x - 80 + hd.x, y: H0.y - 8 + hd.y, r: 14, n: 'eye' }]; if (hand) z.push({ x: hand.x, y: hand.y, r: 24, n: 'hand' }); return z; };
   const nearest = () => { const p = tool(); return zones().reduce((b, z) => { const dd = hyp(p.x - z.x, p.y - z.y) - z.r - 10; return dd < b.d ? { d: dd, n: z.n } : b; }, { d: 1e9, n: '' }); };
   const lp = loop(dt => {
-    t += dt; const ct = t % 15;
-    if (ct > 4 && ct < 8.5) { const u = ct < 5.5 ? (ct - 4) / 1.5 : ct < 7 ? 1 : 1 - (ct - 7) / 1.5; hand = { x: lerp(w + 40, 390, u), y: lerp(40, 110, u) }; } else hand = null;
-    if (ct > 10.5 && !flinched) { flinched = true; const p = tool(), z = zones()[0], dx = p.x - z.x, dy = p.y - z.y, d = hyp(dx, dy) || 1; hd.vx += dx / d * 340; hd.vy += dy / d * 340; }
-    if (ct < 1) flinched = false;
+    t += dt;
+    const ht = sp === 1 ? { x: 390, y: 110 } : { x: w + 60, y: 40 };
+    if (sp === 1 || hand) { hand = hand || { x: w + 60, y: 40 }; hand.x = lerp(hand.x, ht.x, 1 - Math.exp(-dt * 2)); hand.y = lerp(hand.y, ht.y, 1 - Math.exp(-dt * 2)); if (sp !== 1 && hand.x > w + 30) hand = null; }
+    if (sp === 3 && !flinched) { flinched = true; const p = tool(), z = zones()[0], dx = p.x - z.x, dy = p.y - z.y, d = hyp(dx, dy) || 1; hd.vx += dx / d * 340; hd.vy += dy / d * 340; }
     hd.vx += (-45 * hd.x - 9 * hd.vx) * dt; hd.vy += (-45 * hd.y - 9 * hd.vy) * dt; hd.x += hd.vx * dt; hd.y += hd.vy * dt;
     const nz = nearest(), d = nz.d;
     if (d < dstop && !stopped) { stopped = true; stopT = 0; }
@@ -502,7 +503,7 @@ DEMOS.safe = () => {
     label(ctx, '- - slow-down zone (70 mm)', gx, gy + 40, COL.accent2, 11); label(ctx, '··· stop distance (14 mm)', gx, gy + 58, COL.red, 11);
     label(ctx, 'v = v_max · clip((d − d_stop)/(d_slow − d_stop), 0, 1)', 12, h - 12, COL.muted, 11);
   });
-  return { start() { t = 0; stopped = false; lp.start(); }, stop() { lp.stop(); } };
+  return { steps: 4, step(i) { sp = i; if (i !== 3) flinched = false; if (i === 0) { hand = null; stopped = false; } }, start() { lp.start(); }, stop() { lp.stop(); } };
 };
 
 /* =============== 14. TELEOP (auto-traced, latency cycles) =============== */
@@ -514,7 +515,7 @@ DEMOS.tele = () => {
   const cmds = [], rhist = [], errs = [], otrail = [], rtrail = [];
   const at = (arr, tt, d) => { for (let i = arr.length - 1; i >= 0; i--) if (arr[i].t <= tt) return arr[i]; return arr[0] || d; };
   const lp = loop(dt => {
-    t += dt; mt += dt; if (mt > 7) { mt = 0; mi = (mi + 1) % MODES.length; errs.length = 0; }
+    t += dt;
     const lat = MODES[mi][0]; setPhase($('#telePhase'), MODES[mi][1], mi === 3 ? 'red' : mi === 2 ? '' : 'green');
     $$('.ntab tr').forEach((tr, k) => tr.classList.toggle('on', k === mi + 1));
     op = { x: C.x + 180 * Math.cos(.45 * t), y: C.y + 125 * Math.sin(.45 * t) + 20 * Math.sin(1.35 * t) };
@@ -542,7 +543,7 @@ DEMOS.tele = () => {
     label(ctx, `gap intent ↔ robot   ${rmse.toFixed(1)} mm`, 24, 82, rmse > 20 ? COL.red : COL.green, 13);
     label(ctx, 'dashed ring = what the barber sees on video', 12, h - 12, COL.muted, 11);
   });
-  return { start() { mi = 0; mt = 0; errs.length = 0; lp.start(); }, stop() { lp.stop(); } };
+  return { steps: 4, step(i) { mi = i; errs.length = 0; }, start() { lp.start(); }, stop() { lp.stop(); } };
 };
 
 /* =============== 15. FLEET (auto supervisor) =============== */
@@ -554,8 +555,7 @@ DEMOS.fleet = () => {
     $('#stations').innerHTML = st.map(s => `<div class="st" id="st${s.id}"><div class="h"><span>Robot ${s.id + 1}</span><span class="pc">0%</span></div><div class="pb"><i></i></div><div class="s"></div></div>`).join('') +
       `<div class="st" style="border-color:var(--accent)"><div class="h"><span>Barber</span><span class="acc">supervisor</span></div><div class="s" id="barber" style="font-size:13px"></div></div>`; };
   const lp = loop(dt => {
-    mt += dt; if (mt > 13) { mt = 0; mi = (mi + 1) % 3; done = ints = 0; waitT = totT = 0; }
-    const [mat, txt, cls] = MAT[mi]; setPhase($('#fleetPhase'), txt, cls);
+        const [mat, txt, cls] = MAT[mi]; setPhase($('#fleetPhase'), txt, cls);
     lam = lerp(.09, .006, mat);
     st.forEach(s => {
       totT += dt; s.tt += dt;
@@ -577,7 +577,7 @@ DEMOS.fleet = () => {
     $('#fRho').style.background = rho > .8 ? 'var(--red)' : ''; $('#fRhoTxt').textContent = rho > .8 ? '· overloaded: robots queue' : rho > .4 ? '· busy' : '· comfortable';
     $('#fDone').textContent = done; $('#fInt').textContent = ints; $('#fWait').textContent = Math.round(waitT / (totT || 1) * 100) + '%';
   });
-  return { start() { mi = 0; mt = 0; done = ints = 0; waitT = totT = 0; supBusy = 0; build(); lp.start(); }, stop() { lp.stop(); } };
+  return { steps: 3, step(i) { mi = i; done = ints = 0; waitT = totT = 0; supBusy = 0; build(); }, start() { lp.start(); }, stop() { lp.stop(); } };
 };
 
 /* =============== 16. VLA (auto-typed instructions) =============== */
@@ -648,8 +648,7 @@ DEMOS.vla = () => {
     }, t0 + boxes.length * 300);
   }
   drawMap({ z: cur });
-  return { start() { pi = 0; run(presets[0]); clearInterval(iv); iv = setInterval(() => { pi = (pi + 1) % presets.length; run(presets[pi]); }, 9500); },
-           stop() { clearInterval(iv); timers.forEach(clearTimeout); timers = []; } };
+  return { steps: presets.length, step(i) { run(presets[i]); }, start() {}, stop() { timers.forEach(clearTimeout); timers = []; } };
 };
 
 /* =============== 17. FLYWHEEL =============== */
@@ -673,7 +672,7 @@ DEMOS.fly = () => {
   const dot = $('#flyDot', svg); let cur = 0, ang = -Math.PI / 2;
   const pick = i => { cur = i; $$('.fn circle', svg).forEach((c, k) => { c.setAttribute('stroke', k === i ? 'var(--accent)' : 'var(--line)'); c.setAttribute('stroke-width', k === i ? 4 : 2); c.setAttribute('fill', k === i ? 'var(--accentBg)' : 'var(--panel)'); });
     $('#flyCard').innerHTML = `<div style="animation:fadein .4s"><span class="tag">Stage ${i + 1} of 5</span><h3 style="margin-top:10px;font-size:21px">${nodes[i][0]} ${nodes[i][1]}</h3><p style="font-size:16px">${nodes[i][2]}</p></div>`; };
-  const cy = cycle(3800, 5, pick);
+  const cy = stepper(5, pick);
   const lp = loop(dt => { const ta = -Math.PI / 2 + cur * TAU / 5; const d = ((ta - ang) % TAU + TAU) % TAU; ang += Math.min(d, dt * 2.2); dot.setAttribute('cx', C.x + R * Math.cos(ang)); dot.setAttribute('cy', C.y + R * Math.sin(ang)); });
   return both(cy, lp);
 };
@@ -691,7 +690,7 @@ DEMOS.lvl = () => {
   const B = ['Precise, safe actuation that a person can hand over to.', 'Repeatable autonomous paths and reliable head registration.', 'Robust head-motion compensation plus a certified safety case.', 'Generalising across hair types and styles: VLA + large, diverse data.', 'Open-world safety, verified learned policies, public trust.', 'This is the end of the scale.'];
   const labs = ['Perception', 'Planning', 'Execution', 'Fallback / safety'];
   $('#lvls').innerHTML = L.map((l, i) => `<div class="lvl" data-i="${i}">${i === 2 ? '<span class="flag" style="background:var(--blue);color:#fff">RESEARCH TODAY</span>' : i === 3 ? '<span class="flag" style="background:var(--accent);color:#fff">NEXT TARGET</span>' : ''}<b>L${i}</b><span>${l[0]}</span></div>`).join('');
-  return cycle(4200, 6, i => { $$('#lvls .lvl').forEach((e, k) => e.classList.toggle('on', k === i));
+  return stepper(6, i => { $$('#lvls .lvl').forEach((e, k) => e.classList.toggle('on', k === i));
     $('#lvlT').textContent = `L${i} · ${L[i][0]}`; $('#lvlD').textContent = L[i][1]; $('#lvlE').textContent = L[i][2]; $('#lvlB').textContent = B[i];
     $('#lvlShare').innerHTML = labs.map((n, k) => `<div class="share"><span>${n}</span><div class="tr"><div class="r" style="width:${L[i][3][k]}%">${L[i][3][k] > 12 ? L[i][3][k] + '%' : ''}</div><div class="hm" style="width:${100 - L[i][3][k]}%">${100 - L[i][3][k] > 12 ? (100 - L[i][3][k]) + '%' : ''}</div></div></div>`).join(''); });
 };
@@ -709,7 +708,7 @@ DEMOS.chal = () => {
     ['Trust & acceptance', 'Would you let it near your ears? <b>Consent, client-approved paths</b>, visible oversight.'],
   ];
   $('#chal').innerHTML = F.map((f, i) => `<div class="c"><span class="n">${String(i + 1).padStart(2, '0')}</span><h3>${f[0]}</h3><p>${f[1]}</p></div>`).join('');
-  return cycle(2600, 8, i => $$('#chal .c').forEach((c, k) => c.classList.toggle('hl', k === i)));
+  return stepper(8, i => $$('#chal .c').forEach((c, k) => c.classList.toggle('hl', k === i)));
 };
 
 /* =============== 20. FUTURE =============== */
@@ -730,7 +729,7 @@ DEMOS.future = () => {
      ['remote', 'Experts teach, robots generalise', 'Barbers become teachers and supervisors; personal style profiles travel with you.', 80, 'Large, diverse, privacy-preserving datasets'],
      ['care', 'Grooming at home', 'General-purpose assistive robots with grooming skills, supporting ageing in place.', 75, 'Affordable general-purpose hardware']],
   ];
-  return cycle(8000, 3, k => { $$('#horizon .chip').forEach(c => c.classList.toggle('on', +c.dataset.h === k));
+  return stepper(3, k => { $$('#horizon .chip').forEach(c => c.classList.toggle('on', +c.dataset.h === k));
     $('#scen').innerHTML = H[k].map(([i, t, d, m, n]) => `<div class="card" style="display:flex;flex-direction:column;gap:8px;animation:fadein .5s">${ic[i]}<h3 style="font-size:20px">${t}</h3><p style="font-size:15.5px">${d}</p>
       <div style="margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--panel2)"><div class="tiny muted" style="text-transform:uppercase;letter-spacing:.1em">What it needs</div><div style="font-size:15px;margin-top:4px">${n}</div></div>
       <div style="margin-top:auto"><div class="tiny muted">Autonomy</div><div class="bar" style="grid-template-columns:1fr"><div class="tr"><div class="fl" style="width:${m}%"></div></div></div></div></div>`).join(''); });

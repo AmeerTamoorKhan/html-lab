@@ -67,13 +67,25 @@ function demoFor(i) {
   return live.get(i);
 }
 
-function go(i, push = true) {
+let curStep = 0;
+function nSteps() { const d = live.get(cur); return d && d.steps ? d.steps : 1; }
+function showStep() {
+  const d = live.get(cur), n = nSteps();
+  if (d && d.step) d.step(curStep);
+  const el = $('#stepDots');
+  el.innerHTML = n > 1 ? Array.from({ length: n }, (_, k) => `<i class="${k <= curStep ? 'on' : ''}"></i>`).join('') : '';
+}
+function next() { if (curStep < nSteps() - 1) { curStep++; showStep(); } else if (cur < slides.length - 1) go(cur + 1); }
+function prev() { if (curStep > 0) { curStep--; showStep(); } else if (cur > 0) go(cur - 1, true, true); }
+window.nextStep = next;
+function go(i, push = true, atEnd = false) {
   i = clamp(i, 0, slides.length - 1);
   const prev = live.get(cur); if (prev && prev.stop) prev.stop();
   slides[cur].classList.remove('active');
   cur = i;
   slides[cur].classList.add('active');
   const d = demoFor(cur); if (d && d.start) d.start();
+  curStep = atEnd ? nSteps() - 1 : 0; showStep();
   const sec = +slides[cur].dataset.section;
   $$('#journey .step').forEach(s => {
     const k = +s.dataset.s;
@@ -126,8 +138,8 @@ document.addEventListener('keydown', e => {
   const tag = (e.target.tagName || '').toLowerCase();
   if (tag === 'input' || tag === 'textarea') { if (e.key === 'Escape') e.target.blur(); return; }
   const k = e.key;
-  if (k === 'ArrowRight' || k === 'PageDown' || k === ' ') { e.preventDefault(); go(cur + 1); }
-  else if (k === 'ArrowLeft' || k === 'PageUp') { e.preventDefault(); go(cur - 1); }
+  if (k === 'ArrowRight' || k === 'PageDown' || k === ' ') { e.preventDefault(); next(); }
+  else if (k === 'ArrowLeft' || k === 'PageUp') { e.preventDefault(); prev(); }
   else if (k === 'Home') go(0);
   else if (k === 'End') go(slides.length - 1);
   else if (k === 'd' || k === 'D') toggleDrawer();
@@ -142,14 +154,20 @@ document.addEventListener('touchend', e => {
   if (tx === null) return; const dx = e.changedTouches[0].clientX - tx; tx = null;
   if ($('#drawer').classList.contains('on')) return;
   if (e.target.closest('canvas,input')) return;
-  if (Math.abs(dx) > 60) go(cur + (dx < 0 ? 1 : -1));
+  if (Math.abs(dx) > 60) (dx < 0 ? next : prev)();
 });
 
 window.addEventListener('DOMContentLoaded', () => {
   try { if (localStorage.getItem('ath-theme') === 'light') document.body.classList.add('light'); } catch (e) {}
   readColors(); buildJourney(); fit();
-  $('#prevBtn').onclick = () => go(cur - 1);
-  $('#nextBtn').onclick = () => go(cur + 1);
+  $('#prevBtn').onclick = prev;
+  $('#nextBtn').onclick = next;
+  // click anywhere on the slide (not on a control) = next step
+  $('#stage').addEventListener('click', e => {
+    if (!e.target.closest('.slide')) return;
+    if (e.target.closest('button,a,input,.stop,.lens,#journey')) return;
+    next();
+  });
   $('#deepBtn').onclick = () => openDrawer();
   $('#ovBtn').onclick = toggleOverview;
   $('#thBtn').onclick = toggleTheme;
